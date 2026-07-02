@@ -1,0 +1,1 @@
+fetch('https://hallofheroeslcg.com/latest-ffg-rulings-post-rrg-1-7/').then(r => r.text()).then(t => { const imgs = t.match(/<img[^>]+src=["']([^"']+)["']/g); console.log(imgs ? imgs.slice(0, 10).join('\n') : 'no images'); }).catch(console.error)

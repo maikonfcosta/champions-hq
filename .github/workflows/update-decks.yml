@@ -1,0 +1,36 @@
+name: Update MarvelCDB Decks
+
+on:
+  schedule:
+    # Roda todos os dias às 03:00 (UTC)
+    - cron: '0 3 * * *'
+  workflow_dispatch: # Permite rodar manualmente no GitHub
+
+jobs:
+  update-decks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Run Update Script
+        run: node update_decks.js
+
+      - name: Commit and Push Changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add public/all_decks.jsonl public/last_scraped_date.txt
+          
+          # Apenas faz o commit se houver alguma mudança (novos decks adicionados)
+          if git diff --staged --quiet; then
+            echo "Nenhum deck novo para adicionar hoje."
+          else
+            git commit -m "chore: atualiza banco de decks diário [skip ci]"
+            git push
+          fi
