@@ -19,7 +19,7 @@ jobs:
           node-version: '18'
 
       - name: Run Update Script
-        run: node update_decks.js
+        run: node scripts/update_decks.js
 
       - name: Commit and Push Changes
         run: |
