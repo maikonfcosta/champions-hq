@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { Shield, BookOpen, Layers, Zap, Shuffle } from 'lucide-react';
+import { BookOpen, Layers, Zap, Shuffle } from 'lucide-react';
 
 // Stub Components for pages
 const Home = () => (
@@ -65,9 +65,42 @@ const NavItem = ({ to, icon: Icon, children }) => {
 };
 
 function App() {
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstall, setShowInstall] = useState(false);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstall(true);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  }, []);
+
+  const handleInstall = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setShowInstall(false);
+      }
+      setDeferredPrompt(null);
+    }
+  };
+
   return (
     <Router>
       <div className="app-layout">
+        {showInstall && (
+          <div className="install-prompt animate-fade-in" style={{ background: 'linear-gradient(90deg, #e62429, #2b82d9)', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 4px 15px rgba(230, 36, 41, 0.4)', zIndex: 60, position: 'relative' }}>
+            <div>
+              <h4 style={{ margin: 0, color: 'white', fontWeight: 800, fontSize: '1.1rem' }}>Instale o Champions HQ</h4>
+              <p style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '0.85rem' }}>Adicione à sua tela inicial para acessar offline!</p>
+            </div>
+            <button onClick={handleInstall} style={{ background: 'white', color: '#e62429', padding: '8px 16px', borderRadius: '24px', fontWeight: 'bold', fontSize: '0.85rem', boxShadow: '0 2px 5px rgba(0,0,0,0.2)', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}>Instalar App</button>
+          </div>
+        )}
         <nav className="navbar">
           <div className="container nav-content">
             <Link to="/" className="brand">
