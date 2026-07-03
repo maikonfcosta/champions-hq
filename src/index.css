@@ -221,6 +221,7 @@ button {
   gap: 12px;
   text-transform: uppercase;
   letter-spacing: -1px;
+  white-space: nowrap;
 }
 
 .brand-icon {
@@ -230,12 +231,7 @@ button {
 .nav-links {
   display: flex;
   gap: 24px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-}
-.nav-links::-webkit-scrollbar {
-  height: 4px;
-  display: none;
+  margin-left: auto;
 }
 
 .nav-link {
@@ -504,25 +500,21 @@ button {
     display: none;
   }
   .nav-content {
-    flex-direction: column;
-    gap: 24px;
-    padding-top: 16px;
-    padding-bottom: 16px;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-top: 12px;
+    padding-bottom: 12px;
   }
-  .nav-links {
-    width: 100%;
-    justify-content: flex-start;
-    gap: 16px;
-    padding-bottom: 8px;
+  .desktop-only {
+    display: none !important;
   }
-  .nav-link {
-    font-size: 0.95rem;
-    padding: 12px 20px;
-    border-radius: 12px;
+  .mobile-menu-btn {
+    display: flex !important;
   }
   .brand {
-    align-self: center;
-    font-size: 1.5rem;
+    font-size: 1.15rem;
+    white-space: nowrap;
+    gap: 8px;
   }
   .home-title-hero {
     font-size: 2.8rem !important;
@@ -558,6 +550,44 @@ button {
   font-family: var(--font-display);
   font-weight: 900;
   line-height: 1.1;
+}
+
+/* Mobile Menu Classes */
+.mobile-menu-btn {
+  display: none;
+  background: transparent;
+  color: white;
+  padding: 8px;
+}
+.mobile-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: rgba(6, 9, 19, 0.98);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--surface-border);
+  padding: 16px 24px 32px 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 40;
+}
+.mobile-link {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  padding: 12px;
+  border-radius: 8px;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.mobile-link:active {
+  background: var(--surface-glass);
 }
 
 /* =========================================
@@ -786,6 +816,109 @@ button {
 }
 .deck-info-side {
   flex: 1;
+}
+.deck-filters select {
+  font-family: inherit;
+}
+
+/* Tracker Custom Layout */
+.tracker-layout {
+  width: 100%;
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.landscape-warning {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--bg-dark);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  padding: 24px;
+}
+
+.tracker-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.tracker-globals {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  justify-content: center;
+}
+
+.tracker-global-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px 16px;
+  border-radius: 8px;
+}
+
+.tracker-main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas: 
+    "hero villain"
+    "hero threat";
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.tracker-hero-panel {
+  grid-area: hero;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  border-top: 4px solid #2b82d9;
+}
+
+.tracker-villain-panel {
+  grid-area: villain;
+}
+
+.tracker-threat-panel {
+  grid-area: threat;
+}
+
+/* Mobile & Tablet adjustments (Portrait only) */
+@media (max-width: 1024px) and (orientation: portrait) {
+  .tracker-main-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas: 
+      "hero"
+      "villain"
+      "threat";
+  }
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+  .landscape-warning {
+    display: flex !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .tracker-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .tracker-globals {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
 }
 .deck-title {
   font-size: 1.25rem;

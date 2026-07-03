@@ -9,6 +9,8 @@ export default function Decks() {
   const [loading, setLoading] = useState(true);
   const [ownedPacks, setOwnedPacks] = useState({});
   const [filterOwned, setFilterOwned] = useState(false);
+  const [filterAspect, setFilterAspect] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedDeck, setSelectedDeck] = useState(null);
   const [previewCard, setPreviewCard] = useState(null);
   
@@ -90,14 +92,26 @@ export default function Decks() {
   };
 
   const getFilteredDecks = () => {
-    if (!filterOwned) return decks;
-    return decks.filter(canBuildDeck);
+    return decks.filter(deck => {
+      if (filterOwned && !canBuildDeck(deck)) return false;
+      if (filterAspect && deck.aspect && deck.aspect.toLowerCase() !== filterAspect.toLowerCase()) return false;
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        const heroName = (deck.hero_name || '').toLowerCase();
+        const deckName = (deck.name || '').toLowerCase();
+        const authorName = (deck.username || '').toLowerCase();
+        if (!heroName.includes(query) && !deckName.includes(query) && !authorName.includes(query)) {
+          return false;
+        }
+      }
+      return true;
+    });
   };
 
-  // Reset to page 1 when filter changes (Must be before early returns)
+  // Reset to page 1 when filter changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [filterOwned]);
+  }, [filterOwned, filterAspect, searchQuery]);
 
   if (loading) {
     return (
@@ -114,20 +128,43 @@ export default function Decks() {
 
   return (
     <div className="animate-fade-in container">
-      <div className="page-header">
+      <div className="page-header" style={{ marginBottom: '16px' }}>
         <div>
           <h2 className="page-title">Banco de Decks</h2>
           <p className="page-subtitle">Descubra os milhares de decks criados pela comunidade.</p>
         </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '32px', background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+        <input 
+          type="text" 
+          placeholder="Buscar herói, nome ou autor..." 
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          style={{ flex: 1, minWidth: '200px', background: 'rgba(0,0,0,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '10px 16px', borderRadius: '8px', outline: 'none' }}
+        />
         
-        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', background: 'rgba(0,0,0,0.4)', padding: '8px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+        <select 
+          value={filterAspect}
+          onChange={e => setFilterAspect(e.target.value)}
+          style={{ minWidth: '160px', background: 'rgba(0,0,0,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '10px 16px', borderRadius: '8px', outline: 'none' }}
+        >
+          <option value="">Todos Aspectos</option>
+          <option value="aggression">Agressividade</option>
+          <option value="justice">Justiça</option>
+          <option value="leadership">Liderança</option>
+          <option value="protection">Proteção</option>
+          <option value="pool">Pool</option>
+        </select>
+
+        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', background: 'rgba(0,0,0,0.4)', padding: '10px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
           <input 
             type="checkbox" 
             checked={filterOwned} 
             onChange={(e) => setFilterOwned(e.target.checked)} 
-            style={{ accentColor: 'var(--primary-color)' }}
+            style={{ accentColor: 'var(--primary-color)', width: '16px', height: '16px' }}
           />
-          <span style={{ fontSize: '0.9rem', fontWeight: 'bold' }}>Apenas cartas que possuo</span>
+          <span style={{ fontSize: '0.9rem', fontWeight: 'bold' }}>Apenas minha coleção</span>
         </label>
       </div>
 

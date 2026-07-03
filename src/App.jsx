@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { BookOpen, Layers, Zap, Shuffle } from 'lucide-react';
+import { BookOpen, Layers, Zap, Shuffle, Activity, Archive, Wrench, Map, Menu, X, Home as HomeIcon } from 'lucide-react';
 
 // Stub Components for pages
 const Home = () => (
@@ -32,10 +32,34 @@ const Home = () => (
         <p className="home-card-text">Navegue por milhares de decks criados pela comunidade, com match exato para suas cartas.</p>
       </Link>
       
+      <Link to="/tracker" className="glass-panel home-card">
+        <Activity size={40} className="card-icon" style={{ color: '#fbc02d' }} />
+        <h3 className="home-card-title">Tracker de Partida</h3>
+        <p className="home-card-text">Substitua os tokens da mesa e controle a vida, ameaça e status durante o jogo.</p>
+      </Link>
+      
       <Link to="/randomizer" className="glass-panel home-card">
         <Shuffle size={40} className="card-icon text-secondary" />
         <h3 className="home-card-title">Gerador de Caos</h3>
         <p className="home-card-text">Deixe o acaso decidir. Gere heróis, aspectos e vilões aleatórios para um desafio brutal.</p>
+      </Link>
+      
+      <Link to="/history" className="glass-panel home-card">
+        <Archive size={40} className="card-icon text-protection" />
+        <h3 className="home-card-title">Histórico</h3>
+        <p className="home-card-text">Guarde um diário dos seus confrontos e acompanhe sua taxa de vitória.</p>
+      </Link>
+
+      <Link to="/builder" className="glass-panel home-card">
+        <Wrench size={40} className="card-icon text-justice" />
+        <h3 className="home-card-title">Deck Builder</h3>
+        <p className="home-card-text">Monte decks personalizados usando apenas as cartas da sua coleção.</p>
+      </Link>
+      
+      <Link to="/campaign" className="glass-panel home-card">
+        <Map size={40} className="card-icon" style={{ color: '#c084fc' }} />
+        <h3 className="home-card-title">Campanhas</h3>
+        <p className="home-card-text">Gerencie suas campanhas offline sem precisar da caderneta de papel.</p>
       </Link>
       
       <Link to="/rules" className="glass-panel home-card">
@@ -51,6 +75,10 @@ import Collection from './pages/Collection';
 import Randomizer from './pages/Randomizer';
 import Decks from './pages/Decks';
 import Rules from './pages/Rules';
+import Tracker from './pages/Tracker';
+import History from './pages/History';
+import Builder from './pages/Builder';
+import Campaign from './pages/Campaign';
 
 // NavLink Component
 const NavItem = ({ to, icon: Icon, children }) => {
@@ -67,6 +95,7 @@ const NavItem = ({ to, icon: Icon, children }) => {
 function App() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstall, setShowInstall] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e) => {
@@ -102,18 +131,52 @@ function App() {
           </div>
         )}
         <nav className="navbar">
-          <div className="container nav-content">
-            <Link to="/" className="brand">
-              <img src="/logo.jpg" alt="Logo" style={{ width: '32px', height: '32px', borderRadius: '8px' }} />
-              <span>Champions HQ</span>
-            </Link>
-            <div className="nav-links">
-              <NavItem to="/collection" icon={Layers}>Coleção</NavItem>
-              <NavItem to="/decks" icon={Zap}>Decks</NavItem>
-              <NavItem to="/randomizer" icon={Shuffle}>Gerador</NavItem>
-              <NavItem to="/rules" icon={BookOpen}>Regras</NavItem>
+          <div className="nav-content" style={{ padding: '0 32px', width: '100%', maxWidth: '1920px', margin: '0 auto' }}>
+            
+            {/* Lado Esquerdo - Logo */}
+            <div className="nav-left">
+              <Link to="/" className="brand" onClick={() => setIsMobileMenuOpen(false)}>
+                <img src="/logo.jpg" alt="Logo" style={{ width: '32px', height: '32px', borderRadius: '8px' }} />
+                <span>Champions HQ</span>
+              </Link>
             </div>
+            
+            {/* Lado Direito - Menu */}
+            <div className="nav-right" style={{ display: 'flex', alignItems: 'center' }}>
+              <div className="nav-links desktop-only">
+                <NavItem to="/collection" icon={Layers}>Coleção</NavItem>
+                <NavItem to="/decks" icon={Zap}>Decks</NavItem>
+                <NavItem to="/randomizer" icon={Shuffle}>Gerador</NavItem>
+                <NavItem to="/tracker" icon={Activity}>Tracker</NavItem>
+                <NavItem to="/history" icon={Archive}>Histórico</NavItem>
+                <NavItem to="/builder" icon={Wrench}>Builder</NavItem>
+                <NavItem to="/campaign" icon={Map}>Campanha</NavItem>
+                <NavItem to="/rules" icon={BookOpen}>Regras</NavItem>
+              </div>
+
+              <button 
+                className="mobile-menu-btn"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+              </button>
+            </div>
+
           </div>
+
+          {isMobileMenuOpen && (
+            <div className="mobile-menu animate-fade-in">
+              <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><HomeIcon size={20} /> Início</Link>
+              <Link to="/tracker" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Activity size={20} /> Tracker de Partida</Link>
+              <Link to="/builder" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Wrench size={20} /> Deck Builder</Link>
+              <Link to="/campaign" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Map size={20} /> Campanhas</Link>
+              <Link to="/randomizer" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Shuffle size={20} /> Gerador de Caos</Link>
+              <Link to="/history" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Archive size={20} /> Histórico</Link>
+              <Link to="/decks" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Zap size={20} /> Banco de Decks</Link>
+              <Link to="/collection" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Layers size={20} /> Coleção</Link>
+              <Link to="/rules" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><BookOpen size={20} /> Guia de Regras</Link>
+            </div>
+          )}
         </nav>
 
         <main className="main-content container">
@@ -122,6 +185,10 @@ function App() {
             <Route path="/collection" element={<Collection />} />
             <Route path="/decks" element={<Decks />} />
             <Route path="/randomizer" element={<Randomizer />} />
+            <Route path="/tracker" element={<Tracker />} />
+            <Route path="/history" element={<History />} />
+            <Route path="/builder" element={<Builder />} />
+            <Route path="/campaign" element={<Campaign />} />
             <Route path="/rules" element={<Rules />} />
           </Routes>
         </main>

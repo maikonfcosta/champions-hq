@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { getCards } from '../services/api';
-import { Shuffle, Loader2 } from 'lucide-react';
+import { Shuffle, Loader2, Save } from 'lucide-react';
 import { villains, modularSets } from '../data/villains';
 
 export default function Randomizer() {
@@ -14,7 +14,9 @@ export default function Randomizer() {
   const [previewCard, setPreviewCard] = useState(null);
   
   const [randomVillain, setRandomVillain] = useState(null);
-  const [randomModular, setRandomModular] = useState(null);
+  const [randomModulars, setRandomModulars] = useState([]);
+  const [difficulty, setDifficulty] = useState('Standard');
+  const [showLogModal, setShowLogModal] = useState(false);
 
   const aspects = [
     { code: 'aggression', name: 'Agressividade', color: 'var(--aspect-aggression)' },
@@ -110,10 +112,29 @@ export default function Randomizer() {
     }
 
     if (availableModulars.length > 0) {
-      setRandomModular(availableModulars[Math.floor(Math.random() * availableModulars.length)]);
+      // Pick 2 modulars to be safe for advanced villains, or just 1
+      const shuffledMods = availableModulars.sort(() => 0.5 - Math.random());
+      setRandomModulars(shuffledMods.slice(0, 2));
     } else {
-      setRandomModular(null);
+      setRandomModulars([]);
     }
+  };
+
+  const handleSaveLog = (result) => {
+    const saved = localStorage.getItem('mc_match_history');
+    const history = saved ? JSON.parse(saved) : [];
+    history.push({
+      hero: randomHero.name,
+      aspect: randomAspect.name,
+      villain: randomVillain.name,
+      modular: randomModulars.map(m => m.name).join(' & '),
+      difficulty: difficulty,
+      result: result,
+      date: new Date().toISOString()
+    });
+    localStorage.setItem('mc_match_history', JSON.stringify(history));
+    setShowLogModal(false);
+    alert('Partida registrada no Histórico!');
   };
 
   if (loading) {
@@ -131,9 +152,20 @@ export default function Randomizer() {
           <h2 className="page-title">Gerador de Partida</h2>
           <p className="page-subtitle">Gere um encontro e um deck aleatório baseado na sua coleção.</p>
         </div>
-        <button onClick={generateRandom} className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-          <Shuffle size={20} /> Gerar Partida
-        </button>
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+          <select 
+            value={difficulty} 
+            onChange={(e) => setDifficulty(e.target.value)}
+            style={{ background: 'rgba(0,0,0,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '10px 16px', borderRadius: '8px', outline: 'none' }}
+          >
+            <option value="Standard">Standard</option>
+            <option value="Expert">Expert</option>
+            <option value="Heroic">Heroic</option>
+          </select>
+          <button onClick={generateRandom} className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <Shuffle size={20} /> Gerar Partida
+          </button>
+        </div>
       </div>
 
       {(randomHero || randomVillain) && (
@@ -231,25 +263,35 @@ export default function Randomizer() {
                     <p className="result-detail" style={{ marginBottom: '16px' }}>{randomVillain.traits}</p>
                     
                     <div>
-                      <p style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--text-secondary)', marginBottom: '8px', textTransform: 'uppercase' }}>Conjunto Modular (Encontros)</p>
-                      {randomModular ? (
-                        <div className="modular-list">
-                          <div className="modular-item">
-                            {randomModular.code ? (
-                              <img 
-                                src={`https://marvelcdb.com/bundles/cards/${randomModular.code}.png`} 
-                                alt={randomModular.name}
-                                className="modular-img"
-                                onError={(e) => { e.target.style.display = 'none'; }}
-                              />
-                            ) : (
-                              <div className="modular-placeholder">?</div>
-                            )}
-                            <span className="modular-name">{randomModular.name}</span>
-                          </div>
+                      <p style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--text-secondary)', marginBottom: '8px', textTransform: 'uppercase' }}>Conjuntos Modulares</p>
+                      {randomModulars.length > 0 ? (
+                        <div className="modular-list" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          {randomModulars.map((mod, i) => (
+                            <div key={i} className="modular-item">
+                              {mod.code ? (
+                                <img 
+                                  src={`https://marvelcdb.com/bundles/cards/${mod.code}.png`} 
+                                  alt={mod.name}
+                                  className="modular-img"
+                                  onError={(e) => { e.target.style.display = 'none'; }}
+                                />
+                              ) : (
+                                <div className="modular-placeholder">?</div>
+                              )}
+                              <span className="modular-name">{mod.name}</span>
+                            </div>
+                          ))}
                         </div>
                       ) : <p>Nenhum conjunto modular encontrado.</p>}
                     </div>
+                    
+                    <button 
+                      onClick={() => setShowLogModal(true)} 
+                      className="btn-primary" 
+                      style={{ marginTop: '24px', display: 'flex', alignItems: 'center', gap: '8px', width: '100%', justifyContent: 'center' }}
+                    >
+                      <Save size={18} /> Registrar no Histórico
+                    </button>
                   </div>
                 </div>
               ) : <p>Nenhum vilão encontrado na sua coleção.</p>}
@@ -285,6 +327,25 @@ export default function Randomizer() {
               }}
             />
             <p style={{ marginTop: '16px', color: 'white', fontSize: '1.2rem', fontWeight: 'bold' }}>{previewCard.name}</p>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {showLogModal && createPortal(
+        <div 
+          className="modal-overlay animate-fade-in" 
+          onClick={() => setShowLogModal(false)}
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100, padding: '20px' }}
+        >
+          <div className="glass-panel" onClick={e => e.stopPropagation()} style={{ padding: '32px', textAlign: 'center', maxWidth: '400px', width: '100%' }}>
+            <h3 style={{ fontSize: '1.5rem', marginBottom: '8px' }}>Resultado da Partida</h3>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Como foi o confronto contra {randomVillain?.name}?</p>
+            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+              <button onClick={() => handleSaveLog('Vitória')} className="btn-primary" style={{ background: 'var(--aspect-protection)', padding: '12px 24px', flex: 1 }}>Vitória</button>
+              <button onClick={() => handleSaveLog('Derrota')} className="btn-primary" style={{ padding: '12px 24px', flex: 1 }}>Derrota</button>
+            </div>
+            <button onClick={() => setShowLogModal(false)} style={{ background: 'transparent', color: 'var(--text-muted)', marginTop: '24px', textDecoration: 'underline' }}>Cancelar</button>
           </div>
         </div>,
         document.body
