@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { getPopularDecks, getCards } from '../services/api';
-import { Layers, Loader2, List, X } from 'lucide-react';
+import { getCards } from '../services/api';
+import { Loader2, List } from 'lucide-react';
 
 export default function Decks() {
   const [decks, setDecks] = useState([]);
@@ -44,7 +44,7 @@ export default function Decks() {
             if (line.trim()) {
               try {
                 allDecks.push(JSON.parse(line));
-              } catch (e) {
+              } catch {
                 // Ignore partial lines
               }
             }

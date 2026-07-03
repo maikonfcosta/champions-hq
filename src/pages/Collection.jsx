@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getPacks, getCards } from '../services/api';
-import { Check, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 export default function Collection() {
   const [packs, setPacks] = useState([]);
@@ -13,7 +13,7 @@ export default function Collection() {
     if (saved) {
       try {
         setOwnedPacks(JSON.parse(saved));
-      } catch (e) {
+      } catch {
         console.error("Error parsing saved packs");
       }
     }
