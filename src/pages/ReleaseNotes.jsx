@@ -6,7 +6,7 @@ const releases = [
     version: "1.0.0",
     date: "07 de Julho de 2026",
     title: "O Lançamento Oficial (Full Release) 🚀",
-    description: "Após muitos testes e feedbacks incríveis da comunidade, o Champions HQ atinge sua versão 1.0.0 oficial! O aplicativo deixou de ser apenas um consultor de cartas para se tornar a verdadeira central de operações para as suas partidas.",
+    description: "Após muitos testes e feedbacks incríveis da comunidade desde a nossa primeira versão básica, o Champions HQ atinge sua versão 1.0.0 oficial! Compilamos todo o histórico de atualizações para entregar a verdadeira central de operações definitiva para as suas partidas.",
     highlights: [
       {
         icon: <Sparkles size={18} className="text-primary" />,
@@ -18,22 +18,25 @@ const releases = [
       },
       {
         icon: <CheckCircle2 size={18} className="text-protection" />,
-        text: "Diário de Campanhas: Agora você pode registrar campanhas em andamento, acompanhar XP, status de heróis marcados e vitórias."
+        text: "Modo Campanha & Histórico: Agora você pode registrar campanhas em andamento (acompanhando XP e status) e adicionar partidas antigas retroativamente de forma manual no seu Histórico."
       },
       {
         icon: <Tag size={18} className="text-secondary" />,
-        text: "Central de Regras & Manuais: Pesquisa rápida (Spotlight) em mais de 100 palavras-chave do jogo e abertura de Manuais Oficiais em PDF sem sair do app."
+        text: "Dashboard de Estatísticas: Analise sua taxa de vitórias, acompanhe seus heróis mais jogados e descubra contra quais vilões você tem mais dificuldade."
       },
       {
         icon: <Rocket size={18} className="text-primary" />,
-        text: "Temas e SFX: Adicionado trilha de efeitos sonoros imersivos e temas baseados nos Aspectos (Agressividade, Justiça, etc)."
+        text: "Importação e Exportação de Decks: Importe decks diretamente usando links do MarvelCDB e exporte suas listas gerando um QR Code para compartilhar com a mesa."
       }
     ],
     features: [
-      "Layout totalmente refatorado com arquitetura Glassmorphism.",
-      "Melhoria na responsividade do Tracker no celular deitado (modo Paisagem) utilizando CSS Flexbox.",
-      "Novo sistema automático que varre o MarvelCDB diariamente buscando os últimos decks adicionados pela comunidade mundial.",
-      "Filtro avançado no Banco de Decks para exibir apenas decks com cartas que você marcou na sua coleção."
+      "Layout totalmente refatorado com arquitetura Glassmorphism e novos Modais Premium.",
+      "Redesign completo do Tracker de Partida, agora com painéis dedicados para Vilão, Ameaça Principal e Contadores Extras.",
+      "Melhoria drástica na responsividade do Tracker no celular deitado (modo Paisagem) utilizando CSS Flexbox.",
+      "Central de Regras expandida: Pesquisa rápida (Spotlight) e visualizador de Manuais Oficiais em PDF integrados no app.",
+      "Temas e SFX: Trilha de efeitos sonoros imersivos e temas baseados nos Aspectos (Agressividade, Justiça, Liderança, Proteção).",
+      "Novo sistema automático (GitHub Actions) que varre o MarvelCDB diariamente buscando os últimos decks adicionados pela comunidade.",
+      "Filtro inteligente no Banco de Decks para exibir apenas as listas que utilizam cartas que você possui na sua Coleção."
     ]
   }
 ];
