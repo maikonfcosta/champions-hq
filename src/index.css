@@ -35,6 +35,32 @@
   --transition-normal: 0.3s ease-out;
 }
 
+[data-theme="justice"] {
+  --primary-color: var(--aspect-justice);
+  --primary-hover: #fdd835;
+  --primary-glow: rgba(251, 192, 45, 0.4);
+}
+
+[data-theme="leadership"] {
+  --primary-color: var(--aspect-leadership);
+  --primary-hover: #2196f3;
+  --primary-glow: rgba(30, 136, 229, 0.4);
+}
+
+[data-theme="protection"] {
+  --primary-color: var(--aspect-protection);
+  --primary-hover: #4caf50;
+  --primary-glow: rgba(67, 160, 71, 0.4);
+}
+
+[data-theme="dark-knight"] {
+  --primary-color: #71717a; 
+  --primary-hover: #a1a1aa; 
+  --primary-glow: rgba(113, 113, 122, 0.4);
+  --bg-main: #000000;
+  --bg-gradient: radial-gradient(circle at top right, #18181b, #000000 60%);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;

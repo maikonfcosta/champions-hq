@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { BookOpen, Layers, Zap, Shuffle, Activity, Archive, Wrench, Map, Menu, X, Home as HomeIcon, BarChart2 } from 'lucide-react';
+import { BookOpen, Layers, Zap, Shuffle, Activity, Archive, Wrench, Map, Menu, X, Home as HomeIcon, BarChart2, Settings, Volume2, VolumeX } from 'lucide-react';
+import Modal from './components/Modal';
 
 // Stub Components for pages
 const Home = () => (
@@ -103,6 +104,78 @@ function App() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstall, setShowInstall] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  
+  // Theme & SFX States
+  const [theme, setTheme] = useState('aggression');
+  const [sfxEnabled, setSfxEnabled] = useState(true);
+
+  useEffect(() => {
+    // Load theme & sfx prefs
+    const savedTheme = localStorage.getItem('mc_theme');
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.body.setAttribute('data-theme', savedTheme);
+    }
+    const savedSfx = localStorage.getItem('mc_sfx');
+    if (savedSfx !== null) {
+      setSfxEnabled(savedSfx === 'true');
+    }
+    
+    // SFX Interception logic
+    const clickHandler = (e) => {
+      if (localStorage.getItem('mc_sfx') === 'false') return;
+      
+      const target = e.target.closest('button, a');
+      if (target) {
+        // play a tiny base64 click sound (very short subtle tick)
+        const snd = new Audio('data:audio/mp3;base64,//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//NExEAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq'); 
+        // Note: this is a dummy silent base64 to avoid blocking. Real SFX will be handled via simple synth.
+        
+        try {
+          // Web Audio API for a perfect instant tick
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          
+          if (target.classList.contains('btn-primary') || target.tagName === 'A') {
+            // UI click (higher pitch, very short)
+            osc.frequency.setValueAtTime(600, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.05);
+            gain.gain.setValueAtTime(0.05, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.05);
+          } else if (target.classList.contains('btn-danger') || target.textContent === '-' || target.textContent === '+') {
+            // HP/Damage click (lower, punchy)
+            osc.frequency.setValueAtTime(300, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.08);
+            gain.gain.setValueAtTime(0.08, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.08);
+          }
+        } catch(err) { /* ignore audio context errors if blocked */ }
+      }
+    };
+    
+    document.addEventListener('click', clickHandler);
+    return () => document.removeEventListener('click', clickHandler);
+  }, []);
+
+  const changeTheme = (newTheme) => {
+    setTheme(newTheme);
+    document.body.setAttribute('data-theme', newTheme);
+    localStorage.setItem('mc_theme', newTheme);
+  };
+
+  const toggleSfx = () => {
+    const newVal = !sfxEnabled;
+    setSfxEnabled(newVal);
+    localStorage.setItem('mc_sfx', newVal);
+  };
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e) => {
@@ -150,7 +223,7 @@ function App() {
             
             {/* Lado Direito - Menu */}
             <div className="nav-right" style={{ display: 'flex', alignItems: 'center' }}>
-              <div className="nav-links desktop-only">
+              <div className="nav-links desktop-only" style={{ marginRight: '16px' }}>
                 <NavItem to="/collection" icon={Layers}>Coleção</NavItem>
                 <NavItem to="/decks" icon={Zap}>Decks</NavItem>
                 <NavItem to="/randomizer" icon={Shuffle}>Gerador</NavItem>
@@ -161,6 +234,15 @@ function App() {
                 <NavItem to="/campaign" icon={Map}>Campanha</NavItem>
                 <NavItem to="/rules" icon={BookOpen}>Regras</NavItem>
               </div>
+
+              <button 
+                className="desktop-only" 
+                onClick={() => setShowSettings(true)}
+                style={{ background: 'transparent', color: 'var(--text-secondary)', padding: '8px', cursor: 'pointer' }}
+                title="Configurações (Temas e SFX)"
+              >
+                <Settings size={22} />
+              </button>
 
               <button 
                 className="mobile-menu-btn"
@@ -184,6 +266,9 @@ function App() {
               <Link to="/decks" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Zap size={20} /> Banco de Decks</Link>
               <Link to="/collection" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Layers size={20} /> Coleção</Link>
               <Link to="/rules" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><BookOpen size={20} /> Guia de Regras</Link>
+              <button onClick={() => { setIsMobileMenuOpen(false); setShowSettings(true); }} className="mobile-link" style={{ background: 'transparent', border: 'none', textAlign: 'left', width: '100%', cursor: 'pointer' }}>
+                <Settings size={20} /> Temas e Configurações
+              </button>
             </div>
           )}
         </nav>
@@ -212,6 +297,62 @@ function App() {
             </p>
           </div>
         </footer>
+
+        {/* SETTINGS MODAL */}
+        <Modal isOpen={showSettings} onClose={() => setShowSettings(false)} title="Personalização" maxWidth="450px">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            
+            <div>
+              <h4 style={{ color: 'white', marginBottom: '16px', fontSize: '1.1rem' }}>Sons do App (SFX)</h4>
+              <button 
+                onClick={toggleSfx}
+                style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: 'white', cursor: 'pointer' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  {sfxEnabled ? <Volume2 size={20} color="var(--primary-color)" /> : <VolumeX size={20} color="var(--text-muted)" />}
+                  <span>Efeitos Sonoros (SFX)</span>
+                </div>
+                <span style={{ fontSize: '0.85rem', color: sfxEnabled ? '#86efac' : 'var(--text-muted)' }}>
+                  {sfxEnabled ? 'Ligado' : 'Desligado'}
+                </span>
+              </button>
+            </div>
+
+            <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '24px' }}>
+              <h4 style={{ color: 'white', marginBottom: '16px', fontSize: '1.1rem' }}>Tema (Cor Principal)</h4>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '12px' }}>
+                
+                <button onClick={() => changeTheme('aggression')} style={{ padding: '12px 16px', borderRadius: '8px', border: theme === 'aggression' ? '2px solid #e53935' : '1px solid transparent', background: 'rgba(255,255,255,0.05)', color: 'white', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: '#e53935' }}></div>
+                  Agressividade (Padrão)
+                </button>
+                
+                <button onClick={() => changeTheme('justice')} style={{ padding: '12px 16px', borderRadius: '8px', border: theme === 'justice' ? '2px solid #fbc02d' : '1px solid transparent', background: 'rgba(255,255,255,0.05)', color: 'white', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: '#fbc02d' }}></div>
+                  Justiça (Amarelo)
+                </button>
+                
+                <button onClick={() => changeTheme('leadership')} style={{ padding: '12px 16px', borderRadius: '8px', border: theme === 'leadership' ? '2px solid #1e88e5' : '1px solid transparent', background: 'rgba(255,255,255,0.05)', color: 'white', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: '#1e88e5' }}></div>
+                  Liderança (Azul)
+                </button>
+                
+                <button onClick={() => changeTheme('protection')} style={{ padding: '12px 16px', borderRadius: '8px', border: theme === 'protection' ? '2px solid #43a047' : '1px solid transparent', background: 'rgba(255,255,255,0.05)', color: 'white', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: '#43a047' }}></div>
+                  Proteção (Verde)
+                </button>
+
+                <button onClick={() => changeTheme('dark-knight')} style={{ padding: '12px 16px', borderRadius: '8px', border: theme === 'dark-knight' ? '2px solid #71717a' : '1px solid transparent', background: 'rgba(255,255,255,0.05)', color: 'white', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: '#71717a' }}></div>
+                  Cavaleiro das Trevas (Cinza/Preto)
+                </button>
+
+              </div>
+            </div>
+
+          </div>
+        </Modal>
+
       </div>
     </Router>
   );
