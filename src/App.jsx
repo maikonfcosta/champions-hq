@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { BookOpen, Layers, Zap, Shuffle, Activity, Archive, Wrench, Map, Menu, X, Home as HomeIcon } from 'lucide-react';
+import { BookOpen, Layers, Zap, Shuffle, Activity, Archive, Wrench, Map, Menu, X, Home as HomeIcon, BarChart2 } from 'lucide-react';
 
 // Stub Components for pages
 const Home = () => (
@@ -47,7 +47,13 @@ const Home = () => (
       <Link to="/history" className="glass-panel home-card">
         <Archive size={40} className="card-icon text-protection" />
         <h3 className="home-card-title">Histórico</h3>
-        <p className="home-card-text">Guarde um diário dos seus confrontos e acompanhe sua taxa de vitória.</p>
+        <p className="home-card-text">Guarde um diário dos seus confrontos e acompanhe sua evolução.</p>
+      </Link>
+
+      <Link to="/dashboard" className="glass-panel home-card">
+        <BarChart2 size={40} className="card-icon text-primary" />
+        <h3 className="home-card-title">Estatísticas</h3>
+        <p className="home-card-text">Visualize sua taxa de vitórias, melhores heróis e piores vilões.</p>
       </Link>
 
       <Link to="/builder" className="glass-panel home-card">
@@ -79,6 +85,7 @@ import Tracker from './pages/Tracker';
 import History from './pages/History';
 import Builder from './pages/Builder';
 import Campaign from './pages/Campaign';
+import Dashboard from './pages/Dashboard';
 
 // NavLink Component
 const NavItem = ({ to, icon: Icon, children }) => {
@@ -149,6 +156,7 @@ function App() {
                 <NavItem to="/randomizer" icon={Shuffle}>Gerador</NavItem>
                 <NavItem to="/tracker" icon={Activity}>Tracker</NavItem>
                 <NavItem to="/history" icon={Archive}>Histórico</NavItem>
+                <NavItem to="/dashboard" icon={BarChart2}>Estatísticas</NavItem>
                 <NavItem to="/builder" icon={Wrench}>Builder</NavItem>
                 <NavItem to="/campaign" icon={Map}>Campanha</NavItem>
                 <NavItem to="/rules" icon={BookOpen}>Regras</NavItem>
@@ -172,6 +180,7 @@ function App() {
               <Link to="/campaign" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Map size={20} /> Campanhas</Link>
               <Link to="/randomizer" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Shuffle size={20} /> Gerador de Caos</Link>
               <Link to="/history" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Archive size={20} /> Histórico</Link>
+              <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><BarChart2 size={20} /> Estatísticas</Link>
               <Link to="/decks" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Zap size={20} /> Banco de Decks</Link>
               <Link to="/collection" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Layers size={20} /> Coleção</Link>
               <Link to="/rules" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><BookOpen size={20} /> Guia de Regras</Link>
@@ -187,6 +196,7 @@ function App() {
             <Route path="/randomizer" element={<Randomizer />} />
             <Route path="/tracker" element={<Tracker />} />
             <Route path="/history" element={<History />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/builder" element={<Builder />} />
             <Route path="/campaign" element={<Campaign />} />
             <Route path="/rules" element={<Rules />} />
