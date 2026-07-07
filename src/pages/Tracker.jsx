@@ -220,16 +220,16 @@ export default function Tracker() {
 
   // Helper function for rendering +/- buttons
   const renderAdjustButtons = (onAdd) => (
-    <div style={{ display: 'flex', gap: '8px' }}>
-      <button onClick={() => onAdd(-5)} className="btn-secondary" style={{ padding: '8px 12px', fontSize: '0.85rem' }}>-5</button>
-      <button onClick={() => onAdd(-1)} className="btn-secondary" style={{ padding: '12px', borderRadius: '50%' }}><Minus size={20} /></button>
+    <div className="adjust-btn-group">
+      <button onClick={() => onAdd(-5)} className="btn-secondary adjust-btn-small">-5</button>
+      <button onClick={() => onAdd(-1)} className="btn-secondary adjust-btn-round"><Minus size={20} /></button>
     </div>
   );
   
   const renderAddButtons = (onAdd) => (
-    <div style={{ display: 'flex', gap: '8px' }}>
-      <button onClick={() => onAdd(1)} className="btn-primary" style={{ padding: '12px', borderRadius: '50%' }}><Plus size={20} /></button>
-      <button onClick={() => onAdd(5)} className="btn-primary" style={{ padding: '8px 12px', fontSize: '0.85rem' }}>+5</button>
+    <div className="adjust-btn-group">
+      <button onClick={() => onAdd(1)} className="btn-primary adjust-btn-round"><Plus size={20} /></button>
+      <button onClick={() => onAdd(5)} className="btn-primary adjust-btn-small">+5</button>
     </div>
   );
 
@@ -322,9 +322,9 @@ export default function Tracker() {
               )}
             </div>
             
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
+            <div className="tracker-value-row">
               {renderAdjustButtons(updateHeroHp)}
-              <span style={{ fontSize: '4rem', fontWeight: '900', color: 'white', width: '90px', textAlign: 'center', lineHeight: 1 }}>{activeHero.hp}</span>
+              <span className="tracker-big-number">{activeHero.hp}</span>
               {renderAddButtons(updateHeroHp)}
             </div>
 
@@ -353,9 +353,9 @@ export default function Tracker() {
             </select>
           </div>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
+          <div className="tracker-value-row">
             {renderAdjustButtons((amt) => updateState({ villainHp: Math.max(0, gameState.villainHp + amt) }))}
-            <span style={{ fontSize: '4rem', fontWeight: '900', color: 'white', width: '90px', textAlign: 'center', lineHeight: 1 }}>{gameState.villainHp}</span>
+            <span className="tracker-big-number">{gameState.villainHp}</span>
             {renderAddButtons((amt) => updateState({ villainHp: gameState.villainHp + amt }))}
           </div>
 
@@ -371,9 +371,9 @@ export default function Tracker() {
           <ShieldAlert size={40} color="#fbc02d" style={{ marginBottom: '16px' }} />
           <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '24px' }}>Ameaça Principal (Threat)</h3>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div className="tracker-value-row">
             {renderAdjustButtons((amt) => updateState({ threat: Math.max(0, gameState.threat + amt) }))}
-            <span style={{ fontSize: '4rem', fontWeight: '900', color: '#fbc02d', width: '90px', textAlign: 'center', lineHeight: 1 }}>{gameState.threat}</span>
+            <span className="tracker-big-number" style={{ color: '#fbc02d' }}>{gameState.threat}</span>
             {renderAddButtons((amt) => updateState({ threat: Math.max(0, gameState.threat + amt) }))}
           </div>
         </div>
@@ -403,10 +403,10 @@ export default function Tracker() {
                   <button onClick={() => removeExtra(ex.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}><Trash2 size={16} /></button>
                 </div>
                 
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <button onClick={() => updateExtra(ex.id, -1)} className="btn-secondary" style={{ padding: '8px', borderRadius: '50%' }}><Minus size={16} /></button>
-                  <span style={{ fontSize: '2rem', fontWeight: 'bold', color: ex.type === 'minion' ? '#e62429' : '#fbc02d' }}>{ex.value}</span>
-                  <button onClick={() => updateExtra(ex.id, +1)} className="btn-secondary" style={{ padding: '8px', borderRadius: '50%' }}><Plus size={16} /></button>
+                <div className="tracker-extra-row">
+                  <button onClick={() => updateExtra(ex.id, -1)} className="btn-secondary adjust-btn-round"><Minus size={16} /></button>
+                  <span className="tracker-extra-number" style={{ color: ex.type === 'minion' ? '#e62429' : '#fbc02d' }}>{ex.value}</span>
+                  <button onClick={() => updateExtra(ex.id, +1)} className="btn-secondary adjust-btn-round"><Plus size={16} /></button>
                 </div>
               </div>
             ))}
