@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { BookOpen, Layers, Zap, Shuffle, Activity, Archive, Wrench, Map, Menu, X, Home as HomeIcon, BarChart2, Settings, Volume2, VolumeX } from 'lucide-react';
 import Modal from './components/Modal';
+import ReloadPrompt from './components/ReloadPrompt';
 
 // Stub Components for pages
 const Home = () => (
@@ -202,6 +203,7 @@ function App() {
   return (
     <Router>
       <div className="app-layout">
+        <ReloadPrompt />
         {showInstall && (
           <div className="install-prompt animate-fade-in" style={{ background: 'linear-gradient(90deg, #e62429, #2b82d9)', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 4px 15px rgba(230, 36, 41, 0.4)', zIndex: 60, position: 'relative' }}>
             <div>
