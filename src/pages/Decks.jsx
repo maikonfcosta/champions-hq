@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { getCards } from '../services/api';
-import { Loader2, List, Download } from 'lucide-react';
+import { Loader2, List, Copy, QrCode, Check } from 'lucide-react';
 import Modal from '../components/Modal';
+import { QRCodeSVG } from 'qrcode.react';
 
 export default function Decks() {
   const [decks, setDecks] = useState([]);
@@ -14,11 +15,9 @@ export default function Decks() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDeck, setSelectedDeck] = useState(null);
   const [previewCard, setPreviewCard] = useState(null);
-  
-  // Import state
-  const [showImportModal, setShowImportModal] = useState(false);
-  const [importInput, setImportInput] = useState('');
-  const [importError, setImportError] = useState('');
+  const [showCopyAlert, setShowCopyAlert] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -119,27 +118,28 @@ export default function Decks() {
     setCurrentPage(1);
   }, [filterOwned, filterAspect, searchQuery]);
 
-  const handleImport = () => {
-    setImportError('');
-    if (!importInput.trim()) return;
+  const exportDeckText = () => {
+    if (!selectedDeck) return;
+    let text = `Herói: ${selectedDeck.hero_name}\nAspecto: ${selectedDeck.aspect || 'Básico'}\n\n`;
+    const slots = selectedDeck.slots || {};
+    Object.entries(slots).forEach(([code, qty]) => {
+      const c = cardsInfo[code];
+      if (c) text += `${qty}x ${c.name}\n`;
+    });
+    navigator.clipboard.writeText(text);
+    setShowCopyAlert(true);
+    setTimeout(() => setShowCopyAlert(false), 2000);
+  };
 
-    // Extrai possíveis números do input (ID)
-    const match = importInput.match(/\d+/);
-    if (!match) {
-      setImportError('ID inválido. Cole a URL do deck ou apenas os números do ID.');
-      return;
-    }
-
-    const deckId = parseInt(match[0], 10);
-    const foundDeck = decks.find(d => d.id === deckId);
-
-    if (foundDeck) {
-      setShowImportModal(false);
-      setImportInput('');
-      setSelectedDeck(foundDeck);
-    } else {
-      setImportError('Deck não encontrado no banco de dados offline. Tente atualizar a base.');
-    }
+  const generateShareLink = () => {
+    if (!selectedDeck) return;
+    const slots = selectedDeck.slots || {};
+    const cardsString = Object.entries(slots).map(([code, qty]) => `${code}:${qty}`).join(',');
+    const aspect = (selectedDeck.aspect || 'basic').toLowerCase();
+    const payload = `${selectedDeck.hero_code}|${aspect}|${cardsString}`;
+    const url = `${window.location.origin}/builder?deck=${payload}`;
+    setShareUrl(url);
+    setShowShareModal(true);
   };
 
   if (loading) {
@@ -162,9 +162,6 @@ export default function Decks() {
           <h2 className="page-title">Banco de Decks</h2>
           <p className="page-subtitle">Descubra os milhares de decks criados pela comunidade.</p>
         </div>
-        <button className="btn-primary" onClick={() => setShowImportModal(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Download size={18} /> Importar MarvelCDB
-        </button>
       </div>
 
       <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '32px', background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
@@ -346,6 +343,16 @@ export default function Decks() {
                 </div>
               ));
             })()}
+
+            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '16px' }}>
+              <button onClick={exportDeckText} className="btn-secondary" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px' }}>
+                <Copy size={18} /> Copiar Texto
+              </button>
+              
+              <button onClick={generateShareLink} className="btn-primary" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px' }}>
+                <QrCode size={18} /> Compartilhar QR Code
+              </button>
+            </div>
           </div>
         )}
       </Modal>
@@ -373,36 +380,36 @@ export default function Decks() {
         )}
       </Modal>
 
-      {/* Import Modal */}
-      <Modal
-        isOpen={showImportModal}
-        onClose={() => {
-          setShowImportModal(false);
-          setImportError('');
-          setImportInput('');
-        }}
-        title="Importar do MarvelCDB"
-        maxWidth="400px"
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            Cole a URL ou o ID numérico do deck (ex: <strong>12345</strong>). O app fará uma busca ultra-rápida no banco offline local.
+      <Modal isOpen={showCopyAlert} onClose={() => setShowCopyAlert(false)} maxWidth="300px" noPadding={true}>
+        <div style={{ padding: '24px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+          <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(67, 160, 71, 0.2)', color: 'var(--aspect-protection)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid var(--aspect-protection)', boxShadow: '0 0 15px rgba(67, 160, 71, 0.4)' }}>
+            <Check size={28} />
+          </div>
+          <h4 style={{ margin: 0, fontSize: '1.2rem', color: 'white' }}>Copiado!</h4>
+        </div>
+      </Modal>
+
+      {/* Share Modal */}
+      <Modal isOpen={showShareModal} onClose={() => setShowShareModal(false)} title="Compartilhar Deck" maxWidth="400px">
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}>
+          <p style={{ color: 'var(--text-secondary)', textAlign: 'center', fontSize: '0.9rem' }}>
+            Peça para um amigo escanear este QR Code com a câmera do celular ou copie o link direto para carregar essa lista na hora!
           </p>
-          <input
-            type="text"
-            placeholder="URL ou ID do Deck..."
-            value={importInput}
-            onChange={(e) => setImportInput(e.target.value)}
-            style={{ padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.5)', color: 'white', outline: 'none' }}
-            autoFocus
-          />
-          {importError && <p style={{ color: '#ef4444', fontSize: '0.85rem' }}>{importError}</p>}
+          
+          <div style={{ background: 'white', padding: '16px', borderRadius: '16px' }}>
+            <QRCodeSVG value={shareUrl} size={200} level="M" includeMargin={false} />
+          </div>
+          
           <button 
-            onClick={handleImport} 
-            className="btn-primary" 
-            style={{ padding: '12px', display: 'flex', justifyContent: 'center', gap: '8px' }}
+            onClick={() => {
+              navigator.clipboard.writeText(shareUrl);
+              setShowCopyAlert(true);
+              setTimeout(() => setShowCopyAlert(false), 2000);
+            }} 
+            className="btn-secondary" 
+            style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '8px' }}
           >
-            <Download size={18} /> Buscar e Importar
+            <Copy size={18} /> Copiar Link Direto
           </button>
         </div>
       </Modal>

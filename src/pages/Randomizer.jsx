@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { getCards } from '../services/api';
-import { Shuffle, Loader2, Save } from 'lucide-react';
+import { Shuffle, Loader2, Save, Copy, QrCode, Check } from 'lucide-react';
 import { villains, modularSets } from '../data/villains';
 import Modal from '../components/Modal';
+import { QRCodeSVG } from 'qrcode.react';
 
 export default function Randomizer() {
   const [cards, setCards] = useState([]);
@@ -19,6 +20,10 @@ export default function Randomizer() {
   const [difficulty, setDifficulty] = useState('Standard');
   const [showLogModal, setShowLogModal] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  
+  const [showCopyAlert, setShowCopyAlert] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
 
   const aspects = [
     { code: 'aggression', name: 'Agressividade', color: 'var(--aspect-aggression)' },
@@ -140,6 +145,26 @@ export default function Randomizer() {
     setTimeout(() => setShowAlert(false), 2000);
   };
 
+  const exportDeckText = () => {
+    if (!randomHero || generatedDeck.length === 0) return;
+    let text = `Herói: ${randomHero.name}\nAspecto: ${randomAspect?.name || 'Básico'}\n\n`;
+    generatedDeck.forEach(c => {
+      text += `${c.quantity}x ${c.name}\n`;
+    });
+    navigator.clipboard.writeText(text);
+    setShowCopyAlert(true);
+    setTimeout(() => setShowCopyAlert(false), 2000);
+  };
+
+  const generateShareLink = () => {
+    if (!randomHero || generatedDeck.length === 0) return;
+    const cardsString = generatedDeck.map(c => `${c.code}:${c.quantity}`).join(',');
+    const payload = `${randomHero.code}|${randomAspect?.code || 'basic'}|${cardsString}`;
+    const url = `${window.location.origin}/builder?deck=${payload}`;
+    setShareUrl(url);
+    setShowShareModal(true);
+  };
+
   if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '300px' }}>
@@ -233,6 +258,15 @@ export default function Randomizer() {
                             </div>
                           </div>
                         ))}
+                      </div>
+                      
+                      <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '16px' }}>
+                        <button onClick={exportDeckText} className="btn-secondary" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', fontSize: '0.9rem' }}>
+                          <Copy size={16} /> Copiar
+                        </button>
+                        <button onClick={generateShareLink} className="btn-primary" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', fontSize: '0.9rem' }}>
+                          <QrCode size={16} /> Compartilhar
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -348,6 +382,40 @@ export default function Randomizer() {
             <Save size={28} />
           </div>
           <h4 style={{ margin: 0, fontSize: '1.2rem', color: 'white' }}>Salvo no Histórico!</h4>
+        </div>
+      </Modal>
+
+      <Modal isOpen={showCopyAlert} onClose={() => setShowCopyAlert(false)} maxWidth="300px" noPadding={true}>
+        <div style={{ padding: '24px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+          <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(67, 160, 71, 0.2)', color: 'var(--aspect-protection)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid var(--aspect-protection)', boxShadow: '0 0 15px rgba(67, 160, 71, 0.4)' }}>
+            <Check size={28} />
+          </div>
+          <h4 style={{ margin: 0, fontSize: '1.2rem', color: 'white' }}>Copiado!</h4>
+        </div>
+      </Modal>
+
+      {/* Share Modal */}
+      <Modal isOpen={showShareModal} onClose={() => setShowShareModal(false)} title="Compartilhar Deck Gerado" maxWidth="400px">
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}>
+          <p style={{ color: 'var(--text-secondary)', textAlign: 'center', fontSize: '0.9rem' }}>
+            Escaneie este QR Code ou copie o link direto para carregar esse deck aleatório no Deck Builder e editá-lo!
+          </p>
+          
+          <div style={{ background: 'white', padding: '16px', borderRadius: '16px' }}>
+            <QRCodeSVG value={shareUrl} size={200} level="M" includeMargin={false} />
+          </div>
+          
+          <button 
+            onClick={() => {
+              navigator.clipboard.writeText(shareUrl);
+              setShowCopyAlert(true);
+              setTimeout(() => setShowCopyAlert(false), 2000);
+            }} 
+            className="btn-secondary" 
+            style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '8px' }}
+          >
+            <Copy size={18} /> Copiar Link Direto
+          </button>
         </div>
       </Modal>
     </div>
