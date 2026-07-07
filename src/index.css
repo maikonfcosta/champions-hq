@@ -637,6 +637,7 @@ button {
   font-size: 2rem;
   font-weight: 800;
   margin-bottom: 8px;
+  white-space: nowrap;
 }
 .page-subtitle {
   color: var(--text-secondary);
@@ -872,6 +873,7 @@ button {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
   gap: 16px;
   margin-bottom: 24px;
 }
@@ -958,6 +960,38 @@ button {
     width: 100%;
     flex-wrap: wrap;
     justify-content: flex-start;
+  }
+}
+
+/* Otimização extrema para celulares em modo paisagem (landscape) */
+@media (max-height: 500px) and (orientation: landscape) {
+  /* Esconde a navbar para dar 100% de foco ao tracker */
+  .navbar { display: none !important; }
+  
+  /* Remove margens extras do topo */
+  .main-content { padding: 16px 0 !important; }
+  
+  /* Compacta o cabeçalho */
+  .tracker-header { margin-bottom: 12px !important; }
+  .page-title { font-size: 1.25rem !important; margin-bottom: 0 !important; }
+  .page-subtitle { display: none !important; }
+  
+  /* Reduz espaçamento do grid */
+  .tracker-main-grid { gap: 8px !important; margin-bottom: 12px !important; }
+  
+  /* Diminui os botões do header */
+  .btn-primary, .btn-secondary { padding: 8px 12px !important; font-size: 0.85rem !important; }
+  
+  /* Compacta painéis e números */
+  .tracker-hero-panel, .tracker-villain-panel, .tracker-threat-panel {
+    padding: 12px !important;
+  }
+  .tracker-villain-panel h3, .tracker-threat-panel h3 { margin-bottom: 12px !important; font-size: 1.1rem !important; }
+  
+  .tracker-hero-panel span, 
+  .tracker-villain-panel span, 
+  .tracker-threat-panel span {
+    font-size: 2.5rem !important;
   }
 }
 .deck-title {
