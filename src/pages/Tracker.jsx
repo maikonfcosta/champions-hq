@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, ShieldAlert, Skull, Plus, Minus, RotateCcw, FastForward, Clock, Trash2 } from 'lucide-react';
+import { Shield, ShieldAlert, Skull, Plus, Minus, RotateCcw, FastForward, Clock, Trash2, Users, Wifi, Copy, Check } from 'lucide-react';
 import Modal from '../components/Modal';
+import { useMultiplayer } from '../hooks/useMultiplayer';
 
 const defaultState = {
   heroes: [
@@ -20,7 +21,7 @@ export default function Tracker() {
   const [removeHeroIdx, setRemoveHeroIdx] = useState(null);
   const [promptModal, setPromptModal] = useState({ isOpen: false, type: null, value: '' });
 
-  const [gameState, setGameState] = useState(() => {
+  const getInitialState = () => {
     const saved = localStorage.getItem('mc_tracker_state');
     if (saved) {
       try {
@@ -41,7 +42,24 @@ export default function Tracker() {
       } catch {}
     }
     return defaultState;
-  });
+  };
+
+  const { 
+    gameState, 
+    dispatchAction, 
+    isConnected, 
+    isHost, 
+    roomId, 
+    createRoom, 
+    joinRoom, 
+    disconnect,
+    error,
+    setGameStateDirect 
+  } = useMultiplayer(getInitialState());
+
+  const [showMultiplayer, setShowMultiplayer] = useState(false);
+  const [joinId, setJoinId] = useState('');
+  const [copied, setCopied] = useState(false);
 
   const [activeHeroIdx, setActiveHeroIdx] = useState(0);
 
@@ -67,7 +85,15 @@ export default function Tracker() {
   }, [gameState]);
 
   const updateState = (updates) => {
-    setGameState(prev => ({ ...prev, ...updates }));
+    dispatchAction(prev => ({ ...prev, ...updates }));
+  };
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(roomId);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch(err) { }
   };
 
   // --- HERO METHODS ---
@@ -121,7 +147,7 @@ export default function Tracker() {
 
   // --- VILLAIN METHODS ---
   const updateVillainStatus = (status) => {
-    setGameState(prev => ({
+    dispatchAction(prev => ({
       ...prev,
       villainStatus: { ...prev.villainStatus, [status]: !prev.villainStatus[status] }
     }));
@@ -219,9 +245,16 @@ export default function Tracker() {
           </div>
         </div>
 
-        <button onClick={resetGame} className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <RotateCcw size={16} /> Nova Partida
-        </button>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <button onClick={() => setShowMultiplayer(true)} className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '8px', borderColor: isConnected ? '#4ade80' : '' }}>
+            {isConnected ? <Wifi size={16} color="#4ade80" /> : <Users size={16} />}
+            {isConnected ? 'Conectado' : 'Multiplayer'}
+          </button>
+          
+          <button onClick={resetGame} className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <RotateCcw size={16} /> Nova Partida
+          </button>
+        </div>
       </div>
 
       {/* Main Grid: Heroes, Villain, Threat */}
@@ -410,6 +443,85 @@ export default function Tracker() {
             <button type="submit" className="btn-primary" style={{ flex: 1 }}>Adicionar</button>
           </div>
         </form>
+      </Modal>
+
+      {/* MULTIPLAYER MODAL */}
+      <Modal
+        isOpen={showMultiplayer}
+        onClose={() => setShowMultiplayer(false)}
+        title="Sincronização Multiplayer"
+        maxWidth="450px"
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+            Mantenha a vida do Vilão e a Ameaça sincronizadas em tempo real entre os celulares da mesa via WebRTC.
+          </p>
+          
+          {error && (
+            <div style={{ padding: '12px', background: 'rgba(239,68,68,0.2)', border: '1px solid #ef4444', borderRadius: '8px', color: '#fca5a5', fontSize: '0.9rem' }}>
+              Erro: {error}
+            </div>
+          )}
+
+          {isConnected ? (
+            <div style={{ padding: '20px', background: 'rgba(0,0,0,0.4)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', textAlign: 'center' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
+                <div style={{ padding: '16px', background: 'rgba(74, 222, 128, 0.1)', borderRadius: '50%', color: '#4ade80' }}>
+                  <Wifi size={32} />
+                </div>
+              </div>
+              <h4 style={{ color: '#4ade80', marginBottom: '8px', fontSize: '1.2rem' }}>Conectado</h4>
+              
+              {isHost ? (
+                <>
+                  <p style={{ color: 'var(--text-secondary)', marginBottom: '12px' }}>Você é o Host da sala. Compartilhe o ID abaixo com os jogadores.</p>
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
+                    <input type="text" readOnly value={roomId} style={{ flex: 1, background: 'rgba(0,0,0,0.5)', color: 'white', border: '1px solid var(--primary-color)', padding: '12px', borderRadius: '8px', textAlign: 'center', fontSize: '1.1rem', letterSpacing: '2px', fontWeight: 'bold' }} />
+                    <button onClick={copyToClipboard} className="btn-primary" style={{ padding: '12px' }}>
+                      {copied ? <Check size={20} /> : <Copy size={20} />}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Você é um Guest. O tracker está espelhando a mesa do Host (ID: {roomId}).</p>
+              )}
+
+              <button onClick={disconnect} className="btn-secondary" style={{ width: '100%', borderColor: '#ef4444', color: '#ef4444' }}>Desconectar</button>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              
+              <div style={{ padding: '20px', background: 'rgba(0,0,0,0.3)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <h4 style={{ color: 'white', marginBottom: '8px' }}>1. Sou o Dono da Mesa</h4>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '16px' }}>Crie uma sala e seja a central (Host).</p>
+                <button onClick={createRoom} className="btn-primary" style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                  Criar Sala (Host)
+                </button>
+              </div>
+
+              <div style={{ position: 'relative', textAlign: 'center' }}>
+                <hr style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }} />
+                <span style={{ position: 'absolute', top: '-10px', left: '50%', transform: 'translateX(-50%)', background: 'var(--bg-main)', padding: '0 12px', color: 'var(--text-muted)', fontSize: '0.8rem' }}>OU</span>
+              </div>
+
+              <div style={{ padding: '20px', background: 'rgba(0,0,0,0.3)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <h4 style={{ color: 'white', marginBottom: '8px' }}>2. Entrar em uma Sala</h4>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '16px' }}>Digite o ID da sala gerado pelo Host.</p>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input 
+                    type="text" 
+                    placeholder="ID da Sala..." 
+                    value={joinId}
+                    onChange={e => setJoinId(e.target.value)}
+                    style={{ flex: 1, background: 'rgba(0,0,0,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '12px', borderRadius: '8px' }}
+                  />
+                  <button onClick={() => { if(joinId.trim()) joinRoom(joinId.trim()); }} className="btn-secondary">Entrar</button>
+                </div>
+              </div>
+
+            </div>
+          )}
+        </div>
       </Modal>
     </div>
   );
