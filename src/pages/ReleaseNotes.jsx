@@ -3,6 +3,19 @@ import { Tag, CheckCircle2, Star, Sparkles, Rocket } from 'lucide-react';
 
 const releases = [
   {
+    version: "1.0.1",
+    date: "07 de Julho de 2026",
+    title: "Hotfix: Atualização de Cache do App 🩹",
+    description: "Pequena atualização para corrigir um problema de usabilidade na forma como o aplicativo lidava com o cache offline do navegador.",
+    highlights: [
+      {
+        icon: <CheckCircle2 size={18} className="text-protection" />,
+        text: "PWA Reload Prompt: Adicionado um aviso na tela permitindo atualizar a versão do aplicativo de forma segura, sem que o usuário precise deletar o cache do navegador (e arriscar perder seus dados locais)."
+      }
+    ],
+    features: []
+  },
+  {
     version: "1.0.0",
     date: "07 de Julho de 2026",
     title: "O Lançamento Oficial (Full Release) 🚀",
