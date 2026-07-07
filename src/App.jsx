@@ -87,6 +87,7 @@ import History from './pages/History';
 import Builder from './pages/Builder';
 import Campaign from './pages/Campaign';
 import Dashboard from './pages/Dashboard';
+import ReleaseNotes from './pages/ReleaseNotes';
 
 // NavLink Component
 const NavItem = ({ to, icon: Icon, children }) => {
@@ -285,12 +286,16 @@ function App() {
             <Route path="/builder" element={<Builder />} />
             <Route path="/campaign" element={<Campaign />} />
             <Route path="/rules" element={<Rules />} />
+            <Route path="/releases" element={<ReleaseNotes />} />
           </Routes>
         </main>
 
         <footer className="app-footer">
           <div className="container" style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem', padding: '32px 0', borderTop: '1px solid var(--surface-border)', marginTop: 'auto' }}>
-            <p><strong>Champions HQ</strong> &copy; {new Date().getFullYear()}. Desenvolvido por Fãs, para Fãs.</p>
+            <p>
+              <strong>Champions HQ</strong> &copy; {new Date().getFullYear()}. Desenvolvido por Fãs, para Fãs.
+              <Link to="/releases" style={{ color: 'var(--primary-color)', textDecoration: 'none', marginLeft: '12px', fontWeight: 'bold' }} title="Ver Histórico de Versões">v1.0.0</Link>
+            </p>
             <p style={{ fontSize: '0.75rem', marginTop: '12px', opacity: 0.6, maxWidth: '600px', margin: '12px auto 0' }}>
               Marvel Champions e todos os personagens, textos de cartas e imagens são de propriedade intelectual da Marvel e Fantasy Flight Games.<br/>
               Este aplicativo não possui fins lucrativos e não é afiliado de forma alguma à Marvel ou FFG.
