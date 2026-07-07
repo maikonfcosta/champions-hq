@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Shield, ShieldAlert, Skull, Plus, Minus, RotateCcw, FastForward, Clock, Trash2, Users, Wifi, Copy, Check } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Shield, ShieldAlert, Skull, Plus, Minus, RotateCcw, FastForward, Clock, Trash2, Users, Wifi, Copy, Check, Camera, X } from 'lucide-react';
 import Modal from '../components/Modal';
 import { useMultiplayer } from '../hooks/useMultiplayer';
+import { QRCodeSVG } from 'qrcode.react';
+import { Html5QrcodeScanner } from 'html5-qrcode';
 
 const defaultState = {
   heroes: [
@@ -60,6 +62,28 @@ export default function Tracker() {
   const [showMultiplayer, setShowMultiplayer] = useState(false);
   const [joinId, setJoinId] = useState('');
   const [copied, setCopied] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
+
+  // Scanner Logic
+  useEffect(() => {
+    let scanner = null;
+    if (showScanner) {
+      scanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: { width: 250, height: 250 } }, false);
+      scanner.render((decodedText) => {
+        setJoinId(decodedText);
+        setShowScanner(false);
+        joinRoom(decodedText);
+        scanner.clear();
+      }, (error) => {
+        // Ignore read errors
+      });
+    }
+    return () => {
+      if (scanner) {
+        scanner.clear().catch(e => console.error(e));
+      }
+    };
+  }, [showScanner]);
 
   const [activeHeroIdx, setActiveHeroIdx] = useState(0);
 
@@ -474,12 +498,15 @@ export default function Tracker() {
               
               {isHost ? (
                 <>
-                  <p style={{ color: 'var(--text-secondary)', marginBottom: '12px' }}>Você é o Host da sala. Compartilhe o ID abaixo com os jogadores.</p>
-                  <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
+                  <p style={{ color: 'var(--text-secondary)', marginBottom: '12px' }}>Você é o Host da sala. Compartilhe o ID ou mostre o QR Code abaixo para os jogadores.</p>
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
                     <input type="text" readOnly value={roomId} style={{ flex: 1, background: 'rgba(0,0,0,0.5)', color: 'white', border: '1px solid var(--primary-color)', padding: '12px', borderRadius: '8px', textAlign: 'center', fontSize: '1.1rem', letterSpacing: '2px', fontWeight: 'bold' }} />
                     <button onClick={copyToClipboard} className="btn-primary" style={{ padding: '12px' }}>
                       {copied ? <Check size={20} /> : <Copy size={20} />}
                     </button>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px', background: 'white', padding: '16px', borderRadius: '12px', display: 'inline-block', margin: '0 auto 24px auto' }}>
+                    <QRCodeSVG value={roomId} size={150} level={"H"} />
                   </div>
                 </>
               ) : (
@@ -506,17 +533,30 @@ export default function Tracker() {
 
               <div style={{ padding: '20px', background: 'rgba(0,0,0,0.3)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
                 <h4 style={{ color: 'white', marginBottom: '8px' }}>2. Entrar em uma Sala</h4>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '16px' }}>Digite o ID da sala gerado pelo Host.</p>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <input 
-                    type="text" 
-                    placeholder="ID da Sala..." 
-                    value={joinId}
-                    onChange={e => setJoinId(e.target.value)}
-                    style={{ flex: 1, background: 'rgba(0,0,0,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '12px', borderRadius: '8px' }}
-                  />
-                  <button onClick={() => { if(joinId.trim()) joinRoom(joinId.trim()); }} className="btn-secondary">Entrar</button>
-                </div>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '16px' }}>Digite o ID da sala gerado pelo Host ou escaneie o QR Code.</p>
+                
+                {showScanner ? (
+                  <div style={{ marginBottom: '16px' }}>
+                    <div id="reader" style={{ width: '100%', borderRadius: '8px', overflow: 'hidden' }}></div>
+                    <button onClick={() => setShowScanner(false)} className="btn-secondary" style={{ width: '100%', marginTop: '12px', display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                      <X size={16} /> Fechar Câmera
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <input 
+                      type="text" 
+                      placeholder="ID da Sala..." 
+                      value={joinId}
+                      onChange={e => setJoinId(e.target.value)}
+                      style={{ flex: 1, background: 'rgba(0,0,0,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '12px', borderRadius: '8px' }}
+                    />
+                    <button onClick={() => setShowScanner(true)} className="btn-secondary" style={{ padding: '12px' }} title="Ler QR Code">
+                      <Camera size={20} />
+                    </button>
+                    <button onClick={() => { if(joinId.trim()) joinRoom(joinId.trim()); }} className="btn-primary">Entrar</button>
+                  </div>
+                )}
               </div>
 
             </div>
