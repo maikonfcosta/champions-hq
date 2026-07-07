@@ -17,6 +17,7 @@ async function run() {
   startDate.setDate(startDate.getDate() + 1); // começa do dia seguinte
 
   const endDate = new Date(); // Hoje
+  endDate.setDate(endDate.getDate() - 1); // Garante que só vai até ONTEM (pois HOJE ainda está incompleto)
   
   if (startDate > endDate) {
     console.log('Já está atualizado!');
