@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { getCards } from '../services/api';
-import { Loader2, Plus, Minus, Copy, Check } from 'lucide-react';
+import { Loader2, Plus, Minus, Copy, Check, QrCode } from 'lucide-react';
 import Modal from '../components/Modal';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { QRCodeSVG } from 'qrcode.react';
 
 export default function Builder() {
   const [showCopyAlert, setShowCopyAlert] = useState(false);
@@ -12,6 +14,11 @@ export default function Builder() {
   const [selectedHero, setSelectedHero] = useState(null);
   const [selectedAspect, setSelectedAspect] = useState('justice');
   const [deck, setDeck] = useState({});
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
+
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const saved = localStorage.getItem('mc_owned_packs');
@@ -19,6 +26,37 @@ export default function Builder() {
 
     getCards().then(data => {
       setCards(data);
+      
+      // Checar se há deck na URL: /builder?deck=heroCode|aspect|cardCode:qty,cardCode:qty
+      const searchParams = new URLSearchParams(window.location.search);
+      const deckParam = searchParams.get('deck');
+      if (deckParam) {
+        try {
+          const [hCode, aCode, cList] = deckParam.split('|');
+          if (hCode) {
+            const hero = data.find(c => c.code === hCode);
+            if (hero) {
+              setSelectedHero(hero);
+              if (aCode) setSelectedAspect(aCode);
+              
+              const parsedDeck = {};
+              if (cList) {
+                const pairs = cList.split(',');
+                pairs.forEach(p => {
+                  const [c, q] = p.split(':');
+                  if (c && q) parsedDeck[c] = parseInt(q, 10);
+                });
+              }
+              setDeck(parsedDeck);
+            }
+          }
+          // Limpa a URL depois de carregar para não ficar poluída
+          window.history.replaceState({}, '', '/builder');
+        } catch (e) {
+          console.error("Erro ao importar deck da URL", e);
+        }
+      }
+      
       setLoading(false);
     });
   }, []);
@@ -75,6 +113,15 @@ export default function Builder() {
     navigator.clipboard.writeText(text);
     setShowCopyAlert(true);
     setTimeout(() => setShowCopyAlert(false), 2000);
+  };
+
+  const generateShareLink = () => {
+    if (!selectedHero) return;
+    const cardsString = Object.entries(deck).map(([code, qty]) => `${code}:${qty}`).join(',');
+    const payload = `${selectedHero.code}|${selectedAspect}|${cardsString}`;
+    const url = `${window.location.origin}/builder?deck=${payload}`;
+    setShareUrl(url);
+    setShowShareModal(true);
   };
 
   if (loading) {
@@ -147,9 +194,15 @@ export default function Builder() {
               </div>
             </div>
 
-            <button onClick={exportDeck} className="btn-primary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '16px' }}>
-              <Copy size={20} /> Copiar Lista para Área de Transferência
-            </button>
+            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+              <button onClick={exportDeck} className="btn-secondary" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '16px' }}>
+                <Copy size={20} /> Copiar Lista de Texto
+              </button>
+              
+              <button onClick={generateShareLink} className="btn-primary" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '16px' }}>
+                <QrCode size={20} /> Compartilhar QR Code
+              </button>
+            </div>
           </div>
         )}
       </div>
@@ -160,6 +213,31 @@ export default function Builder() {
             <Check size={28} />
           </div>
           <h4 style={{ margin: 0, fontSize: '1.2rem', color: 'white' }}>Copiado!</h4>
+        </div>
+      </Modal>
+
+      {/* Share Modal */}
+      <Modal isOpen={showShareModal} onClose={() => setShowShareModal(false)} title="Compartilhar Deck" maxWidth="400px">
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}>
+          <p style={{ color: 'var(--text-secondary)', textAlign: 'center', fontSize: '0.9rem' }}>
+            Peça para um amigo escanear este QR Code com a câmera do celular ou copie o link direto para carregar essa lista na hora!
+          </p>
+          
+          <div style={{ background: 'white', padding: '16px', borderRadius: '16px' }}>
+            <QRCodeSVG value={shareUrl} size={200} level="M" includeMargin={false} />
+          </div>
+          
+          <button 
+            onClick={() => {
+              navigator.clipboard.writeText(shareUrl);
+              setShowCopyAlert(true);
+              setTimeout(() => setShowCopyAlert(false), 2000);
+            }} 
+            className="btn-secondary" 
+            style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '8px' }}
+          >
+            <Copy size={18} /> Copiar Link Direto
+          </button>
         </div>
       </Modal>
     </div>

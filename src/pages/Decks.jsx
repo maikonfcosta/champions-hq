@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { getCards } from '../services/api';
-import { Loader2, List } from 'lucide-react';
+import { Loader2, List, Download } from 'lucide-react';
 import Modal from '../components/Modal';
 
 export default function Decks() {
@@ -14,6 +14,11 @@ export default function Decks() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDeck, setSelectedDeck] = useState(null);
   const [previewCard, setPreviewCard] = useState(null);
+  
+  // Import state
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importInput, setImportInput] = useState('');
+  const [importError, setImportError] = useState('');
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -114,6 +119,29 @@ export default function Decks() {
     setCurrentPage(1);
   }, [filterOwned, filterAspect, searchQuery]);
 
+  const handleImport = () => {
+    setImportError('');
+    if (!importInput.trim()) return;
+
+    // Extrai possíveis números do input (ID)
+    const match = importInput.match(/\d+/);
+    if (!match) {
+      setImportError('ID inválido. Cole a URL do deck ou apenas os números do ID.');
+      return;
+    }
+
+    const deckId = parseInt(match[0], 10);
+    const foundDeck = decks.find(d => d.id === deckId);
+
+    if (foundDeck) {
+      setShowImportModal(false);
+      setImportInput('');
+      setSelectedDeck(foundDeck);
+    } else {
+      setImportError('Deck não encontrado no banco de dados offline. Tente atualizar a base.');
+    }
+  };
+
   if (loading) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '300px', gap: '16px' }}>
@@ -134,6 +162,9 @@ export default function Decks() {
           <h2 className="page-title">Banco de Decks</h2>
           <p className="page-subtitle">Descubra os milhares de decks criados pela comunidade.</p>
         </div>
+        <button className="btn-primary" onClick={() => setShowImportModal(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Download size={18} /> Importar MarvelCDB
+        </button>
       </div>
 
       <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '32px', background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
@@ -340,6 +371,40 @@ export default function Decks() {
             <p style={{ marginTop: '16px', color: 'white', fontSize: '1.2rem', fontWeight: 'bold', textAlign: 'center' }}>{previewCard.name}</p>
           </div>
         )}
+      </Modal>
+
+      {/* Import Modal */}
+      <Modal
+        isOpen={showImportModal}
+        onClose={() => {
+          setShowImportModal(false);
+          setImportError('');
+          setImportInput('');
+        }}
+        title="Importar do MarvelCDB"
+        maxWidth="400px"
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+            Cole a URL ou o ID numérico do deck (ex: <strong>12345</strong>). O app fará uma busca ultra-rápida no banco offline local.
+          </p>
+          <input
+            type="text"
+            placeholder="URL ou ID do Deck..."
+            value={importInput}
+            onChange={(e) => setImportInput(e.target.value)}
+            style={{ padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.5)', color: 'white', outline: 'none' }}
+            autoFocus
+          />
+          {importError && <p style={{ color: '#ef4444', fontSize: '0.85rem' }}>{importError}</p>}
+          <button 
+            onClick={handleImport} 
+            className="btn-primary" 
+            style={{ padding: '12px', display: 'flex', justifyContent: 'center', gap: '8px' }}
+          >
+            <Download size={18} /> Buscar e Importar
+          </button>
+        </div>
       </Modal>
     </div>
   );
