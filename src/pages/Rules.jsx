@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
-import { BookOpen, Shield, Sword, ChevronRight, Activity } from 'lucide-react';
+import { BookOpen, Shield, Sword, ChevronRight, Activity, Search } from 'lucide-react';
+import { rulesDictionary } from '../data/rules';
 
 export default function Rules() {
   const [activeTab, setActiveTab] = useState('player');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredRules = rulesDictionary.filter(rule => 
+    rule.term.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    rule.desc.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="container animate-fade-in" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -18,7 +25,52 @@ export default function Rules() {
         </p>
       </div>
 
-      {/* Tabs Navigation */}
+      {/* Spotlight Search Bar */}
+      <div style={{ padding: '0 24px', marginBottom: '24px', position: 'relative' }}>
+        <div style={{ position: 'relative', width: '100%', maxWidth: '800px', margin: '0 auto' }}>
+          <Search size={24} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary-color)' }} />
+          <input 
+            type="text" 
+            placeholder="Spotlight: Busque por Overkill, Tough, Setup, Stunned..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ 
+              width: '100%', 
+              background: 'rgba(0,0,0,0.5)', 
+              color: 'white', 
+              border: '2px solid rgba(230, 36, 41, 0.3)', 
+              padding: '16px 16px 16px 56px', 
+              borderRadius: '16px', 
+              fontSize: '1.2rem', 
+              outline: 'none',
+              boxShadow: searchTerm ? '0 0 20px rgba(230, 36, 41, 0.2)' : 'none',
+              transition: 'all 0.3s'
+            }}
+          />
+        </div>
+      </div>
+
+      {searchTerm.length > 0 ? (
+        /* BUSCA ATIVA: Mostra Resultados */
+        <div className="glass-panel tab-content" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px', borderTop: '4px solid var(--primary-color)' }}>
+          {filteredRules.length === 0 ? (
+            <p style={{ color: 'var(--text-secondary)', padding: '24px', textAlign: 'center', gridColumn: '1 / -1' }}>Nenhum termo encontrado para "{searchTerm}".</p>
+          ) : (
+            filteredRules.map((rule, idx) => (
+              <div key={idx} className="dict-item" style={{ background: 'rgba(255,255,255,0.05)', padding: '16px', borderRadius: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                  <strong style={{ fontSize: '1.2rem', color: 'white' }}>{rule.term}</strong>
+                  <span style={{ fontSize: '0.75rem', background: 'var(--primary-color)', color: 'white', padding: '2px 8px', borderRadius: '12px', fontWeight: 'bold' }}>{rule.category}</span>
+                </div>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: '1.5' }}>{rule.desc}</p>
+              </div>
+            ))
+          )}
+        </div>
+      ) : (
+        /* BUSCA VAZIA: Mostra Tabs Originais */
+        <>
+          {/* Tabs Navigation */}
       <div className="tabs-container">
         <div className="tabs-wrapper hide-scrollbar">
           <button 
@@ -154,7 +206,8 @@ export default function Rules() {
         {activeTab === 'dictionary' && (
           <div className="animate-fade-in dict-grid">
             <div>
-              <h3 className="section-title text-primary">Cartas de Status</h3>
+              <h3 className="section-title text-primary">Status Principais</h3>
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '16px' }}>Use a barra de pesquisa no topo para procurar qualquer outra Keyword do jogo.</p>
               <div>
                 <div className="dict-item tough">
                   <strong className="dict-title block">Tough (Robusto)</strong>
@@ -170,27 +223,11 @@ export default function Rules() {
                 </div>
               </div>
             </div>
-
-            <div>
-              <h3 className="section-title text-primary">Palavras-chave</h3>
-              <div>
-                <div className="dict-item keyword">
-                  <strong className="dict-title block">Overkill (Sobrecarga)</strong>
-                  <p className="dict-desc">Dano excedente ao derrotar um lacaio passa para o vilão (e vice-versa).</p>
-                </div>
-                <div className="dict-item keyword">
-                  <strong className="dict-title block">Retaliate X (Retaliação)</strong>
-                  <p className="dict-desc">Se atacado e sobreviver, causa X de dano ao atacante passivamente.</p>
-                </div>
-                <div className="dict-item keyword">
-                  <strong className="dict-title block">Surge (Surto)</strong>
-                  <p className="dict-desc">Obriga a revelar uma carta extra do deck de encontros logo após a atual.</p>
-                </div>
-              </div>
-            </div>
           </div>
         )}
       </div>
+      </>
+      )}
 
       <div style={{ textAlign: 'center', marginTop: '32px', paddingBottom: '32px' }}>
         <a 
