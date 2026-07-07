@@ -6,19 +6,15 @@ const releases = [
     version: "1.0.0",
     date: "07 de Julho de 2026",
     title: "O Lançamento Oficial (Full Release) 🚀",
-    description: "Após muitos testes e feedbacks incríveis da comunidade desde a nossa primeira versão básica, o Champions HQ atinge sua versão 1.0.0 oficial! Compilamos todo o histórico de atualizações para entregar a verdadeira central de operações definitiva para as suas partidas.",
+    description: "Após os testes nas versões beta, o Champions HQ atinge sua versão 1.0.0 com as features mais robustas e definitivas para suas partidas de mesa.",
     highlights: [
       {
-        icon: <Sparkles size={18} className="text-primary" />,
-        text: "PWA (Progressive Web App): O app agora pode ser instalado no seu celular ou PC e funciona 100% offline."
-      },
-      {
         icon: <Star size={18} className="text-justice" />,
-        text: "Tracker Multiplayer P2P: Conecte múltiplos celulares na mesma partida lendo um simples QR Code. A sincronização de dano e ameaça ocorre em tempo real via WebRTC (sem atrasos e sem servidor central)."
+        text: "Tracker Multiplayer P2P: Conecte múltiplos celulares na mesma partida lendo um simples QR Code. Sincronização de dano e ameaça em tempo real via WebRTC."
       },
       {
         icon: <CheckCircle2 size={18} className="text-protection" />,
-        text: "Modo Campanha & Histórico: Agora você pode registrar campanhas em andamento (acompanhando XP e status) e adicionar partidas antigas retroativamente de forma manual no seu Histórico."
+        text: "Modo Campanha: Agora você pode criar e registrar campanhas em andamento, acompanhando experiência (XP) e status dos heróis."
       },
       {
         icon: <Tag size={18} className="text-secondary" />,
@@ -26,17 +22,66 @@ const releases = [
       },
       {
         icon: <Rocket size={18} className="text-primary" />,
-        text: "Importação e Exportação de Decks: Importe decks diretamente usando links do MarvelCDB e exporte suas listas gerando um QR Code para compartilhar com a mesa."
+        text: "Importação e Exportação de Decks: Importe decks diretamente usando links do MarvelCDB e exporte suas listas gerando um QR Code para os amigos."
       }
     ],
     features: [
-      "Layout totalmente refatorado com arquitetura Glassmorphism e novos Modais Premium.",
-      "Redesign completo do Tracker de Partida, agora com painéis dedicados para Vilão, Ameaça Principal e Contadores Extras.",
-      "Melhoria drástica na responsividade do Tracker no celular deitado (modo Paisagem) utilizando CSS Flexbox.",
       "Central de Regras expandida: Pesquisa rápida (Spotlight) e visualizador de Manuais Oficiais em PDF integrados no app.",
       "Temas e SFX: Trilha de efeitos sonoros imersivos e temas baseados nos Aspectos (Agressividade, Justiça, Liderança, Proteção).",
-      "Novo sistema automático (GitHub Actions) que varre o MarvelCDB diariamente buscando os últimos decks adicionados pela comunidade.",
-      "Filtro inteligente no Banco de Decks para exibir apenas as listas que utilizam cartas que você possui na sua Coleção."
+      "Melhoria drástica na responsividade do Tracker no celular deitado (modo Paisagem) utilizando CSS Flexbox.",
+      "Padronização de Layout utilizando novos Modais Premium com arquitetura Glassmorphism."
+    ]
+  },
+  {
+    version: "0.3.0",
+    date: "03 de Julho de 2026",
+    title: "Tracker Redesign e Automação de Decks ⚙️",
+    description: "Foco na melhoria da usabilidade durante a partida e integração com os criadores de decks.",
+    highlights: [
+      {
+        icon: <Sparkles size={18} className="text-primary" />,
+        text: "Redesign do Tracker: Nova interface com painéis dedicados e bem divididos para o Vilão, Ameaça Principal e Contadores Extras."
+      },
+      {
+        icon: <Star size={18} className="text-justice" />,
+        text: "Automação de Raspagem Diária: Novo bot no GitHub Actions que atualiza o banco de dados do app diariamente com os novos decks do MarvelCDB."
+      }
+    ],
+    features: [
+      "Lançamento Manual no Histórico: Adicionada a opção de inserir partidas antigas retroativamente no histórico.",
+      "Filtros de Coleção: O Banco de Decks agora permite filtrar para exibir apenas listas onde você possui todas as cartas físicas."
+    ]
+  },
+  {
+    version: "0.2.0",
+    date: "02 de Julho de 2026",
+    title: "Modo Offline (PWA) 📱",
+    description: "Transformando o site web em um aplicativo nativo no celular.",
+    highlights: [
+      {
+        icon: <CheckCircle2 size={18} className="text-protection" />,
+        text: "Progressive Web App (PWA): O sistema agora pode ser instalado no iOS ou Android e funciona 100% offline."
+      }
+    ],
+    features: [
+      "Otimização extrema de Cache (Service Workers) para permitir carregamento rápido do arquivo de banco de decks (JSONL).",
+      "Adicionado o arquivo de contexto GEMINI.md para padronização de prompts dos robôs."
+    ]
+  },
+  {
+    version: "0.1.0",
+    date: "Lançamento Inicial",
+    title: "O Início da Jornada 🦸‍♂️",
+    description: "O primeiro deploy do Champions HQ no Vercel com as funcionalidades básicas.",
+    highlights: [
+      {
+        icon: <Rocket size={18} className="text-primary" />,
+        text: "Base Completa: Minha Coleção, Banco de Decks, Gerador de Caos, Histórico Básico e Guia de Regras inicial."
+      }
+    ],
+    features: [
+      "Construção inicial do Layout Mobile-First.",
+      "Importação manual estática da base do MarvelCDB."
     ]
   }
 ];
