@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { BookOpen, Shield, Sword, ChevronRight, Activity, Search } from 'lucide-react';
 import { rulesDictionary } from '../data/rules';
+import Modal from '../components/Modal';
 
 export default function Rules() {
   const [activeTab, setActiveTab] = useState('player');
   const [searchTerm, setSearchTerm] = useState('');
+  const [pdfUrl, setPdfUrl] = useState(null);
+  const [pdfTitle, setPdfTitle] = useState('');
 
   const filteredRules = rulesDictionary.filter(rule => 
     rule.term.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -243,29 +246,56 @@ export default function Rules() {
             <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Acesse os guias oficiais em formato PDF originais (Requer leitor de PDF). Eles estão salvos offline no app.</p>
             
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
-              <a href="/docs/marvel_champions_th_learn_to_play_142802.pdf" target="_blank" rel="noreferrer" className="glass-panel" style={{ display: 'flex', flexDirection: 'column', padding: '24px', textDecoration: 'none', transition: 'all 0.3s' }}>
+              <button 
+                onClick={() => { setPdfUrl('/docs/marvel_champions_th_learn_to_play_142802.pdf'); setPdfTitle('Aprenda a Jogar'); }} 
+                className="glass-panel" 
+                style={{ display: 'flex', flexDirection: 'column', padding: '24px', border: 'none', background: 'rgba(255,255,255,0.05)', textAlign: 'left', cursor: 'pointer', transition: 'all 0.3s' }}
+              >
                 <BookOpen size={32} style={{ color: 'var(--aspect-leadership)', marginBottom: '16px' }} />
                 <strong style={{ color: 'white', fontSize: '1.2rem', marginBottom: '8px' }}>Aprenda a Jogar (Learn to Play)</strong>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>O guia básico para sua primeira partida. Explica passo a passo como o jogo funciona.</p>
-              </a>
+              </button>
 
-              <a href="/docs/marvel_champions_th_referencia_de_regras_142911.pdf" target="_blank" rel="noreferrer" className="glass-panel" style={{ display: 'flex', flexDirection: 'column', padding: '24px', textDecoration: 'none', transition: 'all 0.3s' }}>
+              <button 
+                onClick={() => { setPdfUrl('/docs/marvel_champions_th_referencia_de_regras_142911.pdf'); setPdfTitle('Referência de Regras'); }} 
+                className="glass-panel" 
+                style={{ display: 'flex', flexDirection: 'column', padding: '24px', border: 'none', background: 'rgba(255,255,255,0.05)', textAlign: 'left', cursor: 'pointer', transition: 'all 0.3s' }}
+              >
                 <Shield size={32} style={{ color: 'var(--aspect-protection)', marginBottom: '16px' }} />
                 <strong style={{ color: 'white', fontSize: '1.2rem', marginBottom: '8px' }}>Referência de Regras (RRG)</strong>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>O dicionário completo oficial da FFG (Fantasy Flight Games) com todas as minúcias.</p>
-              </a>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>O dicionário completo oficial da FFG com todas as minúcias.</p>
+              </button>
 
-              <a href="/docs/marvel_champions_th_guia_de_referencia_pt_br_268594.pdf" target="_blank" rel="noreferrer" className="glass-panel" style={{ display: 'flex', flexDirection: 'column', padding: '24px', textDecoration: 'none', transition: 'all 0.3s' }}>
+              <button 
+                onClick={() => { setPdfUrl('/docs/marvel_champions_th_guia_de_referencia_pt_br_268594.pdf'); setPdfTitle('Guia de Referência PT-BR'); }} 
+                className="glass-panel" 
+                style={{ display: 'flex', flexDirection: 'column', padding: '24px', border: 'none', background: 'rgba(255,255,255,0.05)', textAlign: 'left', cursor: 'pointer', transition: 'all 0.3s' }}
+              >
                 <Sword size={32} style={{ color: 'var(--aspect-aggression)', marginBottom: '16px' }} />
                 <strong style={{ color: 'white', fontSize: '1.2rem', marginBottom: '8px' }}>Guia de Referência PT-BR</strong>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Versão traduzida para o português com detalhes avançados e esclarecimento de termos.</p>
-              </a>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Versão traduzida para o português com detalhes avançados e termos.</p>
+              </button>
             </div>
           </div>
         )}
       </div>
       </>
       )}
+
+      {/* PDF VIEWER MODAL */}
+      <Modal isOpen={!!pdfUrl} onClose={() => setPdfUrl(null)} title={pdfTitle} maxWidth="1200px">
+        {pdfUrl && (
+          <div style={{ height: '75vh', width: '100%', background: '#333', borderRadius: '8px', overflow: 'hidden' }}>
+            <iframe 
+              src={`${pdfUrl}#toolbar=0&navpanes=0`} 
+              width="100%" 
+              height="100%" 
+              style={{ border: 'none' }} 
+              title={pdfTitle}
+            />
+          </div>
+        )}
+      </Modal>
 
       <div style={{ textAlign: 'center', marginTop: '32px', paddingBottom: '32px' }}>
         <a 
