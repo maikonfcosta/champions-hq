@@ -99,6 +99,16 @@ export default function Rules() {
             <span className="desktop-text">Dicionário de Combate</span>
             <span className="mobile-text">Dicionário</span>
           </button>
+
+          <button 
+            onClick={() => setActiveTab('official')}
+            className={`tab-btn ${activeTab === 'official' ? 'active' : ''}`}
+            style={{ marginLeft: 'auto', background: 'rgba(230, 36, 41, 0.1)' }}
+          >
+            <BookOpen size={18} style={{ color: 'var(--primary-color)' }} />
+            <span className="desktop-text" style={{ color: 'var(--primary-color)' }}>Manuais Oficiais (PDF)</span>
+            <span className="mobile-text" style={{ color: 'var(--primary-color)' }}>Manuais</span>
+          </button>
         </div>
       </div>
 
@@ -222,6 +232,34 @@ export default function Rules() {
                   <p className="dict-desc">Substitui a próxima intervenção do personagem por descartar esta carta.</p>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* OFFICIAL PDF MANUALS */}
+        {activeTab === 'official' && (
+          <div className="animate-fade-in" style={{ padding: '16px' }}>
+            <h3 className="section-title text-primary" style={{ marginBottom: '16px' }}>Manuais Oficiais de Regras</h3>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Acesse os guias oficiais em formato PDF originais (Requer leitor de PDF). Eles estão salvos offline no app.</p>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+              <a href="/docs/marvel_champions_th_learn_to_play_142802.pdf" target="_blank" rel="noreferrer" className="glass-panel" style={{ display: 'flex', flexDirection: 'column', padding: '24px', textDecoration: 'none', transition: 'all 0.3s' }}>
+                <BookOpen size={32} style={{ color: 'var(--aspect-leadership)', marginBottom: '16px' }} />
+                <strong style={{ color: 'white', fontSize: '1.2rem', marginBottom: '8px' }}>Aprenda a Jogar (Learn to Play)</strong>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>O guia básico para sua primeira partida. Explica passo a passo como o jogo funciona.</p>
+              </a>
+
+              <a href="/docs/marvel_champions_th_referencia_de_regras_142911.pdf" target="_blank" rel="noreferrer" className="glass-panel" style={{ display: 'flex', flexDirection: 'column', padding: '24px', textDecoration: 'none', transition: 'all 0.3s' }}>
+                <Shield size={32} style={{ color: 'var(--aspect-protection)', marginBottom: '16px' }} />
+                <strong style={{ color: 'white', fontSize: '1.2rem', marginBottom: '8px' }}>Referência de Regras (RRG)</strong>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>O dicionário completo oficial da FFG (Fantasy Flight Games) com todas as minúcias.</p>
+              </a>
+
+              <a href="/docs/marvel_champions_th_guia_de_referencia_pt_br_268594.pdf" target="_blank" rel="noreferrer" className="glass-panel" style={{ display: 'flex', flexDirection: 'column', padding: '24px', textDecoration: 'none', transition: 'all 0.3s' }}>
+                <Sword size={32} style={{ color: 'var(--aspect-aggression)', marginBottom: '16px' }} />
+                <strong style={{ color: 'white', fontSize: '1.2rem', marginBottom: '8px' }}>Guia de Referência PT-BR</strong>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Versão traduzida para o português com detalhes avançados e esclarecimento de termos.</p>
+              </a>
             </div>
           </div>
         )}
