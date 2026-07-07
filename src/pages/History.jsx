@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Trash2, Plus } from 'lucide-react';
 import { getCards } from '../services/api';
 import { villains, modularSets } from '../data/villains';
+import Modal from '../components/Modal';
 
 export default function History() {
   const [history, setHistory] = useState([]);
@@ -45,6 +46,7 @@ export default function History() {
   }, []);
 
   const [showModal, setShowModal] = useState(false);
+  const [deleteIndex, setDeleteIndex] = useState(null);
   const [form, setForm] = useState({
     hero: '',
     aspect: 'Agressividade',
@@ -81,10 +83,15 @@ export default function History() {
   };
 
   const deleteEntry = (index) => {
-    if (window.confirm("Apagar registro de partida?")) {
+    setDeleteIndex(index);
+  };
+
+  const confirmDelete = () => {
+    if (deleteIndex !== null) {
       const newHistory = [...history];
-      newHistory.splice(index, 1);
+      newHistory.splice(deleteIndex, 1);
       saveHistory(newHistory);
+      setDeleteIndex(null);
     }
   };
 
@@ -140,85 +147,94 @@ export default function History() {
         )}
       </div>
 
-      {showModal && createPortal(
-        <div 
-          className="modal-overlay animate-fade-in" 
-          onClick={() => setShowModal(false)}
-          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100, padding: '20px' }}
-        >
-          <div className="glass-panel" onClick={e => e.stopPropagation()} style={{ padding: '32px', width: '100%', maxWidth: '500px', maxHeight: '90vh', overflowY: 'auto' }}>
-            <h3 style={{ fontSize: '1.5rem', marginBottom: '24px' }}>Registrar Manualmente</h3>
-            
-            <form onSubmit={handleAddManual} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Herói</label>
-                <select required value={form.hero} onChange={e => setForm({...form, hero: e.target.value})} style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', borderRadius: '8px' }}>
-                  <option value="" disabled>Selecione um Herói...</option>
-                  {heroes.map(h => (
-                    <option key={h.code} value={h.name}>{h.name}</option>
-                  ))}
-                </select>
-              </div>
-              
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Aspecto</label>
-                <select value={form.aspect} onChange={e => setForm({...form, aspect: e.target.value})} style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', borderRadius: '8px' }}>
-                  <option value="Agressividade">Agressividade</option>
-                  <option value="Justiça">Justiça</option>
-                  <option value="Liderança">Liderança</option>
-                  <option value="Proteção">Proteção</option>
-                  <option value="Pool">Pool</option>
-                  <option value="Básico">Básico</option>
-                </select>
-              </div>
-
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Vilão</label>
-                <select required value={form.villain} onChange={e => setForm({...form, villain: e.target.value})} style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', borderRadius: '8px' }}>
-                  <option value="" disabled>Selecione um Vilão...</option>
-                  {ownedVillains.map(v => (
-                    <option key={v.code} value={v.name}>{v.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Módulos (opcional)</label>
-                <select value={form.modular} onChange={e => setForm({...form, modular: e.target.value})} style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', borderRadius: '8px' }}>
-                  <option value="">Nenhum / Selecione...</option>
-                  {ownedModulars.map(m => (
-                    <option key={m.code} value={m.name}>{m.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Dificuldade</label>
-                  <select value={form.difficulty} onChange={e => setForm({...form, difficulty: e.target.value})} style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', borderRadius: '8px' }}>
-                    <option value="Standard">Standard</option>
-                    <option value="Expert">Expert</option>
-                    <option value="Heroic">Heroic</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Resultado</label>
-                  <select value={form.result} onChange={e => setForm({...form, result: e.target.value})} style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', borderRadius: '8px' }}>
-                    <option value="Vitória">Vitória</option>
-                    <option value="Derrota">Derrota</option>
-                  </select>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '16px', marginTop: '16px' }}>
-                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary" style={{ flex: 1 }}>Cancelar</button>
-                <button type="submit" className="btn-primary" style={{ flex: 1 }}>Salvar Partida</button>
-              </div>
-            </form>
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title="Registrar Manualmente"
+        maxWidth="500px"
+      >
+        <form onSubmit={handleAddManual} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div>
+            <label className="premium-label">Herói</label>
+            <select required value={form.hero} onChange={e => setForm({...form, hero: e.target.value})} className="premium-select">
+              <option value="" disabled>Selecione um Herói...</option>
+              {heroes.map(h => (
+                <option key={h.code} value={h.name}>{h.name}</option>
+              ))}
+            </select>
           </div>
-        </div>,
-        document.body
-      )}
+          
+          <div>
+            <label className="premium-label">Aspecto</label>
+            <select value={form.aspect} onChange={e => setForm({...form, aspect: e.target.value})} className="premium-select">
+              <option value="Agressividade">Agressividade</option>
+              <option value="Justiça">Justiça</option>
+              <option value="Liderança">Liderança</option>
+              <option value="Proteção">Proteção</option>
+              <option value="Pool">Pool</option>
+              <option value="Básico">Básico</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="premium-label">Vilão</label>
+            <select required value={form.villain} onChange={e => setForm({...form, villain: e.target.value})} className="premium-select">
+              <option value="" disabled>Selecione um Vilão...</option>
+              {ownedVillains.map(v => (
+                <option key={v.code} value={v.name}>{v.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="premium-label">Módulos (opcional)</label>
+            <select value={form.modular} onChange={e => setForm({...form, modular: e.target.value})} className="premium-select">
+              <option value="">Nenhum / Selecione...</option>
+              {ownedModulars.map(m => (
+                <option key={m.code} value={m.name}>{m.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div>
+              <label className="premium-label">Dificuldade</label>
+              <select value={form.difficulty} onChange={e => setForm({...form, difficulty: e.target.value})} className="premium-select">
+                <option value="Standard">Standard</option>
+                <option value="Expert">Expert</option>
+                <option value="Heroic">Heroic</option>
+              </select>
+            </div>
+            <div>
+              <label className="premium-label">Resultado</label>
+              <select value={form.result} onChange={e => setForm({...form, result: e.target.value})} className="premium-select">
+                <option value="Vitória">Vitória</option>
+                <option value="Derrota">Derrota</option>
+              </select>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '16px', marginTop: '16px' }}>
+            <button type="button" onClick={() => setShowModal(false)} className="btn-secondary" style={{ flex: 1 }}>Cancelar</button>
+            <button type="submit" className="btn-primary" style={{ flex: 1 }}>Salvar Partida</button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal
+        isOpen={deleteIndex !== null}
+        onClose={() => setDeleteIndex(null)}
+        title="Apagar Registro"
+        maxWidth="400px"
+      >
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Tem certeza que deseja apagar o registro desta partida?</p>
+          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+            <button onClick={() => setDeleteIndex(null)} className="btn-secondary" style={{ flex: 1 }}>Cancelar</button>
+            <button onClick={confirmDelete} className="btn-primary" style={{ flex: 1, background: 'var(--primary-color)' }}>Apagar</button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

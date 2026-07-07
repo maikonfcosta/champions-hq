@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { getCards } from '../services/api';
 import { Shuffle, Loader2, Save } from 'lucide-react';
 import { villains, modularSets } from '../data/villains';
+import Modal from '../components/Modal';
 
 export default function Randomizer() {
   const [cards, setCards] = useState([]);
@@ -17,6 +18,7 @@ export default function Randomizer() {
   const [randomModulars, setRandomModulars] = useState([]);
   const [difficulty, setDifficulty] = useState('Standard');
   const [showLogModal, setShowLogModal] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
 
   const aspects = [
     { code: 'aggression', name: 'Agressividade', color: 'var(--aspect-aggression)' },
@@ -134,7 +136,8 @@ export default function Randomizer() {
     });
     localStorage.setItem('mc_match_history', JSON.stringify(history));
     setShowLogModal(false);
-    alert('Partida registrada no Histórico!');
+    setShowAlert(true);
+    setTimeout(() => setShowAlert(false), 2000);
   };
 
   if (loading) {
@@ -301,55 +304,52 @@ export default function Randomizer() {
         </div>
       )}
       {/* Card Image Preview Modal */}
-      {previewCard && createPortal(
-        <div 
-          className="modal-overlay animate-fade-in" 
-          onClick={() => setPreviewCard(null)}
-          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100, padding: '20px' }}
-        >
-          <div 
-            onClick={e => e.stopPropagation()} 
-            style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
-          >
-            <button 
-              onClick={() => setPreviewCard(null)}
-              style={{ position: 'absolute', top: '-40px', right: '-10px', background: 'none', border: 'none', color: 'white', fontSize: '2rem', cursor: 'pointer' }}
-            >
-              &times;
-            </button>
+      <Modal
+        isOpen={!!previewCard}
+        onClose={() => setPreviewCard(null)}
+        maxWidth="400px"
+        noPadding={true}
+      >
+        {previewCard && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px' }}>
             <img 
               src={`https://marvelcdb.com/bundles/cards/${previewCard.code}.png`} 
               alt={previewCard.name} 
-              style={{ maxWidth: '100%', maxHeight: '80vh', objectFit: 'contain', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }} 
+              style={{ maxWidth: '100%', maxHeight: '80vh', objectFit: 'contain', borderRadius: '12px', boxShadow: '0 10px 40px rgba(0,0,0,0.6)' }} 
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src = 'https://marvelcdb.com/bundles/cards/default.png'; // Fallback if missing
               }}
             />
-            <p style={{ marginTop: '16px', color: 'white', fontSize: '1.2rem', fontWeight: 'bold' }}>{previewCard.name}</p>
+            <p style={{ marginTop: '16px', color: 'white', fontSize: '1.2rem', fontWeight: 'bold', textAlign: 'center' }}>{previewCard.name}</p>
           </div>
-        </div>,
-        document.body
-      )}
+        )}
+      </Modal>
 
-      {showLogModal && createPortal(
-        <div 
-          className="modal-overlay animate-fade-in" 
-          onClick={() => setShowLogModal(false)}
-          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100, padding: '20px' }}
-        >
-          <div className="glass-panel" onClick={e => e.stopPropagation()} style={{ padding: '32px', textAlign: 'center', maxWidth: '400px', width: '100%' }}>
-            <h3 style={{ fontSize: '1.5rem', marginBottom: '8px' }}>Resultado da Partida</h3>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Como foi o confronto contra {randomVillain?.name}?</p>
-            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
-              <button onClick={() => handleSaveLog('Vitória')} className="btn-primary" style={{ background: 'var(--aspect-protection)', padding: '12px 24px', flex: 1 }}>Vitória</button>
-              <button onClick={() => handleSaveLog('Derrota')} className="btn-primary" style={{ padding: '12px 24px', flex: 1 }}>Derrota</button>
-            </div>
-            <button onClick={() => setShowLogModal(false)} style={{ background: 'transparent', color: 'var(--text-muted)', marginTop: '24px', textDecoration: 'underline' }}>Cancelar</button>
+      <Modal
+        isOpen={showLogModal}
+        onClose={() => setShowLogModal(false)}
+        title="Resultado da Partida"
+        maxWidth="400px"
+      >
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Como foi o confronto contra <strong style={{ color: 'white' }}>{randomVillain?.name}</strong>?</p>
+          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+            <button onClick={() => handleSaveLog('Vitória')} className="btn-primary" style={{ background: 'var(--aspect-protection)', padding: '12px 24px', flex: 1 }}>Vitória</button>
+            <button onClick={() => handleSaveLog('Derrota')} className="btn-primary" style={{ padding: '12px 24px', flex: 1 }}>Derrota</button>
           </div>
-        </div>,
-        document.body
-      )}
+          <button onClick={() => setShowLogModal(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', marginTop: '24px', textDecoration: 'underline' }}>Cancelar</button>
+        </div>
+      </Modal>
+
+      <Modal isOpen={showAlert} onClose={() => setShowAlert(false)} maxWidth="300px" noPadding={true}>
+        <div style={{ padding: '24px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+          <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(67, 160, 71, 0.2)', color: 'var(--aspect-protection)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid var(--aspect-protection)', boxShadow: '0 0 15px rgba(67, 160, 71, 0.4)' }}>
+            <Save size={28} />
+          </div>
+          <h4 style={{ margin: 0, fontSize: '1.2rem', color: 'white' }}>Salvo no Histórico!</h4>
+        </div>
+      </Modal>
     </div>
   );
 }

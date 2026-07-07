@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { getCards } from '../services/api';
-import { Loader2, Plus, Minus, Copy } from 'lucide-react';
+import { Loader2, Plus, Minus, Copy, Check } from 'lucide-react';
+import Modal from '../components/Modal';
 
 export default function Builder() {
+  const [showCopyAlert, setShowCopyAlert] = useState(false);
   const [cards, setCards] = useState([]);
   const [ownedPacks, setOwnedPacks] = useState({});
   const [loading, setLoading] = useState(true);
@@ -71,7 +73,8 @@ export default function Builder() {
       if (c) text += `${qty}x ${c.name}\n`;
     });
     navigator.clipboard.writeText(text);
-    alert('Deck copiado para a área de transferência!');
+    setShowCopyAlert(true);
+    setTimeout(() => setShowCopyAlert(false), 2000);
   };
 
   if (loading) {
@@ -150,6 +153,15 @@ export default function Builder() {
           </div>
         )}
       </div>
+
+      <Modal isOpen={showCopyAlert} onClose={() => setShowCopyAlert(false)} maxWidth="300px" noPadding={true}>
+        <div style={{ padding: '24px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+          <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(67, 160, 71, 0.2)', color: 'var(--aspect-protection)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid var(--aspect-protection)', boxShadow: '0 0 15px rgba(67, 160, 71, 0.4)' }}>
+            <Check size={28} />
+          </div>
+          <h4 style={{ margin: 0, fontSize: '1.2rem', color: 'white' }}>Copiado!</h4>
+        </div>
+      </Modal>
     </div>
   );
 }

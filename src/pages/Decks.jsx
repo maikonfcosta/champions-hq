@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { getCards } from '../services/api';
 import { Loader2, List } from 'lucide-react';
+import Modal from '../components/Modal';
 
 export default function Decks() {
   const [decks, setDecks] = useState([]);
@@ -245,134 +246,101 @@ export default function Decks() {
         </div>
       )}
 
-      {selectedDeck && createPortal(
-        <div 
-          className="modal-overlay animate-fade-in" 
-          onClick={() => setSelectedDeck(null)}
-          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000, padding: '20px' }}
-        >
-          <div 
-            className="modal-content glass-panel" 
-            onClick={e => e.stopPropagation()} 
-            style={{ 
-              maxWidth: '600px', 
-              width: '100%', 
-              maxHeight: '85vh', 
-              display: 'flex', 
-              flexDirection: 'column',
-              padding: 0,
-              overflow: 'hidden'
-            }}
-          >
-            <div style={{ padding: '20px', borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.3)' }}>
-              <div>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>{selectedDeck.name}</h3>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Herói: {selectedDeck.hero_name}</p>
-              </div>
-              <button 
-                onClick={() => setSelectedDeck(null)}
-                style={{ background: 'none', border: 'none', color: 'white', fontSize: '1.5rem', cursor: 'pointer', padding: '0 8px' }}
-              >
-                &times;
-              </button>
-            </div>
+      <Modal
+        isOpen={!!selectedDeck}
+        onClose={() => setSelectedDeck(null)}
+        title={selectedDeck ? selectedDeck.name : ''}
+        maxWidth="600px"
+      >
+        {selectedDeck && (
+          <div className="hide-scrollbar" style={{ display: 'flex', flexDirection: 'column' }}>
+            <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
+              Herói: <strong style={{ color: 'white' }}>{selectedDeck.hero_name}</strong>
+            </p>
+            {(() => {
+              const slots = selectedDeck.slots || {};
+              const cardEntries = Object.entries(slots).map(([code, qty]) => {
+                return { code, qty, card: cardsInfo[code] };
+              }).filter(entry => entry.card);
 
-            <div style={{ padding: '20px', overflowY: 'auto', flex: 1 }} className="hide-scrollbar">
-              {(() => {
-                const slots = selectedDeck.slots || {};
-                const cardEntries = Object.entries(slots).map(([code, qty]) => {
-                  return { code, qty, card: cardsInfo[code] };
-                }).filter(entry => entry.card);
+              if (cardEntries.length === 0) {
+                return <p>Nenhuma carta encontrada na lista.</p>;
+              }
 
-                if (cardEntries.length === 0) {
-                  return <p>Nenhuma carta encontrada na lista.</p>;
-                }
+              const groups = {};
+              cardEntries.forEach(entry => {
+                if (!entry.card) return;
+                const type = entry.card.type_code === 'hero' || entry.card.type_code === 'alter_ego' ? 'Identity' :
+                             entry.card.type_name || 'Outros';
+                if (!groups[type]) groups[type] = [];
+                groups[type].push(entry);
+              });
 
-                const groups = {};
-                cardEntries.forEach(entry => {
-                  if (!entry.card) return;
-                  const type = entry.card.type_code === 'hero' || entry.card.type_code === 'alter_ego' ? 'Identity' :
-                               entry.card.type_name || 'Outros';
-                  if (!groups[type]) groups[type] = [];
-                  groups[type].push(entry);
-                });
-
-                return Object.entries(groups).map(([type, cardsInGroup]) => (
-                  <div key={type} style={{ marginBottom: '16px' }}>
-                    <h4 style={{ fontSize: '1rem', color: 'var(--primary-color)', marginBottom: '8px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '4px' }}>
-                      {type} ({cardsInGroup.reduce((acc, c) => acc + c.qty, 0)})
-                    </h4>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      {cardsInGroup.map(c => {
-                        const pack = c.card.pack_code;
-                        const isMissing = pack !== 'core' && !ownedPacks[pack];
-                        return (
-                          <div 
-                            key={c.code} 
-                            onClick={() => setPreviewCard(c.card)}
-                            style={{ 
-                              display: 'flex', 
-                              justifyContent: 'space-between', 
-                              alignItems: 'center', 
-                              fontSize: '0.9rem', 
-                              padding: '6px 12px', 
-                              background: isMissing ? 'rgba(239, 68, 68, 0.1)' : 'rgba(255,255,255,0.02)', 
-                              border: isMissing ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid transparent', 
-                              borderRadius: '4px',
-                              cursor: 'pointer',
-                              transition: 'background 0.2s'
-                            }}
-                            onMouseEnter={(e) => { e.currentTarget.style.background = isMissing ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255,255,255,0.06)' }}
-                            onMouseLeave={(e) => { e.currentTarget.style.background = isMissing ? 'rgba(239, 68, 68, 0.1)' : 'rgba(255,255,255,0.02)' }}
-                          >
-                            <span style={{ color: isMissing ? '#fca5a5' : 'inherit' }}>
-                              {c.card.name} {isMissing && <span style={{ fontSize: '0.75rem', opacity: 0.8 }}>(Falta expansão)</span>}
-                            </span>
-                            <span style={{ color: isMissing ? '#fca5a5' : 'var(--text-secondary)', fontWeight: 'bold' }}>{c.qty}x</span>
-                          </div>
-                        );
-                      })}
-                    </div>
+              return Object.entries(groups).map(([type, cardsInGroup]) => (
+                <div key={type} style={{ marginBottom: '16px' }}>
+                  <h4 style={{ fontSize: '1rem', color: 'var(--primary-color)', marginBottom: '8px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '4px' }}>
+                    {type} ({cardsInGroup.reduce((acc, c) => acc + c.qty, 0)})
+                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    {cardsInGroup.map(c => {
+                      const pack = c.card.pack_code;
+                      const isMissing = pack !== 'core' && !ownedPacks[pack];
+                      return (
+                        <div 
+                          key={c.code} 
+                          onClick={() => setPreviewCard(c.card)}
+                          style={{ 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            alignItems: 'center', 
+                            fontSize: '0.9rem', 
+                            padding: '8px 12px', 
+                            background: isMissing ? 'rgba(239, 68, 68, 0.1)' : 'rgba(255,255,255,0.02)', 
+                            border: isMissing ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(255,255,255,0.05)', 
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                          }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = isMissing ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255,255,255,0.08)'; e.currentTarget.style.transform = 'translateX(4px)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = isMissing ? 'rgba(239, 68, 68, 0.1)' : 'rgba(255,255,255,0.02)'; e.currentTarget.style.transform = 'none'; }}
+                        >
+                          <span style={{ color: isMissing ? '#fca5a5' : 'inherit' }}>
+                            {c.card.name} {isMissing && <span style={{ fontSize: '0.75rem', opacity: 0.8 }}>(Falta expansão)</span>}
+                          </span>
+                          <span style={{ color: isMissing ? '#fca5a5' : 'var(--secondary-color)', fontWeight: 'bold' }}>{c.qty}x</span>
+                        </div>
+                      );
+                    })}
                   </div>
-                ));
-              })()}
-            </div>
+                </div>
+              ));
+            })()}
           </div>
-        </div>,
-        document.body
-      )}
+        )}
+      </Modal>
 
       {/* Card Image Preview Modal */}
-      {previewCard && createPortal(
-        <div 
-          className="modal-overlay animate-fade-in" 
-          onClick={() => setPreviewCard(null)}
-          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100, padding: '20px' }}
-        >
-          <div 
-            onClick={e => e.stopPropagation()} 
-            style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
-          >
-            <button 
-              onClick={() => setPreviewCard(null)}
-              style={{ position: 'absolute', top: '-40px', right: '-10px', background: 'none', border: 'none', color: 'white', fontSize: '2rem', cursor: 'pointer' }}
-            >
-              &times;
-            </button>
+      <Modal
+        isOpen={!!previewCard}
+        onClose={() => setPreviewCard(null)}
+        maxWidth="400px"
+        noPadding={true}
+      >
+        {previewCard && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px' }}>
             <img 
               src={`https://marvelcdb.com/bundles/cards/${previewCard.code}.png`} 
               alt={previewCard.name} 
-              style={{ maxWidth: '100%', maxHeight: '80vh', objectFit: 'contain', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }} 
+              style={{ maxWidth: '100%', maxHeight: '80vh', objectFit: 'contain', borderRadius: '12px', boxShadow: '0 10px 40px rgba(0,0,0,0.6)' }} 
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src = 'https://marvelcdb.com/bundles/cards/default.png'; // Fallback if missing
               }}
             />
-            <p style={{ marginTop: '16px', color: 'white', fontSize: '1.2rem', fontWeight: 'bold' }}>{previewCard.name}</p>
+            <p style={{ marginTop: '16px', color: 'white', fontSize: '1.2rem', fontWeight: 'bold', textAlign: 'center' }}>{previewCard.name}</p>
           </div>
-        </div>,
-        document.body
-      )}
+        )}
+      </Modal>
     </div>
   );
 }

@@ -868,10 +868,9 @@ button {
 
 .tracker-main-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   grid-template-areas: 
-    "hero villain"
-    "hero threat";
+    "hero villain threat";
   gap: 24px;
   margin-bottom: 24px;
 }
@@ -886,13 +885,19 @@ button {
 
 .tracker-villain-panel {
   grid-area: villain;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .tracker-threat-panel {
   grid-area: threat;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-/* Mobile & Tablet adjustments (Portrait only) */
+/* Mobile & Tablet adjustments */
 @media (max-width: 1024px) and (orientation: portrait) {
   .tracker-main-grid {
     grid-template-columns: 1fr;
@@ -900,6 +905,15 @@ button {
       "hero"
       "villain"
       "threat";
+  }
+}
+
+@media (max-width: 850px) and (orientation: landscape) {
+  .tracker-main-grid {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-areas: 
+      "hero villain threat";
+    gap: 12px;
   }
 }
 
@@ -1156,4 +1170,138 @@ button {
 .modular-name {
   font-weight: 700;
   color: white;
+}
+
+/* =========================================
+   Premium Modal Styles
+   ========================================= */
+.premium-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(4, 6, 12, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 20px;
+  animation: modalOverlayFadeIn 0.3s ease-out forwards;
+}
+
+.premium-modal-content {
+  background: rgba(12, 16, 28, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05) inset, 0 0 30px rgba(230, 36, 41, 0.15);
+  animation: modalScaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  position: relative;
+  overflow: hidden;
+}
+
+.premium-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 32px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+}
+
+.premium-modal-header.no-title {
+  padding: 16px;
+  border-bottom: none;
+  background: transparent;
+  justify-content: flex-end;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10;
+}
+
+.premium-modal-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0;
+  background: linear-gradient(90deg, #fff, #cbd5e1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.premium-modal-close {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.premium-modal-close:hover {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  transform: rotate(90deg);
+  box-shadow: 0 0 15px rgba(230, 36, 41, 0.5);
+}
+
+.premium-modal-body {
+  padding: 32px;
+  overflow-y: auto;
+}
+.premium-modal-body.no-padding {
+  padding: 0;
+}
+
+@keyframes modalOverlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalScaleUp {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.premium-select {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: white;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.2s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+}
+.premium-select:focus {
+  outline: none;
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 3px rgba(43, 130, 217, 0.2);
+  background-color: rgba(0,0,0,0.6);
+}
+.premium-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
 }

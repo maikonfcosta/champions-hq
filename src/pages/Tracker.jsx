@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, ShieldAlert, Skull, Plus, Minus, RotateCcw, FastForward, Clock, Trash2 } from 'lucide-react';
+import Modal from '../components/Modal';
 
 const defaultState = {
   heroes: [
@@ -15,6 +16,10 @@ const defaultState = {
 };
 
 export default function Tracker() {
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [removeHeroIdx, setRemoveHeroIdx] = useState(null);
+  const [promptModal, setPromptModal] = useState({ isOpen: false, type: null, value: '' });
+
   const [gameState, setGameState] = useState(() => {
     const saved = localStorage.getItem('mc_tracker_state');
     if (saved) {
@@ -81,11 +86,18 @@ export default function Tracker() {
   };
 
   const removeHero = (idx) => {
-    if (gameState.heroes.length > 1 && window.confirm('Remover este herói do tracker?')) {
+    if (gameState.heroes.length > 1) {
+      setRemoveHeroIdx(idx);
+    }
+  };
+
+  const confirmRemoveHero = () => {
+    if (removeHeroIdx !== null) {
       const newHeroes = [...gameState.heroes];
-      newHeroes.splice(idx, 1);
+      newHeroes.splice(removeHeroIdx, 1);
       updateState({ heroes: newHeroes });
-      setActiveHeroIdx(Math.max(0, idx - 1));
+      setActiveHeroIdx(Math.max(0, removeHeroIdx - 1));
+      setRemoveHeroIdx(null);
     }
   };
 
@@ -117,11 +129,16 @@ export default function Tracker() {
 
   // --- EXTRAS METHODS ---
   const addExtra = (type) => {
-    const name = window.prompt(`Nome do ${type === 'minion' ? 'Lacaio' : 'Esquema'}:`);
-    if (name) {
+    setPromptModal({ isOpen: true, type, value: '' });
+  };
+
+  const confirmAddExtra = (e) => {
+    e.preventDefault();
+    if (promptModal.value.trim()) {
       updateState({
-        extras: [...gameState.extras, { id: Date.now(), name, value: type === 'minion' ? 5 : 3, type }]
+        extras: [...gameState.extras, { id: Date.now(), name: promptModal.value.trim(), value: promptModal.type === 'minion' ? 5 : 3, type: promptModal.type }]
       });
+      setPromptModal({ isOpen: false, type: null, value: '' });
     }
   };
 
@@ -138,12 +155,15 @@ export default function Tracker() {
   };
 
   const resetGame = () => {
-    if (window.confirm('Tem certeza que deseja resetar todo o tracker?')) {
-      updateState({
-        ...defaultState,
-        heroes: gameState.heroes.map((h) => ({ ...h, hp: 10, status: { stunned: false, confused: false, tough: false } }))
-      });
-    }
+    setShowResetConfirm(true);
+  };
+  
+  const confirmResetGame = () => {
+    updateState({
+      ...defaultState,
+      heroes: gameState.heroes.map((h) => ({ ...h, hp: 10, status: { stunned: false, confused: false, tough: false } }))
+    });
+    setShowResetConfirm(false);
   };
 
   const activeHero = gameState.heroes[activeHeroIdx];
@@ -336,6 +356,61 @@ export default function Tracker() {
           </div>
         )}
       </div>
+
+      <Modal
+        isOpen={removeHeroIdx !== null}
+        onClose={() => setRemoveHeroIdx(null)}
+        title="Remover Herói"
+        maxWidth="400px"
+      >
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Tem certeza que deseja remover este herói do tracker?</p>
+          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+            <button onClick={() => setRemoveHeroIdx(null)} className="btn-secondary" style={{ flex: 1 }}>Cancelar</button>
+            <button onClick={confirmRemoveHero} className="btn-primary" style={{ flex: 1, background: 'var(--primary-color)' }}>Remover</button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={showResetConfirm}
+        onClose={() => setShowResetConfirm(false)}
+        title="Resetar Tracker"
+        maxWidth="400px"
+      >
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Tem certeza que deseja resetar todo o tracker?</p>
+          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+            <button onClick={() => setShowResetConfirm(false)} className="btn-secondary" style={{ flex: 1 }}>Cancelar</button>
+            <button onClick={confirmResetGame} className="btn-primary" style={{ flex: 1, background: 'var(--primary-color)' }}>Resetar</button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={promptModal.isOpen}
+        onClose={() => setPromptModal({ isOpen: false, type: null, value: '' })}
+        title={`Adicionar ${promptModal.type === 'minion' ? 'Lacaio' : 'Esquema'}`}
+        maxWidth="400px"
+      >
+        <form onSubmit={confirmAddExtra} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', color: 'var(--text-secondary)', marginBottom: '8px' }}>Nome:</label>
+            <input 
+              type="text"
+              autoFocus
+              value={promptModal.value}
+              onChange={(e) => setPromptModal({ ...promptModal, value: e.target.value })}
+              style={{ width: '100%', background: 'rgba(0,0,0,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '12px', borderRadius: '8px' }}
+              placeholder={`Digite o nome do ${promptModal.type === 'minion' ? 'Lacaio' : 'Esquema'}...`}
+            />
+          </div>
+          <div style={{ display: 'flex', gap: '16px', marginTop: '8px' }}>
+            <button type="button" onClick={() => setPromptModal({ isOpen: false, type: null, value: '' })} className="btn-secondary" style={{ flex: 1 }}>Cancelar</button>
+            <button type="submit" className="btn-primary" style={{ flex: 1 }}>Adicionar</button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }
