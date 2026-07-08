@@ -385,6 +385,10 @@ export default function Tracker() {
             {renderAddButtons((amt) => updateState({ threat: Math.max(0, gameState.threat + amt) }))}
           </div>
         </div>
+      </div>
+
+      <div className="tracker-main-grid" style={{ marginTop: '24px' }}>
+
 
         {/* ENCOUNTER SECTION */}
         <div className="glass-panel tracker-encounter-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', borderTop: '4px solid #a855f7' }}>
