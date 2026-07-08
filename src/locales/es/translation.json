@@ -1,0 +1,16 @@
+{
+  "nav": {
+    "randomizer": "Generador",
+    "tracker": "Partida",
+    "history": "Historial",
+    "dashboard": "Estadísticas",
+    "decks": "Mazos",
+    "collection": "Colección",
+    "campaign": "Campaña"
+  },
+  "app": {
+    "title": "Marvel Champions Helper",
+    "login": "Ingresar con Google",
+    "language": "Idioma"
+  }
+}
