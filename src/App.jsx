@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { BookOpen, Layers, Zap, Shuffle, Activity, Archive, Wrench, Map, Menu, X, Home as HomeIcon, BarChart2, Settings, Volume2, VolumeX } from 'lucide-react';
+import { BookOpen, Layers, Zap, Shuffle, Activity, Archive, Wrench, Map, Menu, X, Home as HomeIcon, BarChart2, Settings, Volume2, VolumeX, Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Modal from './components/Modal';
 import ReloadPrompt from './components/ReloadPrompt';
 
@@ -89,6 +90,8 @@ import Builder from './pages/Builder';
 import Campaign from './pages/Campaign';
 import Dashboard from './pages/Dashboard';
 import ReleaseNotes from './pages/ReleaseNotes';
+import { useAuth } from './context/AuthContext';
+import { useCloudSync } from './hooks/useCloudSync';
 
 // NavLink Component
 const NavItem = ({ to, icon: Icon, children }) => {
@@ -103,6 +106,10 @@ const NavItem = ({ to, icon: Icon, children }) => {
 };
 
 function App() {
+  const { user, loginWithGoogle, logout } = useAuth();
+  const { syncStatus } = useCloudSync();
+  const { t, i18n } = useTranslation();
+
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstall, setShowInstall] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -214,28 +221,44 @@ function App() {
           </div>
         )}
         <nav className="navbar">
-          <div className="nav-content" style={{ padding: '0 32px', width: '100%', maxWidth: '1920px', margin: '0 auto' }}>
+          <div className="nav-content" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 32px', width: '100%', maxWidth: '1920px', margin: '0 auto' }}>
             
             {/* Lado Esquerdo - Logo */}
-            <div className="nav-left">
+            <div className="nav-left" style={{ flex: 1, display: 'flex', justifyContent: 'flex-start' }}>
               <Link to="/" className="brand" onClick={() => setIsMobileMenuOpen(false)}>
                 <img src="/logo.jpg" alt="Logo" style={{ width: '32px', height: '32px', borderRadius: '8px' }} />
                 <span>Champions HQ</span>
               </Link>
             </div>
             
-            {/* Lado Direito - Menu */}
-            <div className="nav-right" style={{ display: 'flex', alignItems: 'center' }}>
-              <div className="nav-links desktop-only" style={{ marginRight: '16px' }}>
-                <NavItem to="/collection" icon={Layers}>Coleção</NavItem>
-                <NavItem to="/decks" icon={Zap}>Decks</NavItem>
-                <NavItem to="/randomizer" icon={Shuffle}>Gerador</NavItem>
-                <NavItem to="/tracker" icon={Activity}>Tracker</NavItem>
-                <NavItem to="/history" icon={Archive}>Histórico</NavItem>
-                <NavItem to="/dashboard" icon={BarChart2}>Estatísticas</NavItem>
+            {/* Centro - Menu de Navegação */}
+            <div className="nav-center desktop-only" style={{ display: 'flex', justifyContent: 'center' }}>
+              <div className="nav-links" style={{ display: 'flex', gap: '12px', margin: 0 }}>
+                <NavItem to="/collection" icon={Layers}>{t('nav.collection')}</NavItem>
+                <NavItem to="/decks" icon={Zap}>{t('nav.decks')}</NavItem>
+                <NavItem to="/randomizer" icon={Shuffle}>{t('nav.randomizer')}</NavItem>
+                <NavItem to="/tracker" icon={Activity}>{t('nav.tracker')}</NavItem>
+                <NavItem to="/history" icon={Archive}>{t('nav.history')}</NavItem>
+                <NavItem to="/dashboard" icon={BarChart2}>{t('nav.dashboard')}</NavItem>
                 <NavItem to="/builder" icon={Wrench}>Builder</NavItem>
-                <NavItem to="/campaign" icon={Map}>Campanha</NavItem>
+                <NavItem to="/campaign" icon={Map}>{t('nav.campaign')}</NavItem>
                 <NavItem to="/rules" icon={BookOpen}>Regras</NavItem>
+              </div>
+            </div>
+
+            {/* Lado Direito - Configurações e Login */}
+            <div className="nav-right" style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '16px' }}>
+              <div className="desktop-only" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <Globe size={22} style={{ color: 'var(--text-secondary)', marginRight: '8px' }} />
+                <select 
+                  value={i18n.language.split('-')[0]} 
+                  onChange={(e) => i18n.changeLanguage(e.target.value)}
+                  style={{ background: 'transparent', color: 'var(--text-secondary)', border: 'none', cursor: 'pointer', outline: 'none', fontSize: '0.9rem' }}
+                >
+                  <option value="pt">PT</option>
+                  <option value="en">EN</option>
+                  <option value="es">ES</option>
+                </select>
               </div>
 
               <button 
@@ -246,6 +269,18 @@ function App() {
               >
                 <Settings size={22} />
               </button>
+
+              {user ? (
+                <div className="desktop-only" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '0.8rem', color: '#86efac' }}>{syncStatus === 'syncing' ? 'Salvando...' : 'Nuvem OK'}</span>
+                  <img src={user.photoURL} alt="User" style={{ width: 28, height: 28, borderRadius: '50%' }} title={user.displayName} />
+                  <button onClick={logout} className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.75rem' }}>Sair</button>
+                </div>
+              ) : (
+                <button onClick={loginWithGoogle} className="btn-primary desktop-only" style={{ padding: '6px 12px' }}>
+                  Login
+                </button>
+              )}
 
               <button 
                 className="mobile-menu-btn"
@@ -259,16 +294,16 @@ function App() {
 
           {isMobileMenuOpen && (
             <div className="mobile-menu animate-fade-in">
-              <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><HomeIcon size={20} /> Início</Link>
-              <Link to="/tracker" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Activity size={20} /> Tracker de Partida</Link>
-              <Link to="/builder" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Wrench size={20} /> Deck Builder</Link>
-              <Link to="/campaign" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Map size={20} /> Campanhas</Link>
-              <Link to="/randomizer" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Shuffle size={20} /> Gerador de Caos</Link>
-              <Link to="/history" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Archive size={20} /> Histórico</Link>
-              <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><BarChart2 size={20} /> Estatísticas</Link>
-              <Link to="/decks" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Zap size={20} /> Banco de Decks</Link>
-              <Link to="/collection" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Layers size={20} /> Coleção</Link>
-              <Link to="/rules" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><BookOpen size={20} /> Guia de Regras</Link>
+              <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><HomeIcon size={20} /> {t('nav.home', 'Início')}</Link>
+              <Link to="/tracker" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Activity size={20} /> {t('nav.tracker')}</Link>
+              <Link to="/builder" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Wrench size={20} /> Builder</Link>
+              <Link to="/campaign" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Map size={20} /> {t('nav.campaign')}</Link>
+              <Link to="/randomizer" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Shuffle size={20} /> {t('nav.randomizer')}</Link>
+              <Link to="/history" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Archive size={20} /> {t('nav.history')}</Link>
+              <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><BarChart2 size={20} /> {t('nav.dashboard')}</Link>
+              <Link to="/decks" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Zap size={20} /> {t('nav.decks')}</Link>
+              <Link to="/collection" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Layers size={20} /> {t('nav.collection')}</Link>
+              <Link to="/rules" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><BookOpen size={20} /> Regras</Link>
               <button onClick={() => { setIsMobileMenuOpen(false); setShowSettings(true); }} className="mobile-link" style={{ background: 'transparent', border: 'none', textAlign: 'left', width: '100%', cursor: 'pointer' }}>
                 <Settings size={20} /> Temas e Configurações
               </button>

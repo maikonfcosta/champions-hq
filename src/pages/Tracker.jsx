@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Shield, ShieldAlert, Skull, Plus, Minus, RotateCcw, FastForward, Clock, Trash2, Users, Wifi, Copy, Check, Camera, X } from 'lucide-react';
+import { Shield, ShieldAlert, Skull, Plus, Minus, RotateCcw, FastForward, Clock, Trash2, Users, Wifi, Copy, Check, Camera, X, BookOpen, Ghost } from 'lucide-react';
 import Modal from '../components/Modal';
+import TurnAssistant from '../components/TurnAssistant';
 import { useMultiplayer } from '../hooks/useMultiplayer';
 import { QRCodeSVG } from 'qrcode.react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
@@ -15,13 +16,15 @@ const defaultState = {
   threat: 0,
   acceleration: 0,
   round: 1,
-  extras: []
+  extras: [],
+  encounters: { dealt: 0, surge: 0, notes: '' }
 };
 
 export default function Tracker() {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [removeHeroIdx, setRemoveHeroIdx] = useState(null);
   const [promptModal, setPromptModal] = useState({ isOpen: false, type: null, value: '' });
+  const [showAssistant, setShowAssistant] = useState(false);
 
   const getInitialState = () => {
     const saved = localStorage.getItem('mc_tracker_state');
@@ -38,7 +41,8 @@ export default function Tracker() {
             villainHp: s.villainHp,
             villainStage: s.villainStage,
             villainStatus: s.villainStatus || { stunned: false, confused: false, tough: false },
-            threat: s.threat
+            threat: s.threat,
+            encounters: s.encounters || { dealt: 0, surge: 0, notes: '' }
           };
         }
       } catch {}
@@ -270,6 +274,10 @@ export default function Tracker() {
         </div>
 
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <button className="btn-secondary" onClick={() => setShowAssistant(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px' }} title="Assistente de Fase do Vilão">
+            <BookOpen size={16} />
+            <span className="desktop-only">Fase do Vilão</span>
+          </button>
           <button onClick={() => setShowMultiplayer(true)} className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '8px', borderColor: isConnected ? '#4ade80' : '' }}>
             {isConnected ? <Wifi size={16} color="#4ade80" /> : <Users size={16} />}
             {isConnected ? 'Conectado' : 'Multiplayer'}
@@ -375,6 +383,60 @@ export default function Tracker() {
             {renderAdjustButtons((amt) => updateState({ threat: Math.max(0, gameState.threat + amt) }))}
             <span className="tracker-big-number" style={{ color: '#fbc02d' }}>{gameState.threat}</span>
             {renderAddButtons((amt) => updateState({ threat: Math.max(0, gameState.threat + amt) }))}
+          </div>
+        </div>
+      </div>
+
+      <div className="tracker-main-grid" style={{ marginTop: '24px' }}>
+
+
+        {/* ENCOUNTER SECTION */}
+        <div className="glass-panel tracker-encounter-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', borderTop: '4px solid #a855f7' }}>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Ghost size={24} color="#a855f7" /> Cartas de Encontro
+          </h3>
+          
+          <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap', justifyContent: 'center', width: '100%' }}>
+            
+            {/* Cartas Distribuídas */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <span style={{ color: 'var(--text-secondary)', marginBottom: '8px', fontSize: '0.9rem' }}>Distribuídas</span>
+              <div className="tracker-value-row" style={{ marginTop: 0 }}>
+                {renderAdjustButtons((amt) => updateState({ encounters: { ...gameState.encounters, dealt: Math.max(0, gameState.encounters.dealt + amt) } }))}
+                <span className="tracker-big-number" style={{ color: '#a855f7', fontSize: '2rem', minWidth: '40px' }}>{gameState.encounters.dealt}</span>
+                {renderAddButtons((amt) => updateState({ encounters: { ...gameState.encounters, dealt: Math.max(0, gameState.encounters.dealt + amt) } }))}
+              </div>
+            </div>
+
+            {/* Ímpeto (Surge) */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <span style={{ color: 'var(--text-secondary)', marginBottom: '8px', fontSize: '0.9rem' }}>Ímpeto (Surge)</span>
+              <div className="tracker-value-row" style={{ marginTop: 0 }}>
+                {renderAdjustButtons((amt) => updateState({ encounters: { ...gameState.encounters, surge: Math.max(0, gameState.encounters.surge + amt) } }))}
+                <span className="tracker-big-number" style={{ color: '#ef4444', fontSize: '2rem', minWidth: '40px' }}>{gameState.encounters.surge}</span>
+                {renderAddButtons((amt) => updateState({ encounters: { ...gameState.encounters, surge: Math.max(0, gameState.encounters.surge + amt) } }))}
+              </div>
+            </div>
+
+          </div>
+
+          {/* Bloco de Anotações Rápidas */}
+          <div style={{ width: '100%', marginTop: '24px' }}>
+            <input 
+              type="text" 
+              placeholder="Anotações (ex: Sombra do Passado revelada...)"
+              value={gameState.encounters.notes}
+              onChange={e => updateState({ encounters: { ...gameState.encounters, notes: e.target.value } })}
+              style={{ 
+                width: '100%', 
+                background: 'rgba(0,0,0,0.3)', 
+                border: '1px solid rgba(255,255,255,0.1)', 
+                color: 'white', 
+                padding: '12px', 
+                borderRadius: '8px', 
+                outline: 'none' 
+              }}
+            />
           </div>
         </div>
       </div>
@@ -563,6 +625,8 @@ export default function Tracker() {
           )}
         </div>
       </Modal>
+
+      <TurnAssistant isOpen={showAssistant} onClose={() => setShowAssistant(false)} />
     </div>
   );
 }
