@@ -6,14 +6,14 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'prompt',
+      registerType: 'autoUpdate',
       includeAssets: ['logo.jpg'],
       manifest: {
         name: 'Champions HQ',
         short_name: 'Champions HQ',
         description: 'Seu quartel-general definitivo para Marvel Champions LCG.',
-        theme_color: '#060913',
-        background_color: '#060913',
+        theme_color: '#0f172a',
+        background_color: '#0f172a',
         display: 'standalone',
         icons: [
           {
