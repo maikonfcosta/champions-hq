@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Shield, ShieldAlert, Skull, Plus, Minus, RotateCcw, FastForward, Clock, Trash2, Users, Wifi, Copy, Check, Camera, X, BookOpen } from 'lucide-react';
+import { Shield, ShieldAlert, Skull, Plus, Minus, RotateCcw, FastForward, Clock, Trash2, Users, Wifi, Copy, Check, Camera, X, BookOpen, Ghost } from 'lucide-react';
 import Modal from '../components/Modal';
 import TurnAssistant from '../components/TurnAssistant';
 import { useMultiplayer } from '../hooks/useMultiplayer';
@@ -16,7 +16,8 @@ const defaultState = {
   threat: 0,
   acceleration: 0,
   round: 1,
-  extras: []
+  extras: [],
+  encounters: { dealt: 0, surge: 0, notes: '' }
 };
 
 export default function Tracker() {
@@ -40,7 +41,8 @@ export default function Tracker() {
             villainHp: s.villainHp,
             villainStage: s.villainStage,
             villainStatus: s.villainStatus || { stunned: false, confused: false, tough: false },
-            threat: s.threat
+            threat: s.threat,
+            encounters: s.encounters || { dealt: 0, surge: 0, notes: '' }
           };
         }
       } catch {}
@@ -381,6 +383,60 @@ export default function Tracker() {
             {renderAdjustButtons((amt) => updateState({ threat: Math.max(0, gameState.threat + amt) }))}
             <span className="tracker-big-number" style={{ color: '#fbc02d' }}>{gameState.threat}</span>
             {renderAddButtons((amt) => updateState({ threat: Math.max(0, gameState.threat + amt) }))}
+          </div>
+        </div>
+      </div>
+
+      <div className="tracker-main-grid" style={{ marginTop: '24px' }}>
+
+
+        {/* ENCOUNTER SECTION */}
+        <div className="glass-panel tracker-encounter-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', borderTop: '4px solid #a855f7' }}>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Ghost size={24} color="#a855f7" /> Cartas de Encontro
+          </h3>
+          
+          <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap', justifyContent: 'center', width: '100%' }}>
+            
+            {/* Cartas Distribuídas */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <span style={{ color: 'var(--text-secondary)', marginBottom: '8px', fontSize: '0.9rem' }}>Distribuídas</span>
+              <div className="tracker-value-row" style={{ marginTop: 0 }}>
+                {renderAdjustButtons((amt) => updateState({ encounters: { ...gameState.encounters, dealt: Math.max(0, gameState.encounters.dealt + amt) } }))}
+                <span className="tracker-big-number" style={{ color: '#a855f7', fontSize: '2rem', minWidth: '40px' }}>{gameState.encounters.dealt}</span>
+                {renderAddButtons((amt) => updateState({ encounters: { ...gameState.encounters, dealt: Math.max(0, gameState.encounters.dealt + amt) } }))}
+              </div>
+            </div>
+
+            {/* Ímpeto (Surge) */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <span style={{ color: 'var(--text-secondary)', marginBottom: '8px', fontSize: '0.9rem' }}>Ímpeto (Surge)</span>
+              <div className="tracker-value-row" style={{ marginTop: 0 }}>
+                {renderAdjustButtons((amt) => updateState({ encounters: { ...gameState.encounters, surge: Math.max(0, gameState.encounters.surge + amt) } }))}
+                <span className="tracker-big-number" style={{ color: '#ef4444', fontSize: '2rem', minWidth: '40px' }}>{gameState.encounters.surge}</span>
+                {renderAddButtons((amt) => updateState({ encounters: { ...gameState.encounters, surge: Math.max(0, gameState.encounters.surge + amt) } }))}
+              </div>
+            </div>
+
+          </div>
+
+          {/* Bloco de Anotações Rápidas */}
+          <div style={{ width: '100%', marginTop: '24px' }}>
+            <input 
+              type="text" 
+              placeholder="Anotações (ex: Sombra do Passado revelada...)"
+              value={gameState.encounters.notes}
+              onChange={e => updateState({ encounters: { ...gameState.encounters, notes: e.target.value } })}
+              style={{ 
+                width: '100%', 
+                background: 'rgba(0,0,0,0.3)', 
+                border: '1px solid rgba(255,255,255,0.1)', 
+                color: 'white', 
+                padding: '12px', 
+                borderRadius: '8px', 
+                outline: 'none' 
+              }}
+            />
           </div>
         </div>
       </div>
