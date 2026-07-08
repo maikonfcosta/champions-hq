@@ -3,6 +3,31 @@ import { Tag, CheckCircle2, Star, Sparkles, Rocket } from 'lucide-react';
 
 const releases = [
   {
+    version: "1.1.0",
+    date: "08 de Julho de 2026",
+    title: "A Grande Atualização Global & Competitiva 🏆",
+    description: "Nesta atualização massiva, o Champions HQ rompe as fronteiras e traz competitividade real para as suas partidas.",
+    highlights: [
+      {
+        icon: <Star size={18} className="text-justice" />,
+        text: "Modo Ranqueado & XP: Suas partidas agora geram Pontos de Prestígio (XP) baseados no resultado e dificuldade, subindo o seu Rank de Novato até Herói!"
+      },
+      {
+        icon: <Sparkles size={18} className="text-primary" />,
+        text: "Internacionalização (i18n): O aplicativo agora fala múltiplos idiomas (PT, EN, ES) com detecção automática e seletor na barra superior."
+      },
+      {
+        icon: <CheckCircle2 size={18} className="text-protection" />,
+        text: "PWA Nativo Aperfeiçoado: Transformamos a experiência offline. Instale o app nativamente no celular ou desktop via prompt automático com novo manifesto."
+      }
+    ],
+    features: [
+      "Dashboard Avançado: Novas métricas de duração, rodadas, dano médio e rankings de Top Heróis/Vilões.",
+      "Histórico Aprimorado: Novo layout no histórico exibindo o XP ganho/perdido por partida.",
+      "Correções internas de linting e segurança na stack (Vite + React)."
+    ]
+  },
+  {
     version: "1.0.1",
     date: "07 de Julho de 2026",
     title: "Hotfix: Atualização de Cache do App 🩹",
