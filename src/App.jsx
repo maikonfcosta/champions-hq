@@ -89,6 +89,8 @@ import Builder from './pages/Builder';
 import Campaign from './pages/Campaign';
 import Dashboard from './pages/Dashboard';
 import ReleaseNotes from './pages/ReleaseNotes';
+import { useAuth } from './context/AuthContext';
+import { useCloudSync } from './hooks/useCloudSync';
 
 // NavLink Component
 const NavItem = ({ to, icon: Icon, children }) => {
@@ -103,6 +105,9 @@ const NavItem = ({ to, icon: Icon, children }) => {
 };
 
 function App() {
+  const { user, loginWithGoogle, logout } = useAuth();
+  const { syncStatus } = useCloudSync();
+
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstall, setShowInstall] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -246,6 +251,18 @@ function App() {
               >
                 <Settings size={22} />
               </button>
+
+              {user ? (
+                <div className="desktop-only" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '16px' }}>
+                  <span style={{ fontSize: '0.8rem', color: '#86efac' }}>{syncStatus === 'syncing' ? 'Salvando...' : 'Nuvem OK'}</span>
+                  <img src={user.photoURL} alt="User" style={{ width: 28, height: 28, borderRadius: '50%' }} title={user.displayName} />
+                  <button onClick={logout} className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.75rem' }}>Sair</button>
+                </div>
+              ) : (
+                <button onClick={loginWithGoogle} className="btn-primary desktop-only" style={{ marginRight: '16px', padding: '6px 12px' }}>
+                  Login
+                </button>
+              )}
 
               <button 
                 className="mobile-menu-btn"
