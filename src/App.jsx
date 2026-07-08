@@ -219,19 +219,19 @@ function App() {
           </div>
         )}
         <nav className="navbar">
-          <div className="nav-content" style={{ padding: '0 32px', width: '100%', maxWidth: '1920px', margin: '0 auto' }}>
+          <div className="nav-content" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 32px', width: '100%', maxWidth: '1920px', margin: '0 auto' }}>
             
             {/* Lado Esquerdo - Logo */}
-            <div className="nav-left">
+            <div className="nav-left" style={{ flex: 1, display: 'flex', justifyContent: 'flex-start' }}>
               <Link to="/" className="brand" onClick={() => setIsMobileMenuOpen(false)}>
                 <img src="/logo.jpg" alt="Logo" style={{ width: '32px', height: '32px', borderRadius: '8px' }} />
                 <span>Champions HQ</span>
               </Link>
             </div>
             
-            {/* Lado Direito - Menu */}
-            <div className="nav-right" style={{ display: 'flex', alignItems: 'center' }}>
-              <div className="nav-links desktop-only" style={{ marginRight: '16px' }}>
+            {/* Centro - Menu de Navegação */}
+            <div className="nav-center desktop-only" style={{ display: 'flex', justifyContent: 'center' }}>
+              <div className="nav-links" style={{ display: 'flex', gap: '12px', margin: 0 }}>
                 <NavItem to="/collection" icon={Layers}>Coleção</NavItem>
                 <NavItem to="/decks" icon={Zap}>Decks</NavItem>
                 <NavItem to="/randomizer" icon={Shuffle}>Gerador</NavItem>
@@ -242,7 +242,10 @@ function App() {
                 <NavItem to="/campaign" icon={Map}>Campanha</NavItem>
                 <NavItem to="/rules" icon={BookOpen}>Regras</NavItem>
               </div>
+            </div>
 
+            {/* Lado Direito - Configurações e Login */}
+            <div className="nav-right" style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '16px' }}>
               <button 
                 className="desktop-only" 
                 onClick={() => setShowSettings(true)}
@@ -253,13 +256,13 @@ function App() {
               </button>
 
               {user ? (
-                <div className="desktop-only" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '16px' }}>
+                <div className="desktop-only" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span style={{ fontSize: '0.8rem', color: '#86efac' }}>{syncStatus === 'syncing' ? 'Salvando...' : 'Nuvem OK'}</span>
                   <img src={user.photoURL} alt="User" style={{ width: 28, height: 28, borderRadius: '50%' }} title={user.displayName} />
                   <button onClick={logout} className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.75rem' }}>Sair</button>
                 </div>
               ) : (
-                <button onClick={loginWithGoogle} className="btn-primary desktop-only" style={{ marginRight: '16px', padding: '6px 12px' }}>
+                <button onClick={loginWithGoogle} className="btn-primary desktop-only" style={{ padding: '6px 12px' }}>
                   Login
                 </button>
               )}
