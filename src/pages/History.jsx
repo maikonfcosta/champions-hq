@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Trash2, Plus } from 'lucide-react';
+import { Trash2, Plus, Clock, RotateCcw, Zap } from 'lucide-react';
 import { getCards } from '../services/api';
 import { villains, modularSets } from '../data/villains';
 import Modal from '../components/Modal';
@@ -53,7 +53,10 @@ export default function History() {
     villain: '',
     modular: '',
     difficulty: 'Standard',
-    result: 'Vitória'
+    result: 'Vitória',
+    duration: '',
+    rounds: '',
+    totalDamage: ''
   });
 
   const handleAddManual = (e) => {
@@ -71,7 +74,10 @@ export default function History() {
       villain: '',
       modular: '',
       difficulty: 'Standard',
-      result: 'Vitória'
+      result: 'Vitória',
+      duration: '',
+      rounds: '',
+      totalDamage: ''
     });
   };
 
@@ -137,7 +143,14 @@ export default function History() {
               <div>
                 <h4 style={{ color: match.result === 'Vitória' ? 'var(--aspect-protection)' : 'var(--primary-color)', marginBottom: '4px' }}>{match.result}</h4>
                 <p style={{ fontSize: '1.1rem' }}><strong>{match.hero}</strong> <span style={{ color: 'var(--text-secondary)' }}>({match.aspect})</span> vs <strong>{match.villain}</strong></p>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Módulo: {match.modular} | Diff: {match.difficulty || 'Normal'} | {new Date(match.date).toLocaleDateString()}</p>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Módulo: {match.modular || 'Nenhum'} | Diff: {match.difficulty || 'Normal'} | {new Date(match.date).toLocaleDateString()}</p>
+                {(match.duration || match.rounds || match.totalDamage) && (
+                  <div style={{ display: 'flex', gap: '12px', marginTop: '6px', fontSize: '0.85rem', color: '#a8a8a8' }}>
+                    {match.duration && <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={14} /> {match.duration} min</span>}
+                    {match.rounds && <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><RotateCcw size={14} /> {match.rounds} rodadas</span>}
+                    {match.totalDamage && <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Zap size={14} /> {match.totalDamage} dano</span>}
+                  </div>
+                )}
               </div>
               <button onClick={() => deleteEntry(idx)} className="btn-secondary" style={{ padding: '8px', color: '#ef4444', borderColor: 'transparent' }}>
                 <Trash2 size={20} />
@@ -211,6 +224,21 @@ export default function History() {
                 <option value="Vitória">Vitória</option>
                 <option value="Derrota">Derrota</option>
               </select>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+            <div>
+              <label className="premium-label">Duração (min)</label>
+              <input type="number" min="1" value={form.duration} onChange={e => setForm({...form, duration: e.target.value})} className="premium-input" placeholder="Ex: 45" />
+            </div>
+            <div>
+              <label className="premium-label">Rodadas</label>
+              <input type="number" min="1" value={form.rounds} onChange={e => setForm({...form, rounds: e.target.value})} className="premium-input" placeholder="Ex: 8" />
+            </div>
+            <div>
+              <label className="premium-label">Dano Causado</label>
+              <input type="number" min="1" value={form.totalDamage} onChange={e => setForm({...form, totalDamage: e.target.value})} className="premium-input" placeholder="Ex: 25" />
             </div>
           </div>
 
