@@ -14,6 +14,9 @@ Todo o banco de dados do *MarvelCDB* está embutido no projeto, garantindo pesqu
 - **Banco de Decks**: Explore milhares de decks criados pela comunidade. Inclui o filtro inteligente "Apenas Cartas que Possuo".
 - **Gerador de Caos**: Role os dados para um encontro 100% aleatório, selecionando um Vilão, um Herói e um Aspecto com animações responsivas.
 - **Tracker Multiplayer P2P**: Monitor de Vida e Ameaça sincronizado em tempo real na mesa via WebRTC (PeerJS) de forma gratuita, sem backend, escaneando rapidamente um **QR Code** para conectar!
+- **Modo Ranqueado & Histórico (Novo!)**: Suas vitórias geram XP de Prestígio baseado na dificuldade e resultado da partida. Suba de Rank (de Novato a Herói) e monitore seu progresso no Histórico detalhado!
+- **Dashboard de Estatísticas (Novo!)**: Analise a sua taxa de vitória, seus melhores heróis, as piores ameaças, médias de rodadas e duração de partida.
+- **Multilinguagem (i18n)**: Suporte dinâmico a Português, Inglês e Espanhol.
 - **Campanhas**: Acompanhe o progresso de múltiplas campanhas, registrando vitória/derrota e salvando o histórico.
 - **Guia de Regras Offline**: Dicionário interativo de palavras-chave, fases do vilão, FAQs e consulta dinâmica em popups na tela.
 - **Temas e SFX**: Trilha sonora dinâmica e mudança de temas baseada nos Heróis que dão mais imersão às suas partidas.
@@ -22,7 +25,8 @@ Todo o banco de dados do *MarvelCDB* está embutido no projeto, garantindo pesqu
 - **React + Vite**
 - **Vanilla CSS (Arquitetura Glassmorphism)**
 - **WebRTC (PeerJS)** para Sincronização Multiplayer
-- **Vite PWA** para modo de Aplicativo Offline
+- **Vite PWA** para modo de Aplicativo Offline / Instalável Nativo
+- **i18next** para Internacionalização
 - **Scrapers em Node.js / Actions** (Raspagem Histórica e Diária)
 - **Lucide Icons**
 
