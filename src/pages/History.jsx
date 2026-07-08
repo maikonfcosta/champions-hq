@@ -4,6 +4,7 @@ import { Trash2, Plus, Clock, RotateCcw, Zap } from 'lucide-react';
 import { getCards } from '../services/api';
 import { villains, modularSets } from '../data/villains';
 import Modal from '../components/Modal';
+import { calculateMatchXP } from '../utils/ranking';
 
 export default function History() {
   const [history, setHistory] = useState([]);
@@ -138,10 +139,17 @@ export default function History() {
         {history.length === 0 ? (
           <p style={{ color: 'var(--text-secondary)' }}>Nenhuma partida registrada ainda. Vá ao Gerador para registrar!</p>
         ) : (
-          history.map((match, idx) => (
+          history.map((match, idx) => {
+            const xp = calculateMatchXP(match.result, match.difficulty || 'Standard');
+            return (
             <div key={idx} className="glass-panel" style={{ padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderLeft: `4px solid ${match.result === 'Vitória' ? 'var(--aspect-protection)' : 'var(--primary-color)'}` }}>
               <div>
-                <h4 style={{ color: match.result === 'Vitória' ? 'var(--aspect-protection)' : 'var(--primary-color)', marginBottom: '4px' }}>{match.result}</h4>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px' }}>
+                  <h4 style={{ color: match.result === 'Vitória' ? 'var(--aspect-protection)' : 'var(--primary-color)', margin: 0 }}>{match.result}</h4>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 'bold', padding: '2px 8px', borderRadius: '12px', background: xp > 0 ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', color: xp > 0 ? '#4ade80' : '#f87171' }}>
+                    {xp > 0 ? '+' : ''}{xp} XP
+                  </span>
+                </div>
                 <p style={{ fontSize: '1.1rem' }}><strong>{match.hero}</strong> <span style={{ color: 'var(--text-secondary)' }}>({match.aspect})</span> vs <strong>{match.villain}</strong></p>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Módulo: {match.modular || 'Nenhum'} | Diff: {match.difficulty || 'Normal'} | {new Date(match.date).toLocaleDateString()}</p>
                 {(match.duration || match.rounds || match.totalDamage) && (
@@ -156,7 +164,8 @@ export default function History() {
                 <Trash2 size={20} />
               </button>
             </div>
-          ))
+            );
+          })
         )}
       </div>
 

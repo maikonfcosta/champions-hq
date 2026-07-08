@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart2, TrendingUp, TrendingDown, Swords, ShieldAlert, Award, Clock, Hash, Zap } from 'lucide-react';
+import { BarChart2, TrendingUp, TrendingDown, Swords, ShieldAlert, Award, Clock, Hash, Zap, Shield, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { calculateMatchXP, getRankInfo } from '../utils/ranking';
 
 export default function Dashboard() {
   const [history, setHistory] = useState([]);
@@ -16,6 +17,8 @@ export default function Dashboard() {
     avgDuration: 0,
     avgRounds: 0,
     avgDamagePerRound: 0,
+    totalXP: 0,
+    rankInfo: null
   });
 
   useEffect(() => {
@@ -52,8 +55,12 @@ export default function Dashboard() {
     let roundsCount = 0;
     let totalDamage = 0;
     let damageRounds = 0;
+    let totalXP = 0;
 
     data.forEach(match => {
+      // XP Calculation
+      totalXP += calculateMatchXP(match.result, match.difficulty || 'Standard');
+
       // Aspect
       if (aspectMap[match.aspect]) {
         aspectMap[match.aspect].plays += 1;
@@ -115,6 +122,8 @@ export default function Dashboard() {
       }
     }
 
+    const rankInfo = getRankInfo(totalXP);
+
     setStats({
       totalGames,
       wins,
@@ -126,7 +135,9 @@ export default function Dashboard() {
       deadliestVillain,
       avgDuration,
       avgRounds,
-      avgDamagePerRound
+      avgDamagePerRound,
+      totalXP,
+      rankInfo
     });
   };
 
@@ -151,6 +162,45 @@ export default function Dashboard() {
           <p className="page-subtitle">Analise seu desempenho e estatísticas gerais de combate.</p>
         </div>
       </div>
+
+      {stats.rankInfo && (
+        <div className="glass-panel" style={{ 
+          marginBottom: '32px', 
+          padding: '32px', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          borderTop: `4px solid ${stats.rankInfo.color}`,
+          background: `radial-gradient(circle at center, ${stats.rankInfo.color}15 0%, transparent 70%)`
+        }}>
+          {stats.rankInfo.icon === 'Shield' && <Shield size={64} color={stats.rankInfo.color} style={{ marginBottom: '16px' }} />}
+          {stats.rankInfo.icon === 'Star' && <Star size={64} color={stats.rankInfo.color} style={{ marginBottom: '16px' }} />}
+          {stats.rankInfo.icon === 'Award' && <Award size={64} color={stats.rankInfo.color} style={{ marginBottom: '16px' }} />}
+          {stats.rankInfo.icon === 'Zap' && <Zap size={64} color={stats.rankInfo.color} style={{ marginBottom: '16px' }} />}
+          
+          <h2 style={{ fontSize: '2.5rem', color: stats.rankInfo.color, marginBottom: '8px', textAlign: 'center', textShadow: `0 0 20px ${stats.rankInfo.color}40` }}>{stats.rankInfo.title}</h2>
+          <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', marginBottom: '24px' }}>{stats.totalXP} Pontos de Prestígio (XP)</p>
+          
+          {stats.rankInfo.nextXP && (
+            <div style={{ width: '100%', maxWidth: '500px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Progresso para o próximo rank</span>
+                <span style={{ fontWeight: 'bold', color: stats.rankInfo.color }}>{stats.totalXP} / {stats.rankInfo.nextXP} XP</span>
+              </div>
+              <div style={{ width: '100%', height: '12px', background: 'rgba(0,0,0,0.5)', borderRadius: '6px', overflow: 'hidden', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)' }}>
+                <div style={{ 
+                  height: '100%', 
+                  background: `linear-gradient(90deg, ${stats.rankInfo.color}80, ${stats.rankInfo.color})`, 
+                  width: `${Math.min(100, Math.max(0, ((stats.totalXP - stats.rankInfo.minXP) / (stats.rankInfo.nextXP - stats.rankInfo.minXP)) * 100))}%`,
+                  transition: 'width 1.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                  boxShadow: `0 0 10px ${stats.rankInfo.color}80`
+                }} />
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', marginBottom: '32px' }}>
         
