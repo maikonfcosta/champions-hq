@@ -1,0 +1,16 @@
+{
+  "nav": {
+    "randomizer": "Gerador",
+    "tracker": "Partida",
+    "history": "Histórico",
+    "dashboard": "Estatísticas",
+    "decks": "Decks",
+    "collection": "Coleção",
+    "campaign": "Campanha"
+  },
+  "app": {
+    "title": "Marvel Champions Helper",
+    "login": "Login via Google",
+    "language": "Idioma"
+  }
+}
