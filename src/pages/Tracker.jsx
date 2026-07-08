@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Shield, ShieldAlert, Skull, Plus, Minus, RotateCcw, FastForward, Clock, Trash2, Users, Wifi, Copy, Check, Camera, X } from 'lucide-react';
+import { Shield, ShieldAlert, Skull, Plus, Minus, RotateCcw, FastForward, Clock, Trash2, Users, Wifi, Copy, Check, Camera, X, BookOpen } from 'lucide-react';
 import Modal from '../components/Modal';
+import TurnAssistant from '../components/TurnAssistant';
 import { useMultiplayer } from '../hooks/useMultiplayer';
 import { QRCodeSVG } from 'qrcode.react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
@@ -22,6 +23,7 @@ export default function Tracker() {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [removeHeroIdx, setRemoveHeroIdx] = useState(null);
   const [promptModal, setPromptModal] = useState({ isOpen: false, type: null, value: '' });
+  const [showAssistant, setShowAssistant] = useState(false);
 
   const getInitialState = () => {
     const saved = localStorage.getItem('mc_tracker_state');
@@ -270,6 +272,10 @@ export default function Tracker() {
         </div>
 
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <button className="btn-secondary" onClick={() => setShowAssistant(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px' }} title="Assistente de Fase do Vilão">
+            <BookOpen size={16} />
+            <span className="desktop-only">Fase do Vilão</span>
+          </button>
           <button onClick={() => setShowMultiplayer(true)} className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '8px', borderColor: isConnected ? '#4ade80' : '' }}>
             {isConnected ? <Wifi size={16} color="#4ade80" /> : <Users size={16} />}
             {isConnected ? 'Conectado' : 'Multiplayer'}
@@ -563,6 +569,8 @@ export default function Tracker() {
           )}
         </div>
       </Modal>
+
+      <TurnAssistant isOpen={showAssistant} onClose={() => setShowAssistant(false)} />
     </div>
   );
 }
