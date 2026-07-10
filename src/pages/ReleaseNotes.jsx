@@ -3,6 +3,26 @@ import { Tag, CheckCircle2, Star, Sparkles, Rocket } from 'lucide-react';
 
 const releases = [
   {
+    version: "1.2.0",
+    date: "10 de Julho de 2026",
+    title: "Nova Sidebar Desktop & Navegação 🖥️",
+    description: "Renovação completa da estrutura de navegação para a versão desktop, otimizando o uso do espaço e melhorando a usabilidade.",
+    highlights: [
+      {
+        icon: <Sparkles size={18} className="text-primary" />,
+        text: "Sidebar Premium: O antigo menu superior no PC foi transformado em uma Sidebar lateral estilo Glassmorphism, mantendo os links sempre acessíveis sem roubar espaço vertical."
+      },
+      {
+        icon: <Tag size={18} className="text-secondary" />,
+        text: "Menu Superior Limpo: Os controles de idioma, temas e acesso à nuvem (Login) foram movidos de forma flutuante para o canto superior direito da tela."
+      }
+    ],
+    features: [
+      "Integração de CSS puro avançado garantindo que a barra mobile e desktop nunca entrem em conflito.",
+      "Melhorias de alinhamento visual e responsividade total."
+    ]
+  },
+  {
     version: "1.1.1",
     date: "10 de Julho de 2026",
     title: "Melhorias de Usabilidade Mobile 📱",

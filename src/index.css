@@ -214,6 +214,97 @@ button {
 }
 
 /* App layout specifically */
+/* Layout Classes (Sidebar Desktop) */
+.layout-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.sidebar {
+  width: 280px;
+  background: rgba(6, 9, 19, 0.98);
+  border-right: 1px solid var(--surface-border);
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 50;
+}
+
+.sidebar-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--surface-border);
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.sidebar-logo .logo-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary-color);
+  box-shadow: 0 0 15px var(--primary-glow);
+}
+
+.sidebar-logo h2 {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.sidebar-nav .nav-link {
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  padding: 1rem 1.2rem;
+  text-align: left;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sidebar-nav .nav-link:hover {
+  background: var(--surface-glass-hover);
+  color: white;
+}
+
+.sidebar-nav .nav-link.active {
+  background: var(--primary-color);
+  color: white;
+  box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+.main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* App layout specifically */
 .app-layout {
   display: flex;
   flex-direction: column;
@@ -252,29 +343,6 @@ button {
 
 .brand-icon {
   color: var(--primary-color);
-}
-
-.nav-links {
-  display: flex;
-  gap: 24px;
-  margin-left: auto;
-}
-
-.nav-link {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--text-secondary);
-  font-weight: 500;
-  font-size: 0.95rem;
-  padding: 8px 12px;
-  border-radius: 6px;
-  transition: all var(--transition-fast);
-}
-
-.nav-link:hover, .nav-link.active {
-  color: var(--text-primary);
-  background: var(--surface-glass);
 }
 
 .main-content {
@@ -522,6 +590,12 @@ button {
 }
 
 @media (max-width: 768px) {
+  .sidebar.desktop-only {
+    display: none !important;
+  }
+  .layout-container {
+    flex-direction: column;
+  }
   .villain-split, .dict-grid {
     grid-template-columns: 1fr;
   }
@@ -579,6 +653,9 @@ button {
   }
 }
 @media (min-width: 769px) {
+  .navbar.mobile-only {
+    display: none !important;
+  }
   .tab-btn span.mobile-text {
     display: none;
   }

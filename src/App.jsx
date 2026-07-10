@@ -221,36 +221,66 @@ function App() {
             <button onClick={handleInstall} style={{ background: 'white', color: '#e62429', padding: '8px 16px', borderRadius: '24px', fontWeight: 'bold', fontSize: '0.85rem', boxShadow: '0 2px 5px rgba(0,0,0,0.2)', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}>Instalar App</button>
           </div>
         )}
-        <nav className="navbar">
-          <div className="nav-content" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 32px', width: '100%', maxWidth: '1920px', margin: '0 auto' }}>
-            
-            {/* Lado Esquerdo - Logo */}
-            <div className="nav-left" style={{ flex: 1, display: 'flex', justifyContent: 'flex-start' }}>
-              <Link to="/" className="brand" onClick={() => setIsMobileMenuOpen(false)}>
-                <img src="/logo.jpg" alt="Logo" style={{ width: '32px', height: '32px', borderRadius: '8px' }} />
-                <span>Champions HQ</span>
-              </Link>
-            </div>
-            
-            {/* Centro - Menu de Navegação */}
-            <div className="nav-center desktop-only" style={{ display: 'flex', justifyContent: 'center' }}>
-              <div className="nav-links" style={{ display: 'flex', gap: '12px', margin: 0 }}>
-                <NavItem to="/collection" icon={Layers}>{t('nav.collection')}</NavItem>
-                <NavItem to="/decks" icon={Zap}>{t('nav.decks')}</NavItem>
-                <NavItem to="/randomizer" icon={Shuffle}>{t('nav.randomizer')}</NavItem>
-                <NavItem to="/tracker" icon={Activity}>{t('nav.tracker')}</NavItem>
-                <NavItem to="/history" icon={Archive}>{t('nav.history')}</NavItem>
-                <NavItem to="/dashboard" icon={BarChart2}>{t('nav.dashboard')}</NavItem>
-                <NavItem to="/builder" icon={Wrench}>Builder</NavItem>
-                <NavItem to="/campaign" icon={Map}>{t('nav.campaign')}</NavItem>
-                <NavItem to="/rules" icon={BookOpen}>Regras</NavItem>
+        <nav className="navbar mobile-only">
+          <div className="nav-content" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', width: '100%' }}>
+            <Link to="/" className="brand" onClick={() => setIsMobileMenuOpen(false)}>
+              <img src="/logo.jpg" alt="Logo" style={{ width: '32px', height: '32px', borderRadius: '8px' }} />
+              <span>Champions HQ</span>
+            </Link>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', color: 'var(--text-secondary)' }}>
+                <Globe size={18} style={{ marginRight: '4px' }} />
+                <select 
+                  value={i18n.language.split('-')[0]} 
+                  onChange={(e) => i18n.changeLanguage(e.target.value)}
+                  style={{ background: 'transparent', color: 'var(--text-secondary)', border: 'none', cursor: 'pointer', outline: 'none', fontSize: '0.85rem', appearance: 'none' }}
+                >
+                  <option value="pt">PT</option>
+                  <option value="en">EN</option>
+                  <option value="es">ES</option>
+                </select>
               </div>
+              <button onClick={() => setShowSettings(true)} style={{ background: 'transparent', color: 'var(--text-secondary)', border: 'none', display: 'flex', padding: 0 }} title="Configurações">
+                <Settings size={22} />
+              </button>
+              {user ? (
+                <img src={user.photoURL} alt="User" onClick={logout} style={{ width: 24, height: 24, borderRadius: '50%', cursor: 'pointer' }} title="Sair" />
+              ) : (
+                <button onClick={loginWithGoogle} className="btn-primary" style={{ padding: '4px 8px', fontSize: '0.75rem' }}>Login</button>
+              )}
+              <button className="mobile-menu-btn-top" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} style={{ background: 'transparent', color: 'white', border: 'none', padding: 0, display: 'flex' }}>
+                {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+              </button>
             </div>
+          </div>
+        </nav>
 
-            {/* Lado Direito - Configurações e Login */}
-            <div className="nav-right" style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '16px' }}>
-              <div className="desktop-only" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                <Globe size={22} style={{ color: 'var(--text-secondary)', marginRight: '8px' }} />
+        <div className="layout-container">
+          <aside className="sidebar desktop-only">
+            <div className="sidebar-logo">
+              <img src="/logo.jpg" alt="Champions HQ Logo" className="logo-img" />
+              <h2>Champions HQ</h2>
+            </div>
+            
+            <nav className="sidebar-nav">
+              <NavItem to="/" icon={HomeIcon}>{t('nav.home', 'Início')}</NavItem>
+              <NavItem to="/collection" icon={Layers}>{t('nav.collection')}</NavItem>
+              <NavItem to="/decks" icon={Zap}>{t('nav.decks')}</NavItem>
+              <NavItem to="/randomizer" icon={Shuffle}>{t('nav.randomizer')}</NavItem>
+              <NavItem to="/tracker" icon={Activity}>{t('nav.tracker')}</NavItem>
+              <NavItem to="/history" icon={Archive}>{t('nav.history')}</NavItem>
+              <NavItem to="/dashboard" icon={BarChart2}>{t('nav.dashboard')}</NavItem>
+              <NavItem to="/builder" icon={Wrench}>Builder</NavItem>
+              <NavItem to="/campaign" icon={Map}>{t('nav.campaign')}</NavItem>
+              <NavItem to="/rules" icon={BookOpen}>Regras</NavItem>
+            </nav>
+
+          </aside>
+
+          <div className="main-wrapper">
+            <header className="topbar desktop-only" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', padding: '24px 32px 0 32px', gap: '24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)' }}>
+                <Globe size={18} />
                 <select 
                   value={i18n.language.split('-')[0]} 
                   onChange={(e) => i18n.changeLanguage(e.target.value)}
@@ -271,70 +301,62 @@ function App() {
               </button>
 
               {user ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span className="desktop-only" style={{ fontSize: '0.8rem', color: '#86efac' }}>{syncStatus === 'syncing' ? 'Salvando...' : 'Nuvem OK'}</span>
-                  <img src={user.photoURL} alt="User" style={{ width: 28, height: 28, borderRadius: '50%' }} title={user.displayName} />
-                  <button onClick={logout} className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.75rem' }}>Sair</button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span style={{ fontSize: '0.8rem', color: '#86efac' }}>{syncStatus === 'syncing' ? '...' : 'OK'}</span>
+                  <img src={user.photoURL} alt="User" style={{ width: 32, height: 32, borderRadius: '50%' }} title={user.displayName} />
+                  <button onClick={logout} className="btn-secondary" style={{ padding: '6px 12px', fontSize: '0.85rem' }}>Sair</button>
                 </div>
               ) : (
-                <button onClick={loginWithGoogle} className="btn-primary" style={{ padding: '4px 8px', fontSize: '0.85rem' }}>
+                <button onClick={loginWithGoogle} className="btn-primary" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>
                   Login
                 </button>
               )}
-            </div>
+            </header>
 
+            <main className="main-content container">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/collection" element={<Collection />} />
+                <Route path="/decks" element={<Decks />} />
+                <Route path="/randomizer" element={<Randomizer />} />
+                <Route path="/tracker" element={<Tracker />} />
+                <Route path="/history" element={<History />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/builder" element={<Builder />} />
+                <Route path="/campaign" element={<Campaign />} />
+                <Route path="/rules" element={<Rules />} />
+                <Route path="/releases" element={<ReleaseNotes />} />
+              </Routes>
+            </main>
+
+            <footer className="app-footer">
+              {isMobileMenuOpen && (
+                <div className="mobile-menu">
+                  <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><HomeIcon size={20} /> {t('nav.home', 'Início')}</Link>
+                  <Link to="/tracker" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Activity size={20} /> {t('nav.tracker')}</Link>
+                  <Link to="/builder" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Wrench size={20} /> Builder</Link>
+                  <Link to="/campaign" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Map size={20} /> {t('nav.campaign')}</Link>
+                  <Link to="/randomizer" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Shuffle size={20} /> {t('nav.randomizer')}</Link>
+                  <Link to="/history" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Archive size={20} /> {t('nav.history')}</Link>
+                  <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><BarChart2 size={20} /> {t('nav.dashboard')}</Link>
+                  <Link to="/decks" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Zap size={20} /> {t('nav.decks')}</Link>
+                  <Link to="/collection" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Layers size={20} /> {t('nav.collection')}</Link>
+                  <Link to="/rules" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><BookOpen size={20} /> Regras</Link>
+                </div>
+              )}
+              <div className="container" style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem', padding: '32px 24px', borderTop: '1px solid var(--surface-border)', marginTop: 'auto' }}>
+                <p>
+                  <strong>Champions HQ</strong> &copy; {new Date().getFullYear()}. Desenvolvido por Fãs, para Fãs.
+                  <Link to="/releases" style={{ color: 'var(--primary-color)', textDecoration: 'none', marginLeft: '12px', fontWeight: 'bold' }} title="Ver Histórico de Versões">v{packageJson.version}</Link>
+                </p>
+                <p style={{ fontSize: '0.75rem', marginTop: '12px', opacity: 0.6, maxWidth: '600px', margin: '12px auto 0' }}>
+                  Marvel Champions e todos os personagens, textos de cartas e imagens são de propriedade intelectual da Marvel e Fantasy Flight Games.<br/>
+                  Este aplicativo não possui fins lucrativos e não é afiliado de forma alguma à Marvel ou FFG.
+                </p>
+              </div>
+            </footer>
           </div>
-        </nav>
-
-        <main className="main-content container">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/collection" element={<Collection />} />
-            <Route path="/decks" element={<Decks />} />
-            <Route path="/randomizer" element={<Randomizer />} />
-            <Route path="/tracker" element={<Tracker />} />
-            <Route path="/history" element={<History />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/builder" element={<Builder />} />
-            <Route path="/campaign" element={<Campaign />} />
-            <Route path="/rules" element={<Rules />} />
-            <Route path="/releases" element={<ReleaseNotes />} />
-          </Routes>
-        </main>
-
-        <footer className="app-footer">
-          <button 
-            className="mobile-menu-btn"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
-          </button>
-
-          {isMobileMenuOpen && (
-            <div className="mobile-menu">
-              <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><HomeIcon size={20} /> {t('nav.home', 'Início')}</Link>
-              <Link to="/tracker" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Activity size={20} /> {t('nav.tracker')}</Link>
-              <Link to="/builder" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Wrench size={20} /> Builder</Link>
-              <Link to="/campaign" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Map size={20} /> {t('nav.campaign')}</Link>
-              <Link to="/randomizer" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Shuffle size={20} /> {t('nav.randomizer')}</Link>
-              <Link to="/history" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Archive size={20} /> {t('nav.history')}</Link>
-              <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><BarChart2 size={20} /> {t('nav.dashboard')}</Link>
-              <Link to="/decks" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Zap size={20} /> {t('nav.decks')}</Link>
-              <Link to="/collection" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Layers size={20} /> {t('nav.collection')}</Link>
-              <Link to="/rules" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><BookOpen size={20} /> Regras</Link>
-            </div>
-          )}
-          <div className="container" style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem', padding: '32px 24px', borderTop: '1px solid var(--surface-border)', marginTop: 'auto' }}>
-            <p>
-              <strong>Champions HQ</strong> &copy; {new Date().getFullYear()}. Desenvolvido por Fãs, para Fãs.
-              <Link to="/releases" style={{ color: 'var(--primary-color)', textDecoration: 'none', marginLeft: '12px', fontWeight: 'bold' }} title="Ver Histórico de Versões">v{packageJson.version}</Link>
-            </p>
-            <p style={{ fontSize: '0.75rem', marginTop: '12px', opacity: 0.6, maxWidth: '600px', margin: '12px auto 0' }}>
-              Marvel Champions e todos os personagens, textos de cartas e imagens são de propriedade intelectual da Marvel e Fantasy Flight Games.<br/>
-              Este aplicativo não possui fins lucrativos e não é afiliado de forma alguma à Marvel ou FFG.
-            </p>
-          </div>
-        </footer>
+        </div>
 
         {/* SETTINGS MODAL */}
         <Modal isOpen={showSettings} onClose={() => setShowSettings(false)} title="Personalização" maxWidth="450px">
