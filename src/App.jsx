@@ -248,9 +248,6 @@ function App() {
               ) : (
                 <button onClick={loginWithGoogle} className="btn-primary" style={{ padding: '4px 8px', fontSize: '0.75rem' }}>Login</button>
               )}
-              <button className="mobile-menu-btn-top" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} style={{ background: 'transparent', color: 'white', border: 'none', padding: 0, display: 'flex' }}>
-                {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
-              </button>
             </div>
           </div>
         </nav>
@@ -357,6 +354,11 @@ function App() {
             </footer>
           </div>
         </div>
+
+        {/* BOTAO FLUTUANTE MOBILE */}
+        <button className="mobile-menu-btn mobile-only" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+          {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+        </button>
 
         {/* SETTINGS MODAL */}
         <Modal isOpen={showSettings} onClose={() => setShowSettings(false)} title="Personalização" maxWidth="450px">

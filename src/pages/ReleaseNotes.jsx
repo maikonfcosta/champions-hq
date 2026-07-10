@@ -3,6 +3,16 @@ import { Tag, CheckCircle2, Star, Sparkles, Rocket } from 'lucide-react';
 
 const releases = [
   {
+    version: "1.2.1",
+    date: "10 de Julho de 2026",
+    title: "Hotfix: Menu Mobile Flutuante 🩹",
+    description: "Correção rápida para restaurar o botão flutuante de navegação no celular.",
+    highlights: [],
+    features: [
+      "Restauração do botão flutuante no canto inferior esquerdo para abrir o menu no celular, que havia sido ocultado na alteração de layout."
+    ]
+  },
+  {
     version: "1.2.0",
     date: "10 de Julho de 2026",
     title: "Nova Sidebar Desktop & Navegação 🖥️",
