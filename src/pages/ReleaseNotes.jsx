@@ -18,7 +18,9 @@ const releases = [
       }
     ],
     features: [
-      "Ajuste pixel-perfect (alinhamento Flexbox) no botão de configurações do cabeçalho."
+      "Ajuste pixel-perfect (alinhamento Flexbox) no botão de configurações do cabeçalho.",
+      "Correção de Login no PC: Adicionado fallback automático via redirecionamento caso o navegador bloqueie o popup do Google.",
+      "Ajuste visual (Respiro): Restaurado o espaçamento lateral no conteúdo principal e no rodapé em telas de celular."
     ]
   },
   {
