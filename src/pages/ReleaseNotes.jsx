@@ -3,6 +3,25 @@ import { Tag, CheckCircle2, Star, Sparkles, Rocket } from 'lucide-react';
 
 const releases = [
   {
+    version: "1.1.1",
+    date: "10 de Julho de 2026",
+    title: "Melhorias de Usabilidade Mobile 📱",
+    description: "Foco no refinamento de UI e UX para telas menores, aprimorando a navegação e a exibição do Tracker.",
+    highlights: [
+      {
+        icon: <Sparkles size={18} className="text-primary" />,
+        text: "Menu Mobile Flutuante: O menu no celular agora funciona através de um belo botão flutuante no canto esquerdo da tela, economizando espaço no cabeçalho e facilitando o acesso com apenas uma mão."
+      },
+      {
+        icon: <CheckCircle2 size={18} className="text-protection" />,
+        text: "Tracker Adaptativo: Resolvido o problema de quebra de layout e invasão de blocos no card de Heróis do Tracker no celular. No desktop o input agora tem tamanho máximo para não ficar colado nas bordas."
+      }
+    ],
+    features: [
+      "Ajuste pixel-perfect (alinhamento Flexbox) no botão de configurações do cabeçalho."
+    ]
+  },
+  {
     version: "1.1.0",
     date: "08 de Julho de 2026",
     title: "A Grande Atualização Global & Competitiva 🏆",

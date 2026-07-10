@@ -317,16 +317,28 @@ export default function Tracker() {
           </div>
           
           <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', marginBottom: '24px' }}>
-              <Shield size={32} color="#2b82d9" />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', width: '100%', marginBottom: '24px' }}>
+              <Shield size={32} color="#2b82d9" style={{ flexShrink: 0 }} />
               <input 
                 type="text" 
                 value={activeHero.name}
                 onChange={e => renameHero(e.target.value)}
-                style={{ flex: 1, background: 'transparent', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.2)', color: 'white', fontSize: '1.25rem', fontWeight: 'bold', outline: 'none' }}
+                style={{ 
+                  flex: 1, 
+                  maxWidth: '200px',
+                  minWidth: 0,
+                  background: 'transparent', 
+                  border: 'none', 
+                  borderBottom: '1px solid rgba(255,255,255,0.2)', 
+                  color: 'white', 
+                  fontSize: '1.25rem', 
+                  fontWeight: 'bold', 
+                  outline: 'none',
+                  textAlign: 'center'
+                }}
               />
               {gameState.heroes.length > 1 && (
-                <button onClick={() => removeHero(activeHeroIdx)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}><Trash2 size={20}/></button>
+                <button onClick={() => removeHero(activeHeroIdx)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', flexShrink: 0 }}><Trash2 size={20}/></button>
               )}
             </div>
             
