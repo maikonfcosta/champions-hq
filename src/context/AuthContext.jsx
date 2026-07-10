@@ -35,8 +35,11 @@ export function AuthProvider({ children }) {
       } else if (error.code === 'auth/unauthorized-domain') {
         alert("Este domínio não está autorizado no Firebase Console. Adicione-o na lista de domínios permitidos.");
       } else {
+        alert("Erro de autenticação: " + error.message + " (Código: " + error.code + ")");
         console.log("Tentando login via redirecionamento devido a erro no popup...");
-        signInWithRedirect(auth, googleProvider);
+        signInWithRedirect(auth, googleProvider).catch(err => {
+          alert("Erro crítico no Firebase (Verifique as variáveis de ambiente): " + err.message);
+        });
       }
     }
   };
