@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getCards } from '../services/api';
 import { Shuffle, Loader2, Save, Copy, QrCode, Check } from 'lucide-react';
 import { villains, modularSets } from '../data/villains';
@@ -7,6 +8,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { storage } from '../services/storage';
 
 export default function Randomizer() {
+  const { t } = useTranslation();
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   
@@ -26,10 +28,10 @@ export default function Randomizer() {
   const [shareUrl, setShareUrl] = useState('');
 
   const aspects = [
-    { code: 'aggression', name: 'Agressividade', color: 'var(--aspect-aggression)' },
-    { code: 'justice', name: 'Justiça', color: 'var(--aspect-justice)' },
-    { code: 'leadership', name: 'Liderança', color: 'var(--aspect-leadership)' },
-    { code: 'protection', name: 'Proteção', color: 'var(--aspect-protection)' },
+    { code: 'aggression', name: t('history.aspect_aggression', 'Agressividade'), color: 'var(--aspect-aggression)' },
+    { code: 'justice', name: t('history.aspect_justice', 'Justiça'), color: 'var(--aspect-justice)' },
+    { code: 'leadership', name: t('history.aspect_leadership', 'Liderança'), color: 'var(--aspect-leadership)' },
+    { code: 'protection', name: t('history.aspect_protection', 'Proteção'), color: 'var(--aspect-protection)' },
   ];
 
   useEffect(() => {
@@ -175,8 +177,8 @@ export default function Randomizer() {
     <div className="animate-fade-in container">
       <div className="page-header" style={{ alignItems: 'center', textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
         <div>
-          <h2 className="page-title">Gerador de Partida</h2>
-          <p className="page-subtitle">Gere um encontro e um deck aleatório baseado na sua coleção.</p>
+          <h2 className="page-title">{t("randomizer.title")}</h2>
+          <p className="page-subtitle">{t("randomizer.subtitle")}</p>
         </div>
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
           <select 
@@ -200,7 +202,7 @@ export default function Randomizer() {
           <div className="generator-results">
             {/* HERO SECTION */}
             <div className="result-section">
-              <h3 className="result-header text-primary">Seu Herói & Deck</h3>
+              <h3 className="result-header text-primary">{t("randomizer.your_hero")}</h3>
               {randomHero ? (
                 <div className="glass-panel result-card">
                   <div className="result-image-wrapper">
@@ -220,7 +222,7 @@ export default function Randomizer() {
                     )}
                     
                     <div style={{ marginTop: '24px' }}>
-                      <p style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--text-secondary)', marginBottom: '12px', textTransform: 'uppercase' }}>Deck Sugerido (40 Cartas)</p>
+                      <p style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--text-secondary)', marginBottom: '12px', textTransform: 'uppercase' }}>{t("randomizer.suggested_deck")}</p>
                       
                       {/* Visual grid of cards */}
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: '12px', maxHeight: '400px', overflowY: 'auto', padding: '10px 4px' }} className="hide-scrollbar">
@@ -269,12 +271,12 @@ export default function Randomizer() {
                     </div>
                   </div>
                 </div>
-              ) : <p>Nenhum herói encontrado na sua coleção.</p>}
+              ) : <p>{t("randomizer.no_hero")}</p>}
             </div>
 
             {/* VILLAIN SECTION */}
             <div className="result-section">
-              <h3 className="result-header text-secondary">O Vilão</h3>
+              <h3 className="result-header text-secondary">{t("randomizer.the_villain")}</h3>
               {randomVillain ? (
                 <div className="glass-panel result-card">
                   <div className="result-image-wrapper">
@@ -298,7 +300,7 @@ export default function Randomizer() {
                     <p className="result-detail" style={{ marginBottom: '16px' }}>{randomVillain.traits}</p>
                     
                     <div>
-                      <p style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--text-secondary)', marginBottom: '8px', textTransform: 'uppercase' }}>Conjuntos Modulares</p>
+                      <p style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--text-secondary)', marginBottom: '8px', textTransform: 'uppercase' }}>{t("randomizer.modular_sets")}</p>
                       {randomModulars.length > 0 ? (
                         <div className="modular-list" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                           {randomModulars.map((mod, i) => (
@@ -317,7 +319,7 @@ export default function Randomizer() {
                             </div>
                           ))}
                         </div>
-                      ) : <p>Nenhum conjunto modular encontrado.</p>}
+                      ) : <p>{t("randomizer.no_modulars")}</p>}
                     </div>
                     
                     <button 
@@ -329,7 +331,7 @@ export default function Randomizer() {
                     </button>
                   </div>
                 </div>
-              ) : <p>Nenhum vilão encontrado na sua coleção.</p>}
+              ) : <p>{t("randomizer.no_villain")}</p>}
             </div>
 
           </div>
@@ -361,16 +363,16 @@ export default function Randomizer() {
       <Modal
         isOpen={showLogModal}
         onClose={() => setShowLogModal(false)}
-        title="Resultado da Partida"
+        title={t("randomizer.result_title")}
         maxWidth="400px"
       >
         <div style={{ textAlign: 'center' }}>
-          <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Como foi o confronto contra <strong style={{ color: 'white' }}>{randomVillain?.name}</strong>?</p>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>{t("randomizer.result_desc_start")} <strong style={{ color: 'white' }}>{randomVillain?.name}</strong>?</p>
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
-            <button onClick={() => handleSaveLog('Vitória')} className="btn-primary" style={{ background: 'var(--aspect-protection)', padding: '12px 24px', flex: 1 }}>Vitória</button>
-            <button onClick={() => handleSaveLog('Derrota')} className="btn-primary" style={{ padding: '12px 24px', flex: 1 }}>Derrota</button>
+            <button onClick={() => handleSaveLog('Vitória')} className="btn-primary" style={{ background: 'var(--aspect-protection)', padding: '12px 24px', flex: 1 }}>{t("randomizer.victory")}</button>
+            <button onClick={() => handleSaveLog('Derrota')} className="btn-primary" style={{ padding: '12px 24px', flex: 1 }}>{t("randomizer.defeat")}</button>
           </div>
-          <button onClick={() => setShowLogModal(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', marginTop: '24px', textDecoration: 'underline' }}>Cancelar</button>
+          <button onClick={() => setShowLogModal(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', marginTop: '24px', textDecoration: 'underline' }}>{t("randomizer.cancel")}</button>
         </div>
       </Modal>
 
@@ -379,7 +381,7 @@ export default function Randomizer() {
           <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(67, 160, 71, 0.2)', color: 'var(--aspect-protection)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid var(--aspect-protection)', boxShadow: '0 0 15px rgba(67, 160, 71, 0.4)' }}>
             <Save size={28} />
           </div>
-          <h4 style={{ margin: 0, fontSize: '1.2rem', color: 'white' }}>Salvo no Histórico!</h4>
+          <h4 style={{ margin: 0, fontSize: '1.2rem', color: 'white' }}>{t("randomizer.saved_title")}</h4>
         </div>
       </Modal>
 
@@ -388,12 +390,12 @@ export default function Randomizer() {
           <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(67, 160, 71, 0.2)', color: 'var(--aspect-protection)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid var(--aspect-protection)', boxShadow: '0 0 15px rgba(67, 160, 71, 0.4)' }}>
             <Check size={28} />
           </div>
-          <h4 style={{ margin: 0, fontSize: '1.2rem', color: 'white' }}>Copiado!</h4>
+          <h4 style={{ margin: 0, fontSize: '1.2rem', color: 'white' }}>{t("randomizer.copied_title")}</h4>
         </div>
       </Modal>
 
       {/* Share Modal */}
-      <Modal isOpen={showShareModal} onClose={() => setShowShareModal(false)} title="Compartilhar Deck Gerado" maxWidth="400px">
+      <Modal isOpen={showShareModal} onClose={() => setShowShareModal(false)} title={t("randomizer.share_title")} maxWidth="400px">
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}>
           <p style={{ color: 'var(--text-secondary)', textAlign: 'center', fontSize: '0.9rem' }}>
             Escaneie este QR Code ou copie o link direto para carregar esse deck aleatório no Deck Builder e editá-lo!

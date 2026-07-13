@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { BarChart2, TrendingUp, TrendingDown, Swords, ShieldAlert, Award, Clock, Hash, Zap, Shield, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { calculateMatchXP, getRankInfo } from '../utils/ranking';
 import { useCloudSync } from '../hooks/useCloudSync';
 
 export default function Dashboard() {
+  const { t } = useTranslation();
   const [history, setHistory] = useState([]);
   const [stats, setStats] = useState({
     totalGames: 0,
@@ -150,11 +152,11 @@ export default function Dashboard() {
     return (
       <div className="animate-fade-in container" style={{ textAlign: 'center', marginTop: '60px' }}>
         <BarChart2 size={64} style={{ color: 'var(--text-muted)', marginBottom: '24px' }} />
-        <h2 className="page-title">Sem Estatísticas Ainda</h2>
+        <h2 className="page-title">{t("dashboard.empty_title")}</h2>
         <p className="page-subtitle" style={{ maxWidth: '600px', margin: '0 auto 32px' }}>
           Jogue algumas partidas e registre-as no histórico ou no Randomizer para ver seu desempenho aqui!
         </p>
-        <Link to="/randomizer" className="btn-primary" style={{ display: 'inline-block' }}>Gerar Primeira Partida</Link>
+        <Link to="/randomizer" className="btn-primary" style={{ display: 'inline-block' }}>{t("dashboard.generate_first")}</Link>
       </div>
     );
   }
@@ -163,8 +165,8 @@ export default function Dashboard() {
     <div className="animate-fade-in container">
       <div className="page-header" style={{ marginBottom: '32px' }}>
         <div>
-          <h2 className="page-title">Dashboard</h2>
-          <p className="page-subtitle">Analise seu desempenho e estatísticas gerais de combate.</p>
+          <h2 className="page-title">{t("dashboard.title")}</h2>
+          <p className="page-subtitle">{t("dashboard.subtitle")}</p>
         </div>
       </div>
 
@@ -185,12 +187,12 @@ export default function Dashboard() {
           {stats.rankInfo.icon === 'Zap' && <Zap size={64} color={stats.rankInfo.color} style={{ marginBottom: '16px' }} />}
           
           <h2 style={{ fontSize: '2.5rem', color: stats.rankInfo.color, marginBottom: '8px', textAlign: 'center', textShadow: `0 0 20px ${stats.rankInfo.color}40` }}>{stats.rankInfo.title}</h2>
-          <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', marginBottom: '24px' }}>{stats.totalXP} Pontos de Prestígio (XP)</p>
+          <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', marginBottom: '24px' }}>{stats.totalXP} {t("dashboard.prestige_points")}</p>
           
           {stats.rankInfo.nextXP && (
             <div style={{ width: '100%', maxWidth: '500px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Progresso para o próximo rank</span>
+                <span style={{ color: 'var(--text-muted)' }}>{t("dashboard.progress_next")}</span>
                 <span style={{ fontWeight: 'bold', color: stats.rankInfo.color }}>{stats.totalXP} / {stats.rankInfo.nextXP} XP</span>
               </div>
               <div style={{ width: '100%', height: '12px', background: 'rgba(0,0,0,0.5)', borderRadius: '6px', overflow: 'hidden', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)' }}>
@@ -211,25 +213,25 @@ export default function Dashboard() {
         
         <div className="glass-panel" style={{ padding: '24px', textAlign: 'center', borderTop: '4px solid #2b82d9' }}>
           <Swords size={32} color="#2b82d9" style={{ margin: '0 auto 12px' }} />
-          <p style={{ color: 'var(--text-secondary)', textTransform: 'uppercase', fontSize: '0.85rem', fontWeight: 'bold' }}>Partidas Jogadas</p>
+          <p style={{ color: 'var(--text-secondary)', textTransform: 'uppercase', fontSize: '0.85rem', fontWeight: 'bold' }}>{t("dashboard.games_played")}</p>
           <h3 style={{ fontSize: '2.5rem', margin: '8px 0 0' }}>{stats.totalGames}</h3>
         </div>
         
         <div className="glass-panel" style={{ padding: '24px', textAlign: 'center', borderTop: '4px solid var(--aspect-protection)' }}>
           <TrendingUp size={32} color="var(--aspect-protection)" style={{ margin: '0 auto 12px' }} />
-          <p style={{ color: 'var(--text-secondary)', textTransform: 'uppercase', fontSize: '0.85rem', fontWeight: 'bold' }}>Vitórias</p>
+          <p style={{ color: 'var(--text-secondary)', textTransform: 'uppercase', fontSize: '0.85rem', fontWeight: 'bold' }}>{t("dashboard.wins")}</p>
           <h3 style={{ fontSize: '2.5rem', margin: '8px 0 0', color: 'var(--aspect-protection)' }}>{stats.wins}</h3>
         </div>
 
         <div className="glass-panel" style={{ padding: '24px', textAlign: 'center', borderTop: '4px solid #ef4444' }}>
           <TrendingDown size={32} color="#ef4444" style={{ margin: '0 auto 12px' }} />
-          <p style={{ color: 'var(--text-secondary)', textTransform: 'uppercase', fontSize: '0.85rem', fontWeight: 'bold' }}>Derrotas</p>
+          <p style={{ color: 'var(--text-secondary)', textTransform: 'uppercase', fontSize: '0.85rem', fontWeight: 'bold' }}>{t("dashboard.losses")}</p>
           <h3 style={{ fontSize: '2.5rem', margin: '8px 0 0', color: '#ef4444' }}>{stats.losses}</h3>
         </div>
 
         <div className="glass-panel" style={{ padding: '24px', textAlign: 'center', borderTop: '4px solid var(--primary-color)' }}>
           <Award size={32} color="var(--primary-color)" style={{ margin: '0 auto 12px' }} />
-          <p style={{ color: 'var(--text-secondary)', textTransform: 'uppercase', fontSize: '0.85rem', fontWeight: 'bold' }}>Win Rate</p>
+          <p style={{ color: 'var(--text-secondary)', textTransform: 'uppercase', fontSize: '0.85rem', fontWeight: 'bold' }}>{t("dashboard.win_rate")}</p>
           <h3 style={{ fontSize: '2.5rem', margin: '8px 0 0' }}>{stats.winRate}%</h3>
         </div>
       </div>
@@ -238,19 +240,19 @@ export default function Dashboard() {
         
         <div className="glass-panel" style={{ padding: '24px', textAlign: 'center', borderTop: '4px solid #a855f7' }}>
           <Clock size={32} color="#a855f7" style={{ margin: '0 auto 12px' }} />
-          <p style={{ color: 'var(--text-secondary)', textTransform: 'uppercase', fontSize: '0.85rem', fontWeight: 'bold' }}>Tempo Médio</p>
+          <p style={{ color: 'var(--text-secondary)', textTransform: 'uppercase', fontSize: '0.85rem', fontWeight: 'bold' }}>{t("dashboard.avg_time")}</p>
           <h3 style={{ fontSize: '2.5rem', margin: '8px 0 0' }}>{stats.avgDuration > 0 ? `${stats.avgDuration}m` : '-'}</h3>
         </div>
         
         <div className="glass-panel" style={{ padding: '24px', textAlign: 'center', borderTop: '4px solid #f97316' }}>
           <Hash size={32} color="#f97316" style={{ margin: '0 auto 12px' }} />
-          <p style={{ color: 'var(--text-secondary)', textTransform: 'uppercase', fontSize: '0.85rem', fontWeight: 'bold' }}>Rodadas Médias</p>
+          <p style={{ color: 'var(--text-secondary)', textTransform: 'uppercase', fontSize: '0.85rem', fontWeight: 'bold' }}>{t("dashboard.avg_rounds")}</p>
           <h3 style={{ fontSize: '2.5rem', margin: '8px 0 0' }}>{stats.avgRounds > 0 ? stats.avgRounds : '-'}</h3>
         </div>
 
         <div className="glass-panel" style={{ padding: '24px', textAlign: 'center', borderTop: '4px solid #eab308' }}>
           <Zap size={32} color="#eab308" style={{ margin: '0 auto 12px' }} />
-          <p style={{ color: 'var(--text-secondary)', textTransform: 'uppercase', fontSize: '0.85rem', fontWeight: 'bold' }}>Dano / Rodada</p>
+          <p style={{ color: 'var(--text-secondary)', textTransform: 'uppercase', fontSize: '0.85rem', fontWeight: 'bold' }}>{t("dashboard.damage_per_round")}</p>
           <h3 style={{ fontSize: '2.5rem', margin: '8px 0 0' }}>{stats.avgDamagePerRound > 0 ? stats.avgDamagePerRound : '-'}</h3>
         </div>
       </div>
@@ -286,7 +288,7 @@ export default function Dashboard() {
           
           {stats.topHeroes && stats.topHeroes.length > 0 && (
             <div style={{ background: 'rgba(255,255,255,0.05)', padding: '16px', borderRadius: '12px', borderLeft: '4px solid #2b82d9' }}>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', marginBottom: '12px' }}>Heróis Mais Jogados (Top 3)</p>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', marginBottom: '12px' }}>{t("dashboard.top_heroes")}</p>
               {stats.topHeroes.map((hero, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: i < stats.topHeroes.length - 1 ? '12px' : 0 }}>
                   <span>{i+1}. <strong>{hero.name}</strong></span>
@@ -298,7 +300,7 @@ export default function Dashboard() {
 
           {stats.topVillains && stats.topVillains.length > 0 && (
             <div style={{ background: 'rgba(255,255,255,0.05)', padding: '16px', borderRadius: '12px', borderLeft: '4px solid #ef4444' }}>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', marginBottom: '12px' }}>Vilões Mais Enfrentados (Top 3)</p>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', marginBottom: '12px' }}>{t("dashboard.top_villains")}</p>
               {stats.topVillains.map((villain, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: i < stats.topVillains.length - 1 ? '12px' : 0 }}>
                   <span>{i+1}. <strong>{villain.name}</strong></span>
@@ -310,9 +312,9 @@ export default function Dashboard() {
 
           {stats.deadliestVillain && stats.deadliestVillain.losses > 0 && (
             <div style={{ background: 'rgba(255,255,255,0.05)', padding: '16px', borderRadius: '12px', borderLeft: '4px solid #c084fc' }}>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', marginBottom: '4px' }}>Nêmesis (Vilão Mais Letal)</p>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', marginBottom: '4px' }}>{t("dashboard.nemesis")}</p>
               <h4 style={{ fontSize: '1.2rem', margin: '0 0 8px 0' }}>{stats.deadliestVillain.name}</h4>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Causou {stats.deadliestVillain.losses} derrotas pra você.</p>
+              <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>{t("dashboard.caused_losses", { count: stats.deadliestVillain.losses })}</p>
             </div>
           )}
         </div>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getCards } from '../services/api';
 import { Loader2, List, Copy, QrCode, Check } from 'lucide-react';
 import Modal from '../components/Modal';
@@ -6,6 +7,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { storage } from '../services/storage';
 
 export default function Decks() {
+  const { t } = useTranslation();
   const [decks, setDecks] = useState([]);
   const [cardsInfo, setCardsInfo] = useState({});
   const [loading, setLoading] = useState(true);
@@ -145,7 +147,7 @@ export default function Decks() {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '300px', gap: '16px' }}>
         <Loader2 className="text-primary" size={48} style={{ animation: 'spin 1s linear infinite' }} />
-        <p style={{ color: 'var(--text-secondary)' }}>Carregando banco de decks offline...</p>
+        <p style={{ color: 'var(--text-secondary)' }}>{t("decks.loading")}</p>
       </div>
     );
   }
@@ -158,15 +160,15 @@ export default function Decks() {
     <div className="animate-fade-in container">
       <div className="page-header" style={{ marginBottom: '16px' }}>
         <div>
-          <h2 className="page-title">Banco de Decks</h2>
-          <p className="page-subtitle">Descubra os milhares de decks criados pela comunidade.</p>
+          <h2 className="page-title">{t("decks.title")}</h2>
+          <p className="page-subtitle">{t("decks.subtitle")}</p>
         </div>
       </div>
 
       <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '32px', background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
         <input 
           type="text" 
-          placeholder="Buscar herói, nome ou autor..." 
+          placeholder={t("decks.search")} 
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
           style={{ flex: 1, minWidth: '200px', background: 'rgba(0,0,0,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '10px 16px', borderRadius: '8px', outline: 'none' }}
@@ -177,12 +179,12 @@ export default function Decks() {
           onChange={e => setFilterAspect(e.target.value)}
           style={{ minWidth: '160px', background: 'rgba(0,0,0,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '10px 16px', borderRadius: '8px', outline: 'none' }}
         >
-          <option value="">Todos Aspectos</option>
-          <option value="aggression">Agressividade</option>
-          <option value="justice">Justiça</option>
-          <option value="leadership">Liderança</option>
-          <option value="protection">Proteção</option>
-          <option value="pool">Pool</option>
+          <option value="">{t("decks.all_aspects")}</option>
+          <option value="aggression">{t("history.aspect_aggression")}</option>
+          <option value="justice">{t("history.aspect_justice")}</option>
+          <option value="leadership">{t("history.aspect_leadership")}</option>
+          <option value="protection">{t("history.aspect_protection")}</option>
+          <option value="pool">{t("history.aspect_pool")}</option>
         </select>
 
         <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', background: 'rgba(0,0,0,0.4)', padding: '10px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
@@ -192,12 +194,12 @@ export default function Decks() {
             onChange={(e) => setFilterOwned(e.target.checked)} 
             style={{ accentColor: 'var(--primary-color)', width: '16px', height: '16px' }}
           />
-          <span style={{ fontSize: '0.9rem', fontWeight: 'bold' }}>Apenas minha coleção</span>
+          <span style={{ fontSize: '0.9rem', fontWeight: 'bold' }}>{t("decks.only_owned")}</span>
         </label>
       </div>
 
       {filteredDecks.length === 0 ? (
-        <p style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '40px' }}>Nenhum deck encontrado com as cartas da sua coleção.</p>
+        <p style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '40px' }}>{t("decks.no_decks")}</p>
       ) : (
         <div className="decks-grid">
           {paginatedDecks.map((deck, idx) => {
@@ -226,7 +228,7 @@ export default function Decks() {
                   </button>
                   
                   <p className="deck-hero">
-                    <strong>{list.hero_name || 'Herói'}</strong> — {list.username || 'Autor'}
+                    <strong>{list.hero_name || 'Herói'}</strong> — {list.username || t("decks.author")}
                   </p>
                   
                   <span className={`deck-aspect ${aspectClass}`}>
@@ -260,7 +262,7 @@ export default function Decks() {
             Anterior
           </button>
           <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-            Página {currentPage} de {totalPages}
+            {t("decks.page", { current: currentPage, total: totalPages })}
           </span>
           <button 
             className="btn-primary" 
@@ -332,7 +334,7 @@ export default function Decks() {
                           onMouseLeave={(e) => { e.currentTarget.style.background = isMissing ? 'rgba(239, 68, 68, 0.1)' : 'rgba(255,255,255,0.02)'; e.currentTarget.style.transform = 'none'; }}
                         >
                           <span style={{ color: isMissing ? '#fca5a5' : 'inherit' }}>
-                            {c.card.name} {isMissing && <span style={{ fontSize: '0.75rem', opacity: 0.8 }}>(Falta expansão)</span>}
+                            {c.card.name} {isMissing && <span style={{ fontSize: '0.75rem', opacity: 0.8 }}>{t("decks.missing_pack")}</span>}
                           </span>
                           <span style={{ color: isMissing ? '#fca5a5' : 'var(--secondary-color)', fontWeight: 'bold' }}>{c.qty}x</span>
                         </div>
@@ -384,12 +386,12 @@ export default function Decks() {
           <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(67, 160, 71, 0.2)', color: 'var(--aspect-protection)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid var(--aspect-protection)', boxShadow: '0 0 15px rgba(67, 160, 71, 0.4)' }}>
             <Check size={28} />
           </div>
-          <h4 style={{ margin: 0, fontSize: '1.2rem', color: 'white' }}>Copiado!</h4>
+          <h4 style={{ margin: 0, fontSize: '1.2rem', color: 'white' }}>{t("decks.copied")}</h4>
         </div>
       </Modal>
 
       {/* Share Modal */}
-      <Modal isOpen={showShareModal} onClose={() => setShowShareModal(false)} title="Compartilhar Deck" maxWidth="400px">
+      <Modal isOpen={showShareModal} onClose={() => setShowShareModal(false)} title={t("decks.share_title")} maxWidth="400px">
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}>
           <p style={{ color: 'var(--text-secondary)', textAlign: 'center', fontSize: '0.9rem' }}>
             Peça para um amigo escanear este QR Code com a câmera do celular ou copie o link direto para carregar essa lista na hora!

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getPacks, getCards } from '../services/api';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCloudSync } from '../hooks/useCloudSync';
 
 export default function Collection() {
+  const { t } = useTranslation();
   const [packs, setPacks] = useState([]);
   const [cards, setCards] = useState([]);
   const [ownedPacks, setOwnedPacks] = useState({});
@@ -147,12 +149,12 @@ export default function Collection() {
     <div className="animate-fade-in container">
       <div className="page-header">
         <div>
-          <h2 className="page-title">Minha Coleção</h2>
-          <p className="page-subtitle">Selecione as expansões e packs que você possui.</p>
+          <h2 className="page-title">{t("collection.title")}</h2>
+          <p className="page-subtitle">{t("collection.subtitle")}</p>
         </div>
         <div className="action-buttons">
-          <button onClick={selectAll} className="btn-secondary" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>Selecionar Tudo</button>
-          <button onClick={deselectAll} className="btn-secondary" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>Limpar</button>
+          <button onClick={selectAll} className="btn-secondary" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>{t("collection.select_all")}</button>
+          <button onClick={deselectAll} className="btn-secondary" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>{t("collection.clear")}</button>
         </div>
       </div>
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Shield, ShieldAlert, Skull, Plus, Minus, RotateCcw, FastForward, Clock, Trash2, Users, Wifi, Copy, Check, Camera, X, BookOpen, Ghost } from 'lucide-react';
 import Modal from '../components/Modal';
 import TurnAssistant from '../components/TurnAssistant';
@@ -9,7 +10,7 @@ import { storage } from '../services/storage';
 
 const defaultState = {
   heroes: [
-    { id: 1, name: 'Herói 1', hp: 10, status: { stunned: false, confused: false, tough: false } }
+    { id: 1, name: t('tracker.hero') + ' 1', hp: 10, status: { stunned: false, confused: false, tough: false } }
   ],
   villainHp: 15,
   villainStage: 1,
@@ -22,6 +23,8 @@ const defaultState = {
 };
 
 export default function Tracker() {
+  const { t } = useTranslation();
+
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [removeHeroIdx, setRemoveHeroIdx] = useState(null);
   const [promptModal, setPromptModal] = useState({ isOpen: false, type: null, value: '' });
@@ -36,7 +39,7 @@ export default function Tracker() {
         // Migration from old state
         return {
           ...defaultState,
-          heroes: [{ id: 1, name: 'Herói 1', hp: s.heroHp, status: s.heroStatus || { stunned: false, confused: false, tough: false } }],
+          heroes: [{ id: 1, name: t('tracker.hero') + ' 1', hp: s.heroHp, status: s.heroStatus || { stunned: false, confused: false, tough: false } }],
           villainHp: s.villainHp,
           villainStage: s.villainStage,
           villainStatus: s.villainStatus || { stunned: false, confused: false, tough: false },
@@ -128,7 +131,7 @@ export default function Tracker() {
       updateState({
         heroes: [...gameState.heroes, { 
           id: Date.now(), 
-          name: `Herói ${gameState.heroes.length + 1}`, 
+          name: `${t('tracker.hero')} ${gameState.heroes.length + 1}`, 
           hp: 10, 
           status: { stunned: false, confused: false, tough: false } 
         }]
@@ -241,22 +244,22 @@ export default function Tracker() {
       <div className="landscape-warning">
         <div style={{ textAlign: 'center' }}>
           <RotateCcw size={48} style={{ marginBottom: '16px', margin: '0 auto' }} />
-          <h2>Por favor, vire o celular</h2>
-          <p>O Tracker foi otimizado para o modo horizontal.</p>
+          <h2>{t("tracker.landscape_warning_title")}</h2>
+          <p>{t("tracker.landscape_warning_desc")}</p>
         </div>
       </div>
 
       <div className="page-header tracker-header">
         <div>
-          <h2 className="page-title">Tracker de Partida</h2>
-          <p className="page-subtitle">Modo Completo: Status, ameaça, turnos e extras.</p>
+          <h2 className="page-title">{t("tracker.title")}</h2>
+          <p className="page-subtitle">{t("tracker.subtitle")}</p>
         </div>
         
         {/* Global Counters (inline in header on big screens) */}
         <div className="tracker-globals">
           <div className="tracker-global-item" style={{ borderLeft: '4px solid #a855f7' }}>
             <Clock size={18} color="var(--text-secondary)" />
-            <span style={{ fontWeight: 'bold' }}>Rodada:</span>
+            <span style={{ fontWeight: 'bold' }}>{t('tracker.round')}</span>
             <button onClick={() => updateState({ round: Math.max(1, gameState.round - 1) })} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}><Minus size={16} /></button>
             <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'white' }}>{gameState.round}</span>
             <button onClick={() => updateState({ round: gameState.round + 1 })} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}><Plus size={16} /></button>
@@ -264,7 +267,7 @@ export default function Tracker() {
 
           <div className="tracker-global-item" style={{ borderLeft: '4px solid #f97316' }}>
             <FastForward size={18} color="var(--text-secondary)" />
-            <span style={{ fontWeight: 'bold' }}>Aceleração:</span>
+            <span style={{ fontWeight: 'bold' }}>{t('tracker.acceleration')}</span>
             <button onClick={() => updateState({ acceleration: Math.max(0, gameState.acceleration - 1) })} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}><Minus size={16} /></button>
             <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'white' }}>{gameState.acceleration}</span>
             <button onClick={() => updateState({ acceleration: gameState.acceleration + 1 })} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}><Plus size={16} /></button>
@@ -274,15 +277,15 @@ export default function Tracker() {
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           <button className="btn-secondary" onClick={() => setShowAssistant(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px' }} title="Assistente de Fase do Vilão">
             <BookOpen size={16} />
-            <span className="desktop-only">Fase do Vilão</span>
+            <span className="desktop-only">{t("tracker.villain_phase")}</span>
           </button>
           <button onClick={() => setShowMultiplayer(true)} className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '8px', borderColor: isConnected ? '#4ade80' : '' }}>
             {isConnected ? <Wifi size={16} color="#4ade80" /> : <Users size={16} />}
-            {isConnected ? 'Conectado' : 'Multiplayer'}
+            {isConnected ? t("tracker.connected") : t("tracker.multiplayer")}
           </button>
           
           <button onClick={resetGame} className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <RotateCcw size={16} /> Nova Partida
+            <RotateCcw size={16} /> {t("tracker.new_match")}
           </button>
         </div>
       </div>
@@ -347,9 +350,9 @@ export default function Tracker() {
             </div>
 
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
-              <button onClick={() => updateHeroStatus('tough')} className="btn-secondary" style={{ padding: '8px 16px', borderColor: activeHero.status.tough ? '#94a3b8' : '', background: activeHero.status.tough ? 'rgba(148, 163, 184, 0.3)' : '' }}>Tough</button>
-              <button onClick={() => updateHeroStatus('stunned')} className="btn-secondary" style={{ padding: '8px 16px', borderColor: activeHero.status.stunned ? '#ef4444' : '', background: activeHero.status.stunned ? 'rgba(239, 68, 68, 0.3)' : '' }}>Stunned</button>
-              <button onClick={() => updateHeroStatus('confused')} className="btn-secondary" style={{ padding: '8px 16px', borderColor: activeHero.status.confused ? '#eab308' : '', background: activeHero.status.confused ? 'rgba(234, 179, 8, 0.3)' : '' }}>Confused</button>
+              <button onClick={() => updateHeroStatus('tough')} className="btn-secondary" style={{ padding: '8px 16px', borderColor: activeHero.status.tough ? '#94a3b8' : '', background: activeHero.status.tough ? 'rgba(148, 163, 184, 0.3)' : '' }}>{t('tracker.status_tough')}</button>
+              <button onClick={() => updateHeroStatus('stunned')} className="btn-secondary" style={{ padding: '8px 16px', borderColor: activeHero.status.stunned ? '#ef4444' : '', background: activeHero.status.stunned ? 'rgba(239, 68, 68, 0.3)' : '' }}>{t('tracker.status_stunned')}</button>
+              <button onClick={() => updateHeroStatus('confused')} className="btn-secondary" style={{ padding: '8px 16px', borderColor: activeHero.status.confused ? '#eab308' : '', background: activeHero.status.confused ? 'rgba(234, 179, 8, 0.3)' : '' }}>{t('tracker.status_confused')}</button>
             </div>
           </div>
         </div>
@@ -357,9 +360,9 @@ export default function Tracker() {
         {/* VILLAIN SECTION */}
         <div className="glass-panel tracker-villain-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', borderTop: '4px solid #e62429' }}>
           <Skull size={40} color="#e62429" style={{ marginBottom: '16px' }} />
-          <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '8px' }}>Vilão</h3>
+          <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '8px' }}>{t('tracker.villain')}</h3>
           <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ color: 'var(--text-secondary)' }}>Estágio:</span>
+            <span style={{ color: 'var(--text-secondary)' }}>{t('tracker.stage')}</span>
             <select 
               value={gameState.villainStage} 
               onChange={(e) => updateState({ villainStage: parseInt(e.target.value) })}
@@ -378,16 +381,16 @@ export default function Tracker() {
           </div>
 
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
-            <button onClick={() => updateVillainStatus('tough')} className="btn-secondary" style={{ padding: '8px 16px', borderColor: gameState.villainStatus.tough ? '#94a3b8' : '', background: gameState.villainStatus.tough ? 'rgba(148, 163, 184, 0.3)' : '' }}>Tough</button>
-            <button onClick={() => updateVillainStatus('stunned')} className="btn-secondary" style={{ padding: '8px 16px', borderColor: gameState.villainStatus.stunned ? '#ef4444' : '', background: gameState.villainStatus.stunned ? 'rgba(239, 68, 68, 0.3)' : '' }}>Stunned</button>
-            <button onClick={() => updateVillainStatus('confused')} className="btn-secondary" style={{ padding: '8px 16px', borderColor: gameState.villainStatus.confused ? '#eab308' : '', background: gameState.villainStatus.confused ? 'rgba(234, 179, 8, 0.3)' : '' }}>Confused</button>
+            <button onClick={() => updateVillainStatus('tough')} className="btn-secondary" style={{ padding: '8px 16px', borderColor: gameState.villainStatus.tough ? '#94a3b8' : '', background: gameState.villainStatus.tough ? 'rgba(148, 163, 184, 0.3)' : '' }}>{t('tracker.status_tough')}</button>
+            <button onClick={() => updateVillainStatus('stunned')} className="btn-secondary" style={{ padding: '8px 16px', borderColor: gameState.villainStatus.stunned ? '#ef4444' : '', background: gameState.villainStatus.stunned ? 'rgba(239, 68, 68, 0.3)' : '' }}>{t('tracker.status_stunned')}</button>
+            <button onClick={() => updateVillainStatus('confused')} className="btn-secondary" style={{ padding: '8px 16px', borderColor: gameState.villainStatus.confused ? '#eab308' : '', background: gameState.villainStatus.confused ? 'rgba(234, 179, 8, 0.3)' : '' }}>{t('tracker.status_confused')}</button>
           </div>
         </div>
 
         {/* THREAT SECTION */}
         <div className="glass-panel tracker-threat-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', borderTop: '4px solid #fbc02d' }}>
           <ShieldAlert size={40} color="#fbc02d" style={{ marginBottom: '16px' }} />
-          <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '24px' }}>Ameaça Principal (Threat)</h3>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '24px' }}>{t('tracker.main_threat')}</h3>
           
           <div className="tracker-value-row">
             {renderAdjustButtons((amt) => updateState({ threat: Math.max(0, gameState.threat + amt) }))}
@@ -403,14 +406,14 @@ export default function Tracker() {
         {/* ENCOUNTER SECTION */}
         <div className="glass-panel tracker-encounter-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', borderTop: '4px solid #a855f7' }}>
           <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Ghost size={24} color="#a855f7" /> Cartas de Encontro
+            <Ghost size={24} color="#a855f7" /> {t("tracker.encounter_cards")}
           </h3>
           
           <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap', justifyContent: 'center', width: '100%' }}>
             
             {/* Cartas Distribuídas */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <span style={{ color: 'var(--text-secondary)', marginBottom: '8px', fontSize: '0.9rem' }}>Distribuídas</span>
+              <span style={{ color: 'var(--text-secondary)', marginBottom: '8px', fontSize: '0.9rem' }}>{t('tracker.dealt')}</span>
               <div className="tracker-value-row" style={{ marginTop: 0 }}>
                 {renderAdjustButtons((amt) => updateState({ encounters: { ...gameState.encounters, dealt: Math.max(0, gameState.encounters.dealt + amt) } }))}
                 <span className="tracker-big-number" style={{ color: '#a855f7', fontSize: '2rem', minWidth: '40px' }}>{gameState.encounters.dealt}</span>
@@ -420,7 +423,7 @@ export default function Tracker() {
 
             {/* Ímpeto (Surge) */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <span style={{ color: 'var(--text-secondary)', marginBottom: '8px', fontSize: '0.9rem' }}>Ímpeto (Surge)</span>
+              <span style={{ color: 'var(--text-secondary)', marginBottom: '8px', fontSize: '0.9rem' }}>{t('tracker.surge')}</span>
               <div className="tracker-value-row" style={{ marginTop: 0 }}>
                 {renderAdjustButtons((amt) => updateState({ encounters: { ...gameState.encounters, surge: Math.max(0, gameState.encounters.surge + amt) } }))}
                 <span className="tracker-big-number" style={{ color: '#ef4444', fontSize: '2rem', minWidth: '40px' }}>{gameState.encounters.surge}</span>
@@ -434,7 +437,7 @@ export default function Tracker() {
           <div style={{ width: '100%', marginTop: '24px' }}>
             <input 
               type="text" 
-              placeholder="Anotações (ex: Sombra do Passado revelada...)"
+              placeholder={t("tracker.notes_placeholder")}
               value={gameState.encounters.notes}
               onChange={e => updateState({ encounters: { ...gameState.encounters, notes: e.target.value } })}
               style={{ 
@@ -454,15 +457,15 @@ export default function Tracker() {
       {/* EXTRAS: Minions & Side Schemes */}
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '8px', marginBottom: '16px' }}>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>Contadores Extras</h3>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>{t('tracker.extra_counters')}</h3>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button onClick={() => addExtra('minion')} className="btn-secondary" style={{ padding: '6px 12px', fontSize: '0.85rem' }}>+ Lacaio</button>
-            <button onClick={() => addExtra('scheme')} className="btn-secondary" style={{ padding: '6px 12px', fontSize: '0.85rem' }}>+ Esquema</button>
+            <button onClick={() => addExtra('minion')} className="btn-secondary" style={{ padding: '6px 12px', fontSize: '0.85rem' }}>{t("tracker.add_minion")}</button>
+            <button onClick={() => addExtra('scheme')} className="btn-secondary" style={{ padding: '6px 12px', fontSize: '0.85rem' }}>{t("tracker.add_scheme")}</button>
           </div>
         </div>
         
         {gameState.extras.length === 0 ? (
-          <p style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '20px' }}>Nenhum contador extra na mesa.</p>
+          <p style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '20px' }}>{t("tracker.no_extras")}</p>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '16px' }}>
             {gameState.extras.map(ex => (
@@ -470,7 +473,7 @@ export default function Tracker() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
                   <div>
                     <h4 style={{ fontWeight: 'bold' }}>{ex.name}</h4>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>{ex.type === 'minion' ? 'Lacaio (HP)' : 'Esquema (Ameaça)'}</span>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>{ex.type === 'minion' ? t('tracker.minion_hp') : t('tracker.scheme_threat')}</span>
                   </div>
                   <button onClick={() => removeExtra(ex.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}><Trash2 size={16} /></button>
                 </div>
@@ -489,14 +492,14 @@ export default function Tracker() {
       <Modal
         isOpen={removeHeroIdx !== null}
         onClose={() => setRemoveHeroIdx(null)}
-        title="Remover Herói"
+        title={t("tracker.remove_hero_title")}
         maxWidth="400px"
       >
         <div style={{ textAlign: 'center' }}>
-          <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Tem certeza que deseja remover este herói do tracker?</p>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>{t("tracker.remove_hero_desc")}</p>
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
-            <button onClick={() => setRemoveHeroIdx(null)} className="btn-secondary" style={{ flex: 1 }}>Cancelar</button>
-            <button onClick={confirmRemoveHero} className="btn-primary" style={{ flex: 1, background: 'var(--primary-color)' }}>Remover</button>
+            <button onClick={() => setRemoveHeroIdx(null)} className="btn-secondary" style={{ flex: 1 }}>{t("tracker.cancel")}</button>
+            <button onClick={confirmRemoveHero} className="btn-primary" style={{ flex: 1, background: 'var(--primary-color)' }}>{t("tracker.remove")}</button>
           </div>
         </div>
       </Modal>
@@ -504,14 +507,14 @@ export default function Tracker() {
       <Modal
         isOpen={showResetConfirm}
         onClose={() => setShowResetConfirm(false)}
-        title="Resetar Tracker"
+        title={t("tracker.reset_tracker_title")}
         maxWidth="400px"
       >
         <div style={{ textAlign: 'center' }}>
-          <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Tem certeza que deseja resetar todo o tracker?</p>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>{t("tracker.reset_tracker_desc")}</p>
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
-            <button onClick={() => setShowResetConfirm(false)} className="btn-secondary" style={{ flex: 1 }}>Cancelar</button>
-            <button onClick={confirmResetGame} className="btn-primary" style={{ flex: 1, background: 'var(--primary-color)' }}>Resetar</button>
+            <button onClick={() => setShowResetConfirm(false)} className="btn-secondary" style={{ flex: 1 }}>{t("tracker.cancel")}</button>
+            <button onClick={confirmResetGame} className="btn-primary" style={{ flex: 1, background: 'var(--primary-color)' }}>{t("tracker.reset")}</button>
           </div>
         </div>
       </Modal>
@@ -519,24 +522,24 @@ export default function Tracker() {
       <Modal
         isOpen={promptModal.isOpen}
         onClose={() => setPromptModal({ isOpen: false, type: null, value: '' })}
-        title={`Adicionar ${promptModal.type === 'minion' ? 'Lacaio' : 'Esquema'}`}
+        title={t("tracker.add_modal_title", { type: promptModal.type === 'minion' ? t("tracker.add_modal_minion") : t("tracker.add_modal_scheme") })}
         maxWidth="400px"
       >
         <form onSubmit={confirmAddExtra} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <label style={{ display: 'block', color: 'var(--text-secondary)', marginBottom: '8px' }}>Nome:</label>
+            <label style={{ display: 'block', color: 'var(--text-secondary)', marginBottom: '8px' }}>{t('tracker.add_modal_label')}</label>
             <input 
               type="text"
               autoFocus
               value={promptModal.value}
               onChange={(e) => setPromptModal({ ...promptModal, value: e.target.value })}
               style={{ width: '100%', background: 'rgba(0,0,0,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '12px', borderRadius: '8px' }}
-              placeholder={`Digite o nome do ${promptModal.type === 'minion' ? 'Lacaio' : 'Esquema'}...`}
+              placeholder={t('tracker.add_modal_placeholder', { type: promptModal.type === 'minion' ? t('tracker.add_modal_minion') : t('tracker.add_modal_scheme') })}
             />
           </div>
           <div style={{ display: 'flex', gap: '16px', marginTop: '8px' }}>
-            <button type="button" onClick={() => setPromptModal({ isOpen: false, type: null, value: '' })} className="btn-secondary" style={{ flex: 1 }}>Cancelar</button>
-            <button type="submit" className="btn-primary" style={{ flex: 1 }}>Adicionar</button>
+            <button type="button" onClick={() => setPromptModal({ isOpen: false, type: null, value: '' })} className="btn-secondary" style={{ flex: 1 }}>{t("tracker.cancel")}</button>
+            <button type="submit" className="btn-primary" style={{ flex: 1 }}>{t("tracker.add")}</button>
           </div>
         </form>
       </Modal>
@@ -545,12 +548,12 @@ export default function Tracker() {
       <Modal
         isOpen={showMultiplayer}
         onClose={() => setShowMultiplayer(false)}
-        title="Sincronização Multiplayer"
+        title={t("tracker.mp_title")}
         maxWidth="450px"
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            Mantenha a vida do Vilão e a Ameaça sincronizadas em tempo real entre os celulares da mesa via WebRTC.
+            {t("tracker.mp_desc")}
           </p>
           
           {error && (
@@ -570,7 +573,7 @@ export default function Tracker() {
               
               {isHost ? (
                 <>
-                  <p style={{ color: 'var(--text-secondary)', marginBottom: '12px' }}>Você é o Host da sala. Compartilhe o ID ou mostre o QR Code abaixo para os jogadores.</p>
+                  <p style={{ color: 'var(--text-secondary)', marginBottom: '12px' }}>{t("tracker.mp_host_desc")}</p>
                   <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
                     <input type="text" readOnly value={roomId} style={{ flex: 1, background: 'rgba(0,0,0,0.5)', color: 'white', border: '1px solid var(--primary-color)', padding: '12px', borderRadius: '8px', textAlign: 'center', fontSize: '1.1rem', letterSpacing: '2px', fontWeight: 'bold' }} />
                     <button onClick={copyToClipboard} className="btn-primary" style={{ padding: '12px' }}>
@@ -582,17 +585,17 @@ export default function Tracker() {
                   </div>
                 </>
               ) : (
-                <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Você é um Guest. O tracker está espelhando a mesa do Host (ID: {roomId}).</p>
+                <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>{t("tracker.mp_guest_desc", { id: roomId })}</p>
               )}
 
-              <button onClick={disconnect} className="btn-secondary" style={{ width: '100%', borderColor: '#ef4444', color: '#ef4444' }}>Desconectar</button>
+              <button onClick={disconnect} className="btn-secondary" style={{ width: '100%', borderColor: '#ef4444', color: '#ef4444' }}>{t("tracker.mp_disconnect")}</button>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
               
               <div style={{ padding: '20px', background: 'rgba(0,0,0,0.3)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                <h4 style={{ color: 'white', marginBottom: '8px' }}>1. Sou o Dono da Mesa</h4>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '16px' }}>Crie uma sala e seja a central (Host).</p>
+                <h4 style={{ color: 'white', marginBottom: '8px' }}>{t("tracker.mp_host_title")}</h4>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '16px' }}>{t("tracker.mp_host_sub")}</p>
                 <button onClick={createRoom} className="btn-primary" style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '8px' }}>
                   Criar Sala (Host)
                 </button>
@@ -600,12 +603,12 @@ export default function Tracker() {
 
               <div style={{ position: 'relative', textAlign: 'center' }}>
                 <hr style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }} />
-                <span style={{ position: 'absolute', top: '-10px', left: '50%', transform: 'translateX(-50%)', background: 'var(--bg-main)', padding: '0 12px', color: 'var(--text-muted)', fontSize: '0.8rem' }}>OU</span>
+                <span style={{ position: 'absolute', top: '-10px', left: '50%', transform: 'translateX(-50%)', background: 'var(--bg-main)', padding: '0 12px', color: 'var(--text-muted)', fontSize: '0.8rem' }}>{t("tracker.mp_or")}</span>
               </div>
 
               <div style={{ padding: '20px', background: 'rgba(0,0,0,0.3)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                <h4 style={{ color: 'white', marginBottom: '8px' }}>2. Entrar em uma Sala</h4>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '16px' }}>Digite o ID da sala gerado pelo Host ou escaneie o QR Code.</p>
+                <h4 style={{ color: 'white', marginBottom: '8px' }}>{t("tracker.mp_join_title")}</h4>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '16px' }}>{t("tracker.mp_join_sub")}</p>
                 
                 {showScanner ? (
                   <div style={{ marginBottom: '16px' }}>
@@ -618,7 +621,7 @@ export default function Tracker() {
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <input 
                       type="text" 
-                      placeholder="ID da Sala..." 
+                      placeholder={t("tracker.mp_join_placeholder")} 
                       value={joinId}
                       onChange={e => setJoinId(e.target.value)}
                       style={{ flex: 1, background: 'rgba(0,0,0,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '12px', borderRadius: '8px' }}
@@ -626,7 +629,7 @@ export default function Tracker() {
                     <button onClick={() => setShowScanner(true)} className="btn-secondary" style={{ padding: '12px' }} title="Ler QR Code">
                       <Camera size={20} />
                     </button>
-                    <button onClick={() => { if(joinId.trim()) joinRoom(joinId.trim()); }} className="btn-primary">Entrar</button>
+                    <button onClick={() => { if(joinId.trim()) joinRoom(joinId.trim()); }} className="btn-primary">{t("tracker.mp_join_btn")}</button>
                   </div>
                 )}
               </div>

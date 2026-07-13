@@ -4,8 +4,10 @@ import Modal from '../components/Modal';
 import { campaigns } from '../data/campaigns';
 import { getCards } from '../services/api';
 import { useCloudSync } from '../hooks/useCloudSync';
+import { useTranslation } from 'react-i18next';
 
 export default function Campaign() {
+  const { t } = useTranslation();
   const [saves, setSaves] = useState([]);
   const [activeSaveId, setActiveSaveId] = useState(null);
   
@@ -22,7 +24,7 @@ export default function Campaign() {
   const [newCampId, setNewCampId] = useState(campaigns[0].id);
   const [newCampDiff, setNewCampDiff] = useState('Standard');
   const [players, setPlayers] = useState([
-    { name: 'Jogador 1', heroCode: '', aspect: 'justice', hp: 10, upgrades: [] }
+    { name: `${t("campaign.player_n")} 1`, heroCode: '', aspect: 'justice', hp: 10, upgrades: [] }
   ]);
 
   useEffect(() => {
@@ -38,11 +40,11 @@ export default function Campaign() {
       h.sort((a, b) => a.name.localeCompare(b.name));
       setHeroes(h);
       if (h.length > 0) {
-        setPlayers([{ name: 'Jogador 1', heroCode: h[0].code, aspect: 'justice', hp: parseInt(h[0].health) || 10, upgrades: [] }]);
+        setPlayers([{ name: `${t("campaign.player_n")} 1`, heroCode: h[0].code, aspect: 'justice', hp: parseInt(h[0].health) || 10, upgrades: [] }]);
       }
       setLoading(false);
     });
-  }, [getCloudData]);
+  }, [getCloudData, t]);
 
   const saveToLocal = (newSaves) => {
     setSaves(newSaves);
@@ -51,7 +53,7 @@ export default function Campaign() {
 
   const handleAddPlayer = () => {
     if (players.length >= 4) return;
-    setPlayers([...players, { name: `Jogador ${players.length + 1}`, heroCode: heroes[0]?.code || '', aspect: 'justice', hp: parseInt(heroes[0]?.health) || 10, upgrades: [] }]);
+    setPlayers([...players, { name: `${t("campaign.player_n")} ${players.length + 1}`, heroCode: heroes[0]?.code || '', aspect: 'justice', hp: parseInt(heroes[0]?.health) || 10, upgrades: [] }]);
   };
 
   const handleRemovePlayer = (idx) => {
@@ -91,7 +93,7 @@ export default function Campaign() {
   };
 
   const deleteSave = (id) => {
-    if (confirm('Tem certeza que deseja apagar esta campanha?')) {
+    if (confirm('t("campaign.confirm_delete")')) {
       const newSaves = saves.filter(s => s.id !== id);
       saveToLocal(newSaves);
       if (activeSaveId === id) setActiveSaveId(null);
@@ -160,8 +162,8 @@ export default function Campaign() {
     <div className="animate-fade-in container">
       <div className="page-header" style={{ marginBottom: '24px' }}>
         <div>
-          <h2 className="page-title">Campaign Log</h2>
-          <p className="page-subtitle">Acompanhe seu progresso, vida e upgrades nas grandes campanhas.</p>
+          <h2 className="page-title">{t("campaign.title")}</h2>
+          <p className="page-subtitle">{t("campaign.subtitle")}</p>
         </div>
         {!activeSaveId && (
           <button className="btn-primary" onClick={() => setShowNewModal(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -176,8 +178,8 @@ export default function Campaign() {
           {saves.length === 0 ? (
             <div className="glass-panel" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>
               <Book size={48} style={{ margin: '0 auto 16px', opacity: 0.5 }} />
-              <p>Nenhuma campanha iniciada.</p>
-              <button className="btn-primary" onClick={() => setShowNewModal(true)} style={{ marginTop: '16px' }}>Criar Primeira Campanha</button>
+              <p>{t("campaign.no_campaign")}</p>
+              <button className="btn-primary" onClick={() => setShowNewModal(true)} style={{ marginTop: '16px' }}>{t("campaign.create_first")}</button>
             </div>
           ) : (
             saves.map(save => {
@@ -188,10 +190,10 @@ export default function Campaign() {
                   <div>
                     <h3 style={{ fontSize: '1.2rem', color: 'white', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                       {save.campaignName}
-                      {isCompleted && <span style={{ fontSize: '0.75rem', background: 'var(--aspect-protection)', padding: '2px 8px', borderRadius: '12px' }}>Concluído</span>}
+                      {isCompleted && <span style={{ fontSize: '0.75rem', background: 'var(--aspect-protection)', padding: '2px 8px', borderRadius: '12px' }}>{t("campaign.completed")}</span>}
                     </h3>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}>
-                      Cenário Atual: {isCompleted ? 'Todos' : def?.scenarios[save.currentScenarioIndex]?.name} | Dificuldade: {save.difficulty}
+                      {t("campaign.current_scenario")} {isCompleted ? t("campaign.all") : def?.scenarios[save.currentScenarioIndex]?.name} | {t("campaign.difficulty")} {save.difficulty}
                     </p>
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                       {save.players.map((p, i) => {
@@ -207,7 +209,7 @@ export default function Campaign() {
                   
                   <div style={{ display: 'flex', gap: '12px' }}>
                     <button onClick={() => setActiveSaveId(save.id)} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      Retomar <ChevronRight size={18} />
+                      {t("campaign.resume")} <ChevronRight size={18} />
                     </button>
                     <button onClick={() => deleteSave(save.id)} className="btn-danger" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px', background: 'rgba(239, 68, 68, 0.2)', color: '#fca5a5', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px', cursor: 'pointer' }}>
                       <Trash2 size={18} />
@@ -223,7 +225,7 @@ export default function Campaign() {
         <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
           <button onClick={() => setActiveSaveId(null)} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', color: 'var(--primary-color)', cursor: 'pointer', padding: 0, fontWeight: 'bold' }}>
-            ← Voltar para Lista
+            {t("campaign.back_list")}
           </button>
           
           <div className="glass-panel" style={{ padding: '24px', borderTop: '4px solid var(--primary-color)' }}>
@@ -235,9 +237,9 @@ export default function Campaign() {
                 </span>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '4px' }}>Progresso</p>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '4px' }}>{t("campaign.progress")}</p>
                 <h3 style={{ color: 'var(--primary-color)', fontSize: '1.5rem' }}>
-                  {activeSave.status === 'completed' ? 'Completa' : `${activeSave.currentScenarioIndex + 1} / ${activeDef.scenarios.length}`}
+                  {activeSave.status === 'completed' ? t("campaign.status_completed") : `${activeSave.currentScenarioIndex + 1} / ${activeDef.scenarios.length}`}
                 </h3>
               </div>
             </div>
@@ -247,7 +249,7 @@ export default function Campaign() {
             <div className="generator-results">
               {/* PLAYERS SECTION */}
               <div className="result-section">
-                <h3 className="result-header text-primary">Jogadores (HP & Upgrades)</h3>
+                <h3 className="result-header text-primary">{t("campaign.players")}</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   {activeSave.players.map((p, idx) => {
                     const hero = heroes.find(h => h.code === p.heroCode);
@@ -274,11 +276,11 @@ export default function Campaign() {
 
                         <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '12px' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 'bold' }}>Upgrades da Campanha</span>
-                            <button onClick={() => setShowUpgradeModal(idx)} style={{ background: 'none', border: 'none', color: 'var(--primary-color)', fontSize: '0.85rem', cursor: 'pointer', textDecoration: 'underline' }}>Gerenciar</button>
+                            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 'bold' }}>{t("campaign.campaign_upgrades")}</span>
+                            <button onClick={() => setShowUpgradeModal(idx)} style={{ background: 'none', border: 'none', color: 'var(--primary-color)', fontSize: '0.85rem', cursor: 'pointer', textDecoration: 'underline' }}>{t("campaign.manage")}</button>
                           </div>
                           {p.upgrades.length === 0 ? (
-                            <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Nenhum upgrade selecionado.</p>
+                            <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>{t("campaign.no_upgrades")}</p>
                           ) : (
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                               {p.upgrades.map((u, i) => (
@@ -297,14 +299,14 @@ export default function Campaign() {
 
               {/* SCENARIO SECTION */}
               <div className="result-section">
-                <h3 className="result-header text-secondary">Cenário Atual</h3>
+                <h3 className="result-header text-secondary">{t("campaign.scenario")}</h3>
                 {activeSave.status === 'completed' ? (
                   <div className="glass-panel" style={{ padding: '40px 24px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', background: 'rgba(67, 160, 71, 0.1)', border: '1px solid rgba(67, 160, 71, 0.3)' }}>
                     <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(67, 160, 71, 0.2)', color: '#86efac', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <CheckCircle2 size={32} />
                     </div>
-                    <h3 style={{ color: '#86efac', fontSize: '1.5rem' }}>Campanha Concluída!</h3>
-                    <p style={{ color: 'var(--text-secondary)' }}>Vocês salvaram o dia. Verifique o histórico abaixo para os detalhes.</p>
+                    <h3 style={{ color: '#86efac', fontSize: '1.5rem' }}>{t("campaign.campaign_completed")}</h3>
+                    <p style={{ color: 'var(--text-secondary)' }}>{t("campaign.campaign_completed_desc")}</p>
                   </div>
                 ) : (
                   <div className="glass-panel" style={{ padding: '24px', borderTop: '4px solid var(--secondary-color)' }}>
@@ -313,7 +315,7 @@ export default function Campaign() {
                     </h2>
                     
                     <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '8px', marginBottom: '24px', borderLeft: '4px solid var(--text-secondary)' }}>
-                      <h4 style={{ color: 'var(--text-secondary)', marginBottom: '8px', fontSize: '0.9rem', textTransform: 'uppercase' }}>Setup Especial</h4>
+                      <h4 style={{ color: 'var(--text-secondary)', marginBottom: '8px', fontSize: '0.9rem', textTransform: 'uppercase' }}>{t("campaign.special_setup")}</h4>
                       <p style={{ color: 'white', lineHeight: '1.5' }}>
                         {activeDef.scenarios[activeSave.currentScenarioIndex].setup}
                       </p>
@@ -331,10 +333,10 @@ export default function Campaign() {
                 )}
 
                 {/* TIMELINE / HISTORY */}
-                <h3 className="result-header text-primary" style={{ marginTop: '32px' }}>Histórico da Campanha</h3>
+                <h3 className="result-header text-primary" style={{ marginTop: '32px' }}>{t("campaign.history")}</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {activeSave.history.length === 0 ? (
-                    <p style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Nenhuma partida registrada ainda.</p>
+                    <p style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>{t("campaign.empty_history")}</p>
                   ) : (
                     activeSave.history.map((log, i) => (
                       <div key={i} style={{ display: 'flex', gap: '16px', background: 'rgba(255,255,255,0.03)', padding: '12px 16px', borderRadius: '8px', borderLeft: log.result === 'Victory' ? '4px solid var(--aspect-protection)' : '4px solid #ef4444' }}>
@@ -344,7 +346,7 @@ export default function Campaign() {
                         <div style={{ flex: 1 }}>
                           <p style={{ color: 'white', fontWeight: 'bold' }}>{log.scenarioName}</p>
                           <p style={{ color: log.result === 'Victory' ? '#86efac' : '#fca5a5', fontSize: '0.9rem' }}>
-                            {log.result === 'Victory' ? 'Vitória' : 'Derrota'}
+                            {log.result === 'Victory' ? t('history.victory') : t('history.defeat')}
                           </p>
                         </div>
                         <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
@@ -363,18 +365,18 @@ export default function Campaign() {
       )}
 
       {/* MODAL: NOVA CAMPANHA */}
-      <Modal isOpen={showNewModal} onClose={() => setShowNewModal(false)} title="Nova Campanha" maxWidth="500px">
+      <Modal isOpen={showNewModal} onClose={() => setShowNewModal(false)} title={t("campaign.new_modal_title")} maxWidth="500px">
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           
           <div>
-            <label style={{ display: 'block', color: 'var(--text-secondary)', marginBottom: '8px', fontSize: '0.9rem' }}>Campanha</label>
+            <label style={{ display: 'block', color: 'var(--text-secondary)', marginBottom: '8px', fontSize: '0.9rem' }}>{t("campaign.modal_campaign")}</label>
             <select value={newCampId} onChange={e => setNewCampId(e.target.value)} style={{ width: '100%', background: 'rgba(0,0,0,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '12px', borderRadius: '8px', outline: 'none' }}>
               {campaigns.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
 
           <div>
-            <label style={{ display: 'block', color: 'var(--text-secondary)', marginBottom: '8px', fontSize: '0.9rem' }}>Dificuldade</label>
+            <label style={{ display: 'block', color: 'var(--text-secondary)', marginBottom: '8px', fontSize: '0.9rem' }}>{t("campaign.modal_difficulty")}</label>
             <select value={newCampDiff} onChange={e => setNewCampDiff(e.target.value)} style={{ width: '100%', background: 'rgba(0,0,0,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '12px', borderRadius: '8px', outline: 'none' }}>
               <option value="Standard">Standard</option>
               <option value="Expert">Expert</option>
@@ -383,7 +385,7 @@ export default function Campaign() {
 
           <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <label style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Jogadores ({players.length}/4)</label>
+              <label style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{t("campaign.modal_players", { count: players.length })}</label>
               {players.length < 4 && (
                 <button onClick={handleAddPlayer} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', padding: '6px 12px', borderRadius: '16px', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <Plus size={14} /> Adicionar
@@ -410,11 +412,11 @@ export default function Campaign() {
                       {heroes.map(h => <option key={h.code} value={h.code}>{h.name}</option>)}
                     </select>
                     <select value={p.aspect} onChange={e => handlePlayerChange(i, 'aspect', e.target.value)} style={{ flex: 1, background: 'rgba(255,255,255,0.1)', color: 'white', border: 'none', padding: '8px', borderRadius: '4px', outline: 'none' }}>
-                      <option value="aggression">Agressividade</option>
-                      <option value="justice">Justiça</option>
-                      <option value="leadership">Liderança</option>
-                      <option value="protection">Proteção</option>
-                      <option value="pool">Pool</option>
+                      <option value="aggression">{t("history.aspect_aggression")}</option>
+                      <option value="justice">{t("history.aspect_justice")}</option>
+                      <option value="leadership">{t("history.aspect_leadership")}</option>
+                      <option value="protection">{t("history.aspect_protection")}</option>
+                      <option value="pool">{t("history.aspect_pool")}</option>
                     </select>
                   </div>
                 </div>
@@ -429,16 +431,16 @@ export default function Campaign() {
       </Modal>
 
       {/* MODAL: UPGRADES */}
-      <Modal isOpen={showUpgradeModal !== null} onClose={() => setShowUpgradeModal(null)} title="Upgrades e Obrigações" maxWidth="400px">
+      <Modal isOpen={showUpgradeModal !== null} onClose={() => setShowUpgradeModal(null)} title={t("campaign.upgrades_modal_title")} maxWidth="400px">
         {showUpgradeModal !== null && activeSave && activeDef && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}>
-              Selecione as melhorias conquistadas por {activeSave.players[showUpgradeModal].name}.
+              {t("campaign.upgrades_desc")} {activeSave.players[showUpgradeModal].name}.
             </p>
             
             {activeDef.upgrades.length > 0 && (
               <div>
-                <h4 style={{ color: 'var(--primary-color)', marginBottom: '12px' }}>Upgrades</h4>
+                <h4 style={{ color: 'var(--primary-color)', marginBottom: '12px' }}>{t("campaign.upgrades")}</h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {activeDef.upgrades.map(u => {
                     const has = activeSave.players[showUpgradeModal].upgrades.includes(u);
@@ -455,7 +457,7 @@ export default function Campaign() {
 
             {activeDef.obligations && activeDef.obligations.length > 0 && (
               <div style={{ marginTop: '16px' }}>
-                <h4 style={{ color: '#fca5a5', marginBottom: '12px' }}>Obrigações / Penalidades</h4>
+                <h4 style={{ color: '#fca5a5', marginBottom: '12px' }}>{t("campaign.obligations")}</h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {activeDef.obligations.map(u => {
                     const has = activeSave.players[showUpgradeModal].upgrades.includes(u);
@@ -470,7 +472,7 @@ export default function Campaign() {
               </div>
             )}
             
-            <button onClick={() => setShowUpgradeModal(null)} className="btn-primary" style={{ marginTop: '16px', padding: '12px' }}>Concluído</button>
+            <button onClick={() => setShowUpgradeModal(null)} className="btn-primary" style={{ marginTop: '16px', padding: '12px' }}>{t("campaign.completed")}</button>
           </div>
         )}
       </Modal>

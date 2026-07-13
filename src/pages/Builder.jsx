@@ -4,8 +4,10 @@ import { Loader2, Plus, Minus, Copy, Check, QrCode } from 'lucide-react';
 import Modal from '../components/Modal';
 import { QRCodeSVG } from 'qrcode.react';
 import { storage } from '../services/storage';
+import { useTranslation } from 'react-i18next';
 
 export default function Builder() {
+  const { t } = useTranslation();
   const [showCopyAlert, setShowCopyAlert] = useState(false);
   const [cards, setCards] = useState([]);
   const [ownedPacks, setOwnedPacks] = useState({});
@@ -130,8 +132,8 @@ export default function Builder() {
     <div className="animate-fade-in container">
       <div className="page-header" style={{ marginBottom: '24px' }}>
         <div>
-          <h2 className="page-title">Rascunho de Deck</h2>
-          <p className="page-subtitle">Monte seu deck usando as cartas da sua coleção física.</p>
+          <h2 className="page-title">{t("builder.title")}</h2>
+          <p className="page-subtitle">{t("builder.subtitle")}</p>
         </div>
       </div>
 
@@ -139,21 +141,21 @@ export default function Builder() {
         <div className="glass-panel" style={{ padding: '24px' }}>
           <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
             <div style={{ flex: 1, minWidth: '200px' }}>
-              <label style={{ display: 'block', color: 'var(--text-secondary)', marginBottom: '8px' }}>Selecione o Herói:</label>
+              <label style={{ display: 'block', color: 'var(--text-secondary)', marginBottom: '8px' }}>{t("builder.select_hero_label")}</label>
               <select onChange={handleHeroChange} style={{ width: '100%', background: 'rgba(0,0,0,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '12px', borderRadius: '8px' }}>
-                <option value="">-- Escolher Herói --</option>
+                <option value="">{t("builder.select_hero")}</option>
                 {heroes.map(h => <option key={h.code} value={h.code}>{h.name}</option>)}
               </select>
             </div>
             
             <div style={{ flex: 1, minWidth: '200px' }}>
-              <label style={{ display: 'block', color: 'var(--text-secondary)', marginBottom: '8px' }}>Aspecto:</label>
+              <label style={{ display: 'block', color: 'var(--text-secondary)', marginBottom: '8px' }}>{t("builder.aspect_label")}</label>
               <select value={selectedAspect} onChange={e => setSelectedAspect(e.target.value)} style={{ width: '100%', background: 'rgba(0,0,0,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '12px', borderRadius: '8px' }}>
-                <option value="aggression">Agressividade</option>
-                <option value="justice">Justiça</option>
-                <option value="leadership">Liderança</option>
-                <option value="protection">Proteção</option>
-                <option value="pool">Pool</option>
+                <option value="aggression">{t("history.aspect_aggression")}</option>
+                <option value="justice">{t("history.aspect_justice")}</option>
+                <option value="leadership">{t("history.aspect_leadership")}</option>
+                <option value="protection">{t("history.aspect_protection")}</option>
+                <option value="pool">{t("history.aspect_pool")}</option>
               </select>
             </div>
           </div>
@@ -163,8 +165,8 @@ export default function Builder() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
             <div className="glass-panel" style={{ padding: '24px', maxHeight: '600px', overflowY: 'auto' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <h3 style={{ color: 'var(--secondary-color)' }}>Cartas Disponíveis</h3>
-                <span style={{ background: 'rgba(255,255,255,0.1)', padding: '4px 12px', borderRadius: '24px', color: deckSize >= 40 && deckSize <= 50 ? 'var(--aspect-protection)' : 'var(--text-primary)' }}>Total no Deck: {deckSize} / 50</span>
+                <h3 style={{ color: 'var(--secondary-color)' }}>{t("builder.avail_cards")}</h3>
+                <span style={{ background: 'rgba(255,255,255,0.1)', padding: '4px 12px', borderRadius: '24px', color: deckSize >= 40 && deckSize <= 50 ? 'var(--aspect-protection)' : 'var(--text-primary)' }}>{t("builder.total_deck", { count: deckSize })}</span>
               </div>
               
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '12px' }}>
@@ -210,12 +212,12 @@ export default function Builder() {
           <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(67, 160, 71, 0.2)', color: 'var(--aspect-protection)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid var(--aspect-protection)', boxShadow: '0 0 15px rgba(67, 160, 71, 0.4)' }}>
             <Check size={28} />
           </div>
-          <h4 style={{ margin: 0, fontSize: '1.2rem', color: 'white' }}>Copiado!</h4>
+          <h4 style={{ margin: 0, fontSize: '1.2rem', color: 'white' }}>{t("builder.copied")}</h4>
         </div>
       </Modal>
 
       {/* Share Modal */}
-      <Modal isOpen={showShareModal} onClose={() => setShowShareModal(false)} title="Compartilhar Deck" maxWidth="400px">
+      <Modal isOpen={showShareModal} onClose={() => setShowShareModal(false)} title={t("builder.share_title")} maxWidth="400px">
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}>
           <p style={{ color: 'var(--text-secondary)', textAlign: 'center', fontSize: '0.9rem' }}>
             Peça para um amigo escanear este QR Code com a câmera do celular ou copie o link direto para carregar essa lista na hora!
