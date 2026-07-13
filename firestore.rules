@@ -1,0 +1,14 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Regra padrão: negar tudo por segurança
+    match /{document=**} {
+      allow read, write: if false;
+    }
+    
+    // Regra específica: usuários só podem ler e escrever seus próprios dados
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}

@@ -5,6 +5,7 @@ import TurnAssistant from '../components/TurnAssistant';
 import { useMultiplayer } from '../hooks/useMultiplayer';
 import { QRCodeSVG } from 'qrcode.react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
+import { storage } from '../services/storage';
 
 const defaultState = {
   heroes: [
@@ -27,25 +28,22 @@ export default function Tracker() {
   const [showAssistant, setShowAssistant] = useState(false);
 
   const getInitialState = () => {
-    const saved = localStorage.getItem('mc_tracker_state');
-    if (saved) {
-      try {
-        const s = JSON.parse(saved);
-        if (s.heroes) {
-          return { ...defaultState, ...s };
-        } else if (s.heroHp !== undefined) {
-          // Migration from old state
-          return {
-            ...defaultState,
-            heroes: [{ id: 1, name: 'Herói 1', hp: s.heroHp, status: s.heroStatus || { stunned: false, confused: false, tough: false } }],
-            villainHp: s.villainHp,
-            villainStage: s.villainStage,
-            villainStatus: s.villainStatus || { stunned: false, confused: false, tough: false },
-            threat: s.threat,
-            encounters: s.encounters || { dealt: 0, surge: 0, notes: '' }
-          };
-        }
-      } catch {}
+    const s = storage.get('mc_tracker_state');
+    if (s) {
+      if (s.heroes) {
+        return { ...defaultState, ...s };
+      } else if (s.heroHp !== undefined) {
+        // Migration from old state
+        return {
+          ...defaultState,
+          heroes: [{ id: 1, name: 'Herói 1', hp: s.heroHp, status: s.heroStatus || { stunned: false, confused: false, tough: false } }],
+          villainHp: s.villainHp,
+          villainStage: s.villainStage,
+          villainStatus: s.villainStatus || { stunned: false, confused: false, tough: false },
+          threat: s.threat,
+          encounters: s.encounters || { dealt: 0, surge: 0, notes: '' }
+        };
+      }
     }
     return defaultState;
   };
@@ -109,7 +107,7 @@ export default function Tracker() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('mc_tracker_state', JSON.stringify(gameState));
+    storage.set('mc_tracker_state', gameState);
   }, [gameState]);
 
   const updateState = (updates) => {

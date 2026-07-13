@@ -3,6 +3,7 @@ import { getCards } from '../services/api';
 import { Loader2, List, Copy, QrCode, Check } from 'lucide-react';
 import Modal from '../components/Modal';
 import { QRCodeSVG } from 'qrcode.react';
+import { storage } from '../services/storage';
 
 export default function Decks() {
   const [decks, setDecks] = useState([]);
@@ -24,8 +25,7 @@ export default function Decks() {
 
   useEffect(() => {
     // Load owned packs
-    const saved = localStorage.getItem('mc_owned_packs');
-    const owned = saved ? JSON.parse(saved) : {};
+    const owned = storage.get('mc_owned_packs', {});
     setOwnedPacks(owned);
 
     // Fetch Cards API and Local All Decks JSONL

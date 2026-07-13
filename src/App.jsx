@@ -7,92 +7,22 @@ import ReloadPrompt from './components/ReloadPrompt';
 import packageJson from '../package.json';
 
 // Stub Components for pages
-const Home = () => (
-  <div className="home-hero animate-fade-in">
-    <div className="home-hero-content">
-      <img 
-        src="/logo.jpg" 
-        alt="Champions HQ Logo" 
-        style={{ width: '140px', height: '140px', borderRadius: '28px', boxShadow: '0 10px 40px rgba(230, 36, 41, 0.4)', marginBottom: '40px', objectFit: 'cover' }} 
-      />
-      <h1 className="home-title-hero">
-        Champions HQ
-      </h1>
-      <p className="home-desc">
-        Seu quartel-general definitivo. Controle sua coleção, descubra decks, gere combates e domine as regras.
-      </p>
-    </div>
-    
-    <div className="home-grid">
-      <Link to="/collection" className="glass-panel home-card">
-        <Layers size={40} className="card-icon text-primary" />
-        <h3 className="home-card-title">Minha Coleção</h3>
-        <p className="home-card-text">Marque os pacotes que possui para filtrar decks e gerar partidas sob medida.</p>
-      </Link>
-      
-      <Link to="/decks" className="glass-panel home-card">
-        <Zap size={40} className="card-icon text-justice" />
-        <h3 className="home-card-title">Banco de Decks</h3>
-        <p className="home-card-text">Navegue por milhares de decks criados pela comunidade, com match exato para suas cartas.</p>
-      </Link>
-      
-      <Link to="/tracker" className="glass-panel home-card">
-        <Activity size={40} className="card-icon" style={{ color: '#fbc02d' }} />
-        <h3 className="home-card-title">Tracker de Partida</h3>
-        <p className="home-card-text">Substitua os tokens da mesa e controle a vida, ameaça e status durante o jogo.</p>
-      </Link>
-      
-      <Link to="/randomizer" className="glass-panel home-card">
-        <Shuffle size={40} className="card-icon text-secondary" />
-        <h3 className="home-card-title">Gerador de Caos</h3>
-        <p className="home-card-text">Deixe o acaso decidir. Gere heróis, aspectos e vilões aleatórios para um desafio brutal.</p>
-      </Link>
-      
-      <Link to="/history" className="glass-panel home-card">
-        <Archive size={40} className="card-icon text-protection" />
-        <h3 className="home-card-title">Histórico</h3>
-        <p className="home-card-text">Guarde um diário dos seus confrontos e acompanhe sua evolução.</p>
-      </Link>
+const Home = React.lazy(() => import('./pages/Home'));
 
-      <Link to="/dashboard" className="glass-panel home-card">
-        <BarChart2 size={40} className="card-icon text-primary" />
-        <h3 className="home-card-title">Estatísticas</h3>
-        <p className="home-card-text">Visualize sua taxa de vitórias, melhores heróis e piores vilões.</p>
-      </Link>
-
-      <Link to="/builder" className="glass-panel home-card">
-        <Wrench size={40} className="card-icon text-justice" />
-        <h3 className="home-card-title">Deck Builder</h3>
-        <p className="home-card-text">Monte decks personalizados usando apenas as cartas da sua coleção.</p>
-      </Link>
-      
-      <Link to="/campaign" className="glass-panel home-card">
-        <Map size={40} className="card-icon" style={{ color: '#c084fc' }} />
-        <h3 className="home-card-title">Campanhas</h3>
-        <p className="home-card-text">Gerencie suas campanhas offline sem precisar da caderneta de papel.</p>
-      </Link>
-      
-      <Link to="/rules" className="glass-panel home-card">
-        <BookOpen size={40} className="card-icon text-protection" />
-        <h3 className="home-card-title">Guia de Regras</h3>
-        <p className="home-card-text">Dicionário de palavras-chave, fase do vilão detalhada e referências rápidas.</p>
-      </Link>
-    </div>
-  </div>
-);
-
-import Collection from './pages/Collection';
-import Randomizer from './pages/Randomizer';
-import Decks from './pages/Decks';
-import Rules from './pages/Rules';
-import Tracker from './pages/Tracker';
-import History from './pages/History';
-import Builder from './pages/Builder';
-import Campaign from './pages/Campaign';
-import Dashboard from './pages/Dashboard';
-import ReleaseNotes from './pages/ReleaseNotes';
+const Collection = React.lazy(() => import('./pages/Collection'));
+const Randomizer = React.lazy(() => import('./pages/Randomizer'));
+const Decks = React.lazy(() => import('./pages/Decks'));
+const Rules = React.lazy(() => import('./pages/Rules'));
+const Tracker = React.lazy(() => import('./pages/Tracker'));
+const History = React.lazy(() => import('./pages/History'));
+const Builder = React.lazy(() => import('./pages/Builder'));
+const Campaign = React.lazy(() => import('./pages/Campaign'));
+const Dashboard = React.lazy(() => import('./pages/Dashboard'));
+const ReleaseNotes = React.lazy(() => import('./pages/ReleaseNotes'));
+import LoadingSpinner from './components/LoadingSpinner';
 import { useAuth } from './context/AuthContext';
 import { useCloudSync } from './hooks/useCloudSync';
+import { storage } from './services/storage';
 
 // NavLink Component
 const NavItem = ({ to, icon: Icon, children }) => {
@@ -122,19 +52,19 @@ function App() {
 
   useEffect(() => {
     // Load theme & sfx prefs
-    const savedTheme = localStorage.getItem('mc_theme');
+    const savedTheme = storage.get('mc_theme');
     if (savedTheme) {
       setTheme(savedTheme);
       document.body.setAttribute('data-theme', savedTheme);
     }
-    const savedSfx = localStorage.getItem('mc_sfx');
+    const savedSfx = storage.get('mc_sfx');
     if (savedSfx !== null) {
-      setSfxEnabled(savedSfx === 'true');
+      setSfxEnabled(String(savedSfx) === 'true');
     }
     
     // SFX Interception logic
     const clickHandler = (e) => {
-      if (localStorage.getItem('mc_sfx') === 'false') return;
+      if (String(storage.get('mc_sfx')) === 'false') return;
       
       const target = e.target.closest('button, a');
       if (target) {
@@ -176,13 +106,13 @@ function App() {
   const changeTheme = (newTheme) => {
     setTheme(newTheme);
     document.body.setAttribute('data-theme', newTheme);
-    localStorage.setItem('mc_theme', newTheme);
+    storage.set('mc_theme', newTheme);
   };
 
   const toggleSfx = () => {
     const newVal = !sfxEnabled;
     setSfxEnabled(newVal);
-    localStorage.setItem('mc_sfx', newVal);
+    storage.set('mc_sfx', newVal);
   };
 
   useEffect(() => {
@@ -309,19 +239,21 @@ function App() {
             </header>
 
             <main className="main-content container">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/collection" element={<Collection />} />
-                <Route path="/decks" element={<Decks />} />
-                <Route path="/randomizer" element={<Randomizer />} />
-                <Route path="/tracker" element={<Tracker />} />
-                <Route path="/history" element={<History />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/builder" element={<Builder />} />
-                <Route path="/campaign" element={<Campaign />} />
-                <Route path="/rules" element={<Rules />} />
-                <Route path="/releases" element={<ReleaseNotes />} />
-              </Routes>
+              <React.Suspense fallback={<LoadingSpinner />}>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/collection" element={<Collection />} />
+                  <Route path="/decks" element={<Decks />} />
+                  <Route path="/randomizer" element={<Randomizer />} />
+                  <Route path="/tracker" element={<Tracker />} />
+                  <Route path="/history" element={<History />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/builder" element={<Builder />} />
+                  <Route path="/campaign" element={<Campaign />} />
+                  <Route path="/rules" element={<Rules />} />
+                  <Route path="/releases" element={<ReleaseNotes />} />
+                </Routes>
+              </React.Suspense>
             </main>
 
             <footer className="app-footer">

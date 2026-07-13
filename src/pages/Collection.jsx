@@ -14,20 +14,7 @@ export default function Collection() {
 
   useEffect(() => {
     const loadData = async () => {
-      let saved = null;
-      if (user) {
-        saved = await getCloudData('mc_owned_packs');
-      }
-      if (!saved) {
-        const local = localStorage.getItem('mc_owned_packs');
-        if (local) {
-          try {
-            saved = JSON.parse(local);
-          } catch {
-            console.error("Error parsing saved packs");
-          }
-        }
-      }
+      const saved = await getCloudData('mc_owned_packs');
       if (saved) {
         setOwnedPacks(saved);
       }
@@ -50,22 +37,19 @@ export default function Collection() {
   const togglePack = (packCode) => {
     const updated = { ...ownedPacks, [packCode]: !ownedPacks[packCode] };
     setOwnedPacks(updated);
-    localStorage.setItem('mc_owned_packs', JSON.stringify(updated));
-    if (user) syncDataToCloud('mc_owned_packs', updated);
+    syncDataToCloud('mc_owned_packs', updated);
   };
 
   const selectAll = () => {
     const all = {};
     packs.forEach(p => { all[p.code] = true; });
     setOwnedPacks(all);
-    localStorage.setItem('mc_owned_packs', JSON.stringify(all));
-    if (user) syncDataToCloud('mc_owned_packs', all);
+    syncDataToCloud('mc_owned_packs', all);
   };
 
   const deselectAll = () => {
     setOwnedPacks({});
-    localStorage.removeItem('mc_owned_packs');
-    if (user) syncDataToCloud('mc_owned_packs', {});
+    syncDataToCloud('mc_owned_packs', {});
   };
 
   const packImages = {

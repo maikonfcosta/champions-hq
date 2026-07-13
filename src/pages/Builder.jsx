@@ -3,6 +3,7 @@ import { getCards } from '../services/api';
 import { Loader2, Plus, Minus, Copy, Check, QrCode } from 'lucide-react';
 import Modal from '../components/Modal';
 import { QRCodeSVG } from 'qrcode.react';
+import { storage } from '../services/storage';
 
 export default function Builder() {
   const [showCopyAlert, setShowCopyAlert] = useState(false);
@@ -19,8 +20,7 @@ export default function Builder() {
 
 
   useEffect(() => {
-    const saved = localStorage.getItem('mc_owned_packs');
-    setOwnedPacks(saved ? JSON.parse(saved) : {});
+    setOwnedPacks(storage.get('mc_owned_packs', {}));
 
     getCards().then(data => {
       setCards(data);

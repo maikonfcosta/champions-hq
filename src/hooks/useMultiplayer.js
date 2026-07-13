@@ -147,6 +147,12 @@ export function useMultiplayer(initialState) {
   };
 
   const disconnect = () => {
+    if (hostConnection.current) {
+      hostConnection.current.close();
+      hostConnection.current = null;
+    }
+    connections.current.forEach(c => c.close());
+    connections.current = [];
     if (peerInstance.current) {
       peerInstance.current.destroy();
       peerInstance.current = null;
@@ -160,8 +166,17 @@ export function useMultiplayer(initialState) {
   // Limpeza
   useEffect(() => {
     return () => {
+      if (hostConnection.current) {
+        hostConnection.current.close();
+        hostConnection.current = null;
+      }
+      if (connections.current) {
+        connections.current.forEach(c => c.close());
+        connections.current = [];
+      }
       if (peerInstance.current) {
         peerInstance.current.destroy();
+        peerInstance.current = null;
       }
     };
   }, []);

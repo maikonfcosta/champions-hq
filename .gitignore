@@ -26,3 +26,7 @@ dist-ssr
 hall.html
 GEMINI.md
 IDEAS.md
+
+# PDFs
+docs/*.pdf
+public/docs/*.pdf
