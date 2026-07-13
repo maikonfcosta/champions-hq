@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
 import { Trash2, Plus, Clock, RotateCcw, Zap } from 'lucide-react';
 import { getCards } from '../services/api';
 import { villains, modularSets } from '../data/villains';
 import Modal from '../components/Modal';
 import { calculateMatchXP } from '../utils/ranking';
+import { useCloudSync } from '../hooks/useCloudSync';
 
 export default function History() {
   const [history, setHistory] = useState([]);
@@ -12,39 +12,40 @@ export default function History() {
   const [ownedVillains, setOwnedVillains] = useState([]);
   const [ownedModulars, setOwnedModulars] = useState([]);
 
+  const { syncDataToCloud, getCloudData } = useCloudSync();
+
   useEffect(() => {
-    // 1. Load History
-    const saved = localStorage.getItem('mc_match_history');
-    if (saved) {
-      try {
-        setHistory(JSON.parse(saved).reverse());
-      } catch {}
-    }
+    const loadData = async () => {
+      // 1. Load History
+      const saved = await getCloudData('mc_match_history');
+      if (saved) {
+        setHistory([...saved].reverse());
+      }
 
-    // 2. Load Collection context
-    const savedPacks = localStorage.getItem('mc_owned_packs');
-    const owned = savedPacks ? JSON.parse(savedPacks) : {};
+      // 2. Load Collection context
+      const owned = await getCloudData('mc_owned_packs') || {};
 
-    // 3. Load Heroes
-    getCards().then(cards => {
-      const availableHeroes = cards
-        .filter(c => c.type_code === 'hero' && (c.pack_code === 'core' || owned[c.pack_code]))
+      // 3. Load Heroes
+      getCards().then(cards => {
+        const availableHeroes = cards
+          .filter(c => c.type_code === 'hero' && (c.pack_code === 'core' || owned[c.pack_code]))
+          .sort((a, b) => a.name.localeCompare(b.name));
+        setHeroes(availableHeroes);
+      });
+
+      // 4. Load Villains & Modulars
+      const availableVillains = villains
+        .filter(v => v.pack_code === 'core' || owned[v.pack_code])
         .sort((a, b) => a.name.localeCompare(b.name));
-      setHeroes(availableHeroes);
-    });
+      setOwnedVillains(availableVillains);
 
-    // 4. Load Villains & Modulars
-    const availableVillains = villains
-      .filter(v => v.pack_code === 'core' || owned[v.pack_code])
-      .sort((a, b) => a.name.localeCompare(b.name));
-    setOwnedVillains(availableVillains);
-
-    const availableMods = modularSets
-      .filter(m => m.pack_code === 'core' || owned[m.pack_code])
-      .sort((a, b) => a.name.localeCompare(b.name));
-    setOwnedModulars(availableMods);
-
-  }, []);
+      const availableMods = modularSets
+        .filter(m => m.pack_code === 'core' || owned[m.pack_code])
+        .sort((a, b) => a.name.localeCompare(b.name));
+      setOwnedModulars(availableMods);
+    };
+    loadData();
+  }, [getCloudData]);
 
   const [showModal, setShowModal] = useState(false);
   const [deleteIndex, setDeleteIndex] = useState(null);
@@ -86,7 +87,7 @@ export default function History() {
     // Save in original chronological order (reverse the reversed array)
     const toSave = [...newHistory].reverse();
     setHistory(newHistory);
-    localStorage.setItem('mc_match_history', JSON.stringify(toSave));
+    syncDataToCloud('mc_match_history', toSave);
   };
 
   const deleteEntry = (index) => {

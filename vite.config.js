@@ -12,8 +12,8 @@ export default defineConfig({
         name: 'Champions HQ',
         short_name: 'Champions HQ',
         description: 'Seu quartel-general definitivo para Marvel Champions LCG.',
-        theme_color: '#0f172a',
-        background_color: '#0f172a',
+        theme_color: '#1a1a1a',
+        background_color: '#1a1a1a',
         display: 'standalone',
         icons: [
           {
@@ -30,8 +30,30 @@ export default defineConfig({
       },
       workbox: {
         maximumFileSizeToCacheInBytes: 50 * 1024 * 1024, // 50MB
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,jsonl,json}']
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp}'],
+        runtimeCaching: [
+          {
+            urlPattern: /.*\.jsonl?$/,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'decks-data',
+              expiration: { maxEntries: 5, maxAgeSeconds: 86400 },
+              cacheableResponse: { statuses: [0, 200] }
+            }
+          }
+        ]
       }
     })
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules/firebase')) return 'firebase';
+          if (id.includes('node_modules/peerjs')) return 'peerjs';
+          if (id.includes('node_modules/i18next') || id.includes('node_modules/react-i18next')) return 'i18n';
+        }
+      }
+    }
+  }
 })

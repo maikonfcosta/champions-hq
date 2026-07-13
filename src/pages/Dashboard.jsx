@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BarChart2, TrendingUp, TrendingDown, Swords, ShieldAlert, Award, Clock, Hash, Zap, Shield, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { calculateMatchXP, getRankInfo } from '../utils/ranking';
+import { useCloudSync } from '../hooks/useCloudSync';
 
 export default function Dashboard() {
   const [history, setHistory] = useState([]);
@@ -21,14 +22,18 @@ export default function Dashboard() {
     rankInfo: null
   });
 
+  const { getCloudData } = useCloudSync();
+
   useEffect(() => {
-    const saved = localStorage.getItem('mc_match_history');
-    if (saved) {
-      const parsedHistory = JSON.parse(saved);
-      setHistory(parsedHistory);
-      calculateStats(parsedHistory);
-    }
-  }, []);
+    const loadStats = async () => {
+      const saved = await getCloudData('mc_match_history');
+      if (saved) {
+        setHistory(saved);
+        calculateStats(saved);
+      }
+    };
+    loadStats();
+  }, [getCloudData]);
 
   const calculateStats = (data) => {
     if (data.length === 0) return;

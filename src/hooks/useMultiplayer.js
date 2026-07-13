@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import Peer from 'peerjs';
 
 export function useMultiplayer(initialState) {
-  const [peerId, setPeerId] = useState(null);
   const [roomId, setRoomId] = useState('');
   const [isHost, setIsHost] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
@@ -24,8 +23,8 @@ export function useMultiplayer(initialState) {
     const peer = new Peer({ debug: 2 });
     peerInstance.current = peer;
 
-    peer.on('open', (id) => {
-      setPeerId(id);
+    peer.on('open', () => {
+      // peer ID assigned by PeerJS server
     });
 
     peer.on('error', (err) => {
@@ -148,6 +147,12 @@ export function useMultiplayer(initialState) {
   };
 
   const disconnect = () => {
+    if (hostConnection.current) {
+      hostConnection.current.close();
+      hostConnection.current = null;
+    }
+    connections.current.forEach(c => c.close());
+    connections.current = [];
     if (peerInstance.current) {
       peerInstance.current.destroy();
       peerInstance.current = null;
@@ -161,8 +166,17 @@ export function useMultiplayer(initialState) {
   // Limpeza
   useEffect(() => {
     return () => {
+      if (hostConnection.current) {
+        hostConnection.current.close();
+        hostConnection.current = null;
+      }
+      if (connections.current) {
+        connections.current.forEach(c => c.close());
+        connections.current = [];
+      }
       if (peerInstance.current) {
         peerInstance.current.destroy();
+        peerInstance.current = null;
       }
     };
   }, []);

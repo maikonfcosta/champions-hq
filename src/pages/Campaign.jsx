@@ -3,6 +3,7 @@ import { Book, Plus, Trash2, CheckCircle2, ChevronRight, X, User, Heart, Shield,
 import Modal from '../components/Modal';
 import { campaigns } from '../data/campaigns';
 import { getCards } from '../services/api';
+import { useCloudSync } from '../hooks/useCloudSync';
 
 export default function Campaign() {
   const [saves, setSaves] = useState([]);
@@ -11,9 +12,11 @@ export default function Campaign() {
   const [showNewModal, setShowNewModal] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(null); // player index
   
-  const [allCards, setAllCards] = useState([]);
+
+
   const [heroes, setHeroes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { syncDataToCloud, getCloudData } = useCloudSync();
 
   // New Campaign Form State
   const [newCampId, setNewCampId] = useState(campaigns[0].id);
@@ -23,17 +26,13 @@ export default function Campaign() {
   ]);
 
   useEffect(() => {
-    const loaded = localStorage.getItem('mc_campaign_saves');
-    if (loaded) {
-      try {
-        setSaves(JSON.parse(loaded));
-      } catch (e) {
-        setSaves([]);
-      }
-    }
+    const loadSaves = async () => {
+      const saved = await getCloudData('mc_campaign_saves');
+      if (saved) setSaves(saved);
+    };
+    loadSaves();
 
     getCards().then(data => {
-      setAllCards(data);
       const h = data.filter(c => c.type_code === 'hero');
       // sort heroes alphabetically
       h.sort((a, b) => a.name.localeCompare(b.name));
@@ -43,11 +42,11 @@ export default function Campaign() {
       }
       setLoading(false);
     });
-  }, []);
+  }, [getCloudData]);
 
   const saveToLocal = (newSaves) => {
     setSaves(newSaves);
-    localStorage.setItem('mc_campaign_saves', JSON.stringify(newSaves));
+    syncDataToCloud('mc_campaign_saves', newSaves);
   };
 
   const handleAddPlayer = () => {

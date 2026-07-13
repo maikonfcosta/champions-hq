@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
 import { getCards } from '../services/api';
 import { Shuffle, Loader2, Save, Copy, QrCode, Check } from 'lucide-react';
 import { villains, modularSets } from '../data/villains';
 import Modal from '../components/Modal';
 import { QRCodeSVG } from 'qrcode.react';
+import { storage } from '../services/storage';
 
 export default function Randomizer() {
   const [cards, setCards] = useState([]);
@@ -43,8 +43,7 @@ export default function Randomizer() {
   }, []);
 
   const getOwnedPacks = () => {
-    const saved = localStorage.getItem('mc_owned_packs');
-    return saved ? JSON.parse(saved) : {};
+    return storage.get('mc_owned_packs', {});
   };
 
   const generateRandom = () => {
@@ -128,8 +127,7 @@ export default function Randomizer() {
   };
 
   const handleSaveLog = (result) => {
-    const saved = localStorage.getItem('mc_match_history');
-    const history = saved ? JSON.parse(saved) : [];
+    const history = storage.get('mc_match_history', []);
     history.push({
       hero: randomHero.name,
       aspect: randomAspect.name,
@@ -139,7 +137,7 @@ export default function Randomizer() {
       result: result,
       date: new Date().toISOString()
     });
-    localStorage.setItem('mc_match_history', JSON.stringify(history));
+    storage.set('mc_match_history', history);
     setShowLogModal(false);
     setShowAlert(true);
     setTimeout(() => setShowAlert(false), 2000);
