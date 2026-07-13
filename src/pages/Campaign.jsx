@@ -11,7 +11,8 @@ export default function Campaign() {
   const [showNewModal, setShowNewModal] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(null); // player index
   
-  const [allCards, setAllCards] = useState([]);
+
+
   const [heroes, setHeroes] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -27,13 +28,12 @@ export default function Campaign() {
     if (loaded) {
       try {
         setSaves(JSON.parse(loaded));
-      } catch (e) {
+      } catch {
         setSaves([]);
       }
     }
 
     getCards().then(data => {
-      setAllCards(data);
       const h = data.filter(c => c.type_code === 'hero');
       // sort heroes alphabetically
       h.sort((a, b) => a.name.localeCompare(b.name));

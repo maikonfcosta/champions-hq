@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Shield, ShieldAlert, Skull, Plus, Minus, RotateCcw, FastForward, Clock, Trash2, Users, Wifi, Copy, Check, Camera, X, BookOpen, Ghost } from 'lucide-react';
 import Modal from '../components/Modal';
 import TurnAssistant from '../components/TurnAssistant';
@@ -59,8 +59,7 @@ export default function Tracker() {
     createRoom, 
     joinRoom, 
     disconnect,
-    error,
-    setGameStateDirect 
+    error
   } = useMultiplayer(getInitialState());
 
   const [showMultiplayer, setShowMultiplayer] = useState(false);
@@ -78,7 +77,7 @@ export default function Tracker() {
         setShowScanner(false);
         joinRoom(decodedText);
         scanner.clear();
-      }, (error) => {
+      }, (_error) => {
         // Ignore read errors
       });
     }
@@ -87,6 +86,7 @@ export default function Tracker() {
         scanner.clear().catch(e => console.error(e));
       }
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- joinRoom is unstable (recreated each render), adding it would cause infinite scanner restarts
   }, [showScanner]);
 
   const [activeHeroIdx, setActiveHeroIdx] = useState(0);
@@ -97,14 +97,14 @@ export default function Tracker() {
       if (screen.orientation && screen.orientation.lock) {
         screen.orientation.lock('landscape').catch(e => console.log('Orientation lock failed:', e));
       }
-    } catch (e) {}
+    } catch {}
 
     return () => {
       try {
         if (screen.orientation && screen.orientation.unlock) {
           screen.orientation.unlock();
         }
-      } catch (e) {}
+      } catch {}
     };
   }, []);
 
@@ -121,7 +121,7 @@ export default function Tracker() {
       await navigator.clipboard.writeText(roomId);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch(err) { }
+    } catch { }
   };
 
   // --- HERO METHODS ---
@@ -579,7 +579,7 @@ export default function Tracker() {
                       {copied ? <Check size={20} /> : <Copy size={20} />}
                     </button>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px', background: 'white', padding: '16px', borderRadius: '12px', display: 'inline-block', margin: '0 auto 24px auto' }}>
+                  <div style={{ justifyContent: 'center', background: 'white', padding: '16px', borderRadius: '12px', display: 'inline-block', margin: '0 auto 24px auto' }}>
                     <QRCodeSVG value={roomId} size={150} level={"H"} />
                   </div>
                 </>

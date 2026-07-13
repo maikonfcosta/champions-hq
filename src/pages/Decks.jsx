@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
 import { getCards } from '../services/api';
 import { Loader2, List, Copy, QrCode, Check } from 'lucide-react';
 import Modal from '../components/Modal';

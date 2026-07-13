@@ -138,9 +138,7 @@ function App() {
       
       const target = e.target.closest('button, a');
       if (target) {
-        // play a tiny base64 click sound (very short subtle tick)
-        const snd = new Audio('data:audio/mp3;base64,//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//NExEAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq'); 
-        // Note: this is a dummy silent base64 to avoid blocking. Real SFX will be handled via simple synth.
+        // play a tiny click sound via Web Audio API below
         
         try {
           // Web Audio API for a perfect instant tick
@@ -167,7 +165,7 @@ function App() {
             osc.start();
             osc.stop(ctx.currentTime + 0.08);
           }
-        } catch(err) { /* ignore audio context errors if blocked */ }
+        } catch { /* ignore audio context errors if blocked */ }
       }
     };
     

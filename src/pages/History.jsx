@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
 import { Trash2, Plus, Clock, RotateCcw, Zap } from 'lucide-react';
 import { getCards } from '../services/api';
 import { villains, modularSets } from '../data/villains';

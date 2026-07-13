@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { getCards } from '../services/api';
 import { Loader2, Plus, Minus, Copy, Check, QrCode } from 'lucide-react';
 import Modal from '../components/Modal';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { QRCodeSVG } from 'qrcode.react';
 
 export default function Builder() {
@@ -17,8 +16,7 @@ export default function Builder() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
 
-  const location = useLocation();
-  const navigate = useNavigate();
+
 
   useEffect(() => {
     const saved = localStorage.getItem('mc_owned_packs');

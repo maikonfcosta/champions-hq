@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
 import { getCards } from '../services/api';
 import { Shuffle, Loader2, Save, Copy, QrCode, Check } from 'lucide-react';
 import { villains, modularSets } from '../data/villains';

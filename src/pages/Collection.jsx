@@ -44,6 +44,7 @@ export default function Collection() {
         });
     };
     loadData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- getCloudData is unstable (recreated each render), adding it would cause infinite loops
   }, [user]);
 
   const togglePack = (packCode) => {
