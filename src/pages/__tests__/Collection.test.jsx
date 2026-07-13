@@ -4,6 +4,13 @@ import Collection from '../Collection';
 import React from 'react';
 
 // Mock contexts and hooks
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key) => key,
+    i18n: { changeLanguage: vi.fn() }
+  })
+}));
+
 vi.mock('../../context/AuthContext', () => ({
   useAuth: () => ({ user: null })
 }));
@@ -29,14 +36,14 @@ describe('Collection Page', () => {
   it('should render loading state initially', () => {
     render(<Collection />);
     // Loading is indicated by the Loader2 component but we can just check if main container isn't there yet
-    expect(screen.queryByText('Minha Coleção')).not.toBeInTheDocument();
+    expect(screen.queryByText('collection.title')).not.toBeInTheDocument();
   });
 
   it('should render packs after loading data', async () => {
     render(<Collection />);
     
     await waitFor(() => {
-      expect(screen.getByText('Minha Coleção')).toBeInTheDocument();
+      expect(screen.getByText('collection.title')).toBeInTheDocument();
     });
 
     expect(screen.getByText('Core Set')).toBeInTheDocument();
