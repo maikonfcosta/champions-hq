@@ -172,7 +172,7 @@ function App() {
                 <Settings size={22} />
               </button>
               {user ? (
-                <img src={user.photoURL} alt="User" onClick={logout} style={{ width: 24, height: 24, borderRadius: '50%', cursor: 'pointer' }} title="Sair" />
+                <img src={user.photoURL} alt="User" onClick={logout} style={{ width: 24, height: 24, borderRadius: '50%', cursor: 'pointer' }} title="SAIR" />
               ) : (
                 <button onClick={loginWithGoogle} className="btn-primary" style={{ padding: '4px 8px', fontSize: '0.75rem' }}>Login</button>
               )}
@@ -239,7 +239,7 @@ function App() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <span style={{ fontSize: '0.8rem', color: '#86efac' }}>{syncStatus === 'syncing' ? '...' : 'OK'}</span>
                   <img src={user.photoURL} alt="User" style={{ width: 32, height: 32, borderRadius: '50%' }} title={user.displayName} />
-                  <button onClick={logout} className="btn" style={{ padding: '6px 12px', fontSize: '0.85rem' }}>Sair</button>
+                  <button onClick={logout} className="btn" style={{ padding: '6px 12px', fontSize: '0.85rem' }}>SAIR</button>
                 </div>
               ) : (
                 <button onClick={loginWithGoogle} className="btn-primary" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>
