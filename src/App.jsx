@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { BookOpen, Layers, Zap, Shuffle, Activity, Archive, Wrench, Map, Menu, X, Home as HomeIcon, BarChart2, Settings, Volume2, VolumeX, Globe } from 'lucide-react';
+import { BookOpen, Layers, Zap, Shuffle, Activity, Archive, Wrench, Map, Menu, X, Home as HomeIcon, BarChart2, Settings, Volume2, VolumeX, Globe, Download } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Modal from './components/Modal';
 import ReloadPrompt from './components/ReloadPrompt';
@@ -198,6 +198,16 @@ function App() {
               <NavItem to="/builder" icon={Wrench}>Builder</NavItem>
               <NavItem to="/campaign" icon={Map}>{t('nav.campaign')}</NavItem>
               <NavItem to="/rules" icon={BookOpen}>Regras</NavItem>
+              {deferredPrompt && (
+                <button 
+                  onClick={handleInstall} 
+                  className="nav-link flex items-center gap-2" 
+                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left', color: 'var(--primary-color)' }}
+                >
+                  <Download size={18} />
+                  <span>Instalar App</span>
+                </button>
+              )}
             </nav>
 
           </aside>
@@ -269,6 +279,15 @@ function App() {
                   <Link to="/decks" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Zap size={20} /> {t('nav.decks')}</Link>
                   <Link to="/collection" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Layers size={20} /> {t('nav.collection')}</Link>
                   <Link to="/rules" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><BookOpen size={20} /> Regras</Link>
+                  {deferredPrompt && (
+                    <button 
+                      onClick={() => { setIsMobileMenuOpen(false); handleInstall(); }} 
+                      className="mobile-link" 
+                      style={{ background: 'transparent', border: 'none', color: 'var(--primary-color)', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
+                      <Download size={20} /> Instalar App
+                    </button>
+                  )}
                 </div>
               )}
               <div className="container" style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem', padding: '32px 24px', borderTop: '1px solid var(--surface-border)', marginTop: 'auto' }}>
@@ -341,6 +360,20 @@ function App() {
 
               </div>
             </div>
+
+            {deferredPrompt && (
+              <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '24px' }}>
+                <h4 style={{ color: 'white', marginBottom: '16px', fontSize: '1.1rem' }}>Instalação PWA</h4>
+                <button 
+                  onClick={handleInstall}
+                  className="btn-primary"
+                  style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '16px', fontSize: '1rem' }}
+                >
+                  <Download size={20} />
+                  <span>Instalar Aplicativo Agora</span>
+                </button>
+              </div>
+            )}
 
           </div>
         </Modal>
