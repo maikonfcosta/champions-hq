@@ -3,6 +3,31 @@ import { Tag, CheckCircle2, Star, Sparkles, Rocket } from 'lucide-react';
 
 const releases = [
   {
+    version: "1.3.0",
+    date: "13 de Julho de 2026",
+    title: "Performance & Robustez (The Quality Update) ⚡",
+    description: "Nesta grande atualização invisível aos olhos mas sentida no uso, reescrevemos o coração do aplicativo. O app agora carrega muito mais rápido, consome menos memória e blinda seus dados com regras estritas.",
+    highlights: [
+      {
+        icon: <Rocket size={18} className="text-primary" />,
+        text: "Code-Splitting e Lazy Loading: O aplicativo foi quebrado em dezenas de pequenos pedaços (Chunks). Você só baixa o código da tela em que está navegando, e não mais o app inteiro de uma só vez, garantindo loadings instantâneos."
+      },
+      {
+        icon: <CheckCircle2 size={18} className="text-protection" />,
+        text: "Zero Memory Leaks no Multiplayer: O código de conexão em tempo real (P2P/WebRTC) foi reescrito, fechando as pontas que ficavam abertas caso você mudasse de tela, melhorando a estabilidade da partida conjunta."
+      },
+      {
+        icon: <Tag size={18} className="text-secondary" />,
+        text: "Proteção de Dados na Nuvem (Security Rules): O servidor do banco de dados agora proíbe criptograficamente qualquer tentativa de leitura ou edição dos seus saves por outras pessoas. Seus dados estão 100% blindados pela sua conta Google."
+      }
+    ],
+    features: [
+      "Substituição de alertas brancos de erro antigos por belas Notificações em Toast animadas.",
+      "Otimização do PWA e Cache das centenas de decks offline.",
+      "Redução no peso da aplicação com remoção de lixo estático e importações atrasadas (Lazy load de idiomas)."
+    ]
+  },
+  {
     version: "1.2.1",
     date: "10 de Julho de 2026",
     title: "Hotfix: Menu Mobile Flutuante 🩹",
