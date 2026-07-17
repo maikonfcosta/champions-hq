@@ -249,7 +249,7 @@ export default function Rules() {
             
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
               <button 
-                onClick={() => { setPdfUrl('/docs/marvel_champions_th_learn_to_play_142802.pdf'); setPdfTitle('Aprenda a Jogar'); }} 
+                onClick={() => { setPdfUrl(`${import.meta.env.BASE_URL}docs/marvel_champions_th_learn_to_play_142802.pdf`); setPdfTitle('Aprenda a Jogar'); }} 
                 className="glass-panel" 
                 style={{ display: 'flex', flexDirection: 'column', padding: '24px', border: 'none', background: 'rgba(255,255,255,0.05)', textAlign: 'left', cursor: 'pointer', transition: 'all 0.3s' }}
               >
@@ -259,7 +259,7 @@ export default function Rules() {
               </button>
 
               <button 
-                onClick={() => { setPdfUrl('/docs/marvel_champions_th_referencia_de_regras_142911.pdf'); setPdfTitle('Referência de Regras'); }} 
+                onClick={() => { setPdfUrl(`${import.meta.env.BASE_URL}docs/marvel_champions_th_referencia_de_regras_142911.pdf`); setPdfTitle('Referência de Regras'); }} 
                 className="glass-panel" 
                 style={{ display: 'flex', flexDirection: 'column', padding: '24px', border: 'none', background: 'rgba(255,255,255,0.05)', textAlign: 'left', cursor: 'pointer', transition: 'all 0.3s' }}
               >
@@ -269,7 +269,7 @@ export default function Rules() {
               </button>
 
               <button 
-                onClick={() => { setPdfUrl('/docs/marvel_champions_th_guia_de_referencia_pt_br_268594.pdf'); setPdfTitle('Guia de Referência PT-BR'); }} 
+                onClick={() => { setPdfUrl(`${import.meta.env.BASE_URL}docs/marvel_champions_th_guia_de_referencia_pt_br_268594.pdf`); setPdfTitle('Guia de Referência PT-BR'); }} 
                 className="glass-panel" 
 
                 style={{ display: 'flex', flexDirection: 'column', padding: '24px', border: 'none', background: 'rgba(255,255,255,0.05)', textAlign: 'left', cursor: 'pointer', transition: 'all 0.3s' }}
