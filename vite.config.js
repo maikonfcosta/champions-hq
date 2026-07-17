@@ -31,6 +31,7 @@ export default defineConfig({
       workbox: {
         maximumFileSizeToCacheInBytes: 50 * 1024 * 1024, // 50MB
         globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp}'],
+        navigateFallbackDenylist: [/^\/docs/],
         runtimeCaching: [
           {
             urlPattern: /.*\.jsonl?$/,
