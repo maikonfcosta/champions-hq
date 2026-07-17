@@ -23,6 +23,7 @@ import LoadingSpinner from './components/LoadingSpinner';
 import { useAuth } from './context/AuthContext';
 import { useCloudSync } from './hooks/useCloudSync';
 import { storage } from './services/storage';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // NavLink Component
 const NavItem = ({ to, icon: Icon, children }) => {
@@ -249,21 +250,23 @@ function App() {
             </header>
 
             <main className="main-content container">
-              <React.Suspense fallback={<LoadingSpinner />}>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/collection" element={<Collection />} />
-                  <Route path="/decks" element={<Decks />} />
-                  <Route path="/randomizer" element={<Randomizer />} />
-                  <Route path="/tracker" element={<Tracker />} />
-                  <Route path="/history" element={<History />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/builder" element={<Builder />} />
-                  <Route path="/campaign" element={<Campaign />} />
-                  <Route path="/rules" element={<Rules />} />
-                  <Route path="/releases" element={<ReleaseNotes />} />
-                </Routes>
-              </React.Suspense>
+              <ErrorBoundary>
+                <React.Suspense fallback={<LoadingSpinner />}>
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/collection" element={<Collection />} />
+                    <Route path="/decks" element={<Decks />} />
+                    <Route path="/randomizer" element={<Randomizer />} />
+                    <Route path="/tracker" element={<Tracker />} />
+                    <Route path="/history" element={<History />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/builder" element={<Builder />} />
+                    <Route path="/campaign" element={<Campaign />} />
+                    <Route path="/rules" element={<Rules />} />
+                    <Route path="/releases" element={<ReleaseNotes />} />
+                  </Routes>
+                </React.Suspense>
+              </ErrorBoundary>
             </main>
 
             <footer className="app-footer">

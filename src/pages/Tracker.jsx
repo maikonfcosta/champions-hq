@@ -8,9 +8,9 @@ import { QRCodeSVG } from 'qrcode.react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import { storage } from '../services/storage';
 
-const defaultState = {
+const getDefaultState = (t) => ({
   heroes: [
-    { id: 1, name: t('tracker.hero') + ' 1', hp: 10, status: { stunned: false, confused: false, tough: false } }
+    { id: 1, name: t ? t('tracker.hero') + ' 1' : 'Hero 1', hp: 10, status: { stunned: false, confused: false, tough: false } }
   ],
   villainHp: 15,
   villainStage: 1,
@@ -20,7 +20,7 @@ const defaultState = {
   round: 1,
   extras: [],
   encounters: { dealt: 0, surge: 0, notes: '' }
-};
+});
 
 export default function Tracker() {
   const { t } = useTranslation();
@@ -31,6 +31,7 @@ export default function Tracker() {
   const [showAssistant, setShowAssistant] = useState(false);
 
   const getInitialState = () => {
+    const defaultState = getDefaultState(t);
     const s = storage.get('mc_tracker_state');
     if (s) {
       if (s.heroes) {
@@ -215,7 +216,7 @@ export default function Tracker() {
   
   const confirmResetGame = () => {
     updateState({
-      ...defaultState,
+      ...getDefaultState(t),
       heroes: gameState.heroes.map((h) => ({ ...h, hp: 10, status: { stunned: false, confused: false, tough: false } }))
     });
     setShowResetConfirm(false);
