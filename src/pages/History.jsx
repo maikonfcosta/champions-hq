@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Trash2, Plus, Clock, RotateCcw, Zap } from 'lucide-react';
+import { Trash2, Plus, Clock, RotateCcw, Zap, Trophy } from 'lucide-react';
 import { getCards } from '../services/api';
 import { villains, modularSets } from '../data/villains';
 import Modal from '../components/Modal';
@@ -148,7 +148,10 @@ export default function History() {
             <div key={idx} className="glass-panel" style={{ padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderLeft: `4px solid ${match.result === 'Vitória' ? 'var(--aspect-protection)' : 'var(--primary-color)'}` }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px' }}>
-                  <h4 style={{ color: match.result === 'Vitória' ? 'var(--aspect-protection)' : 'var(--primary-color)', margin: 0 }}>{match.result === 'Vitória' ? t('history.victory') : match.result === 'Derrota' ? t('history.defeat') : match.result}</h4>
+                  <h4 style={{ color: match.result === 'Vitória' ? 'var(--aspect-protection)' : 'var(--primary-color)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    {match.isChallenge && <Trophy size={16} color="#fbc02d" title="Desafio da Semana" />}
+                    {match.result === 'Vitória' ? t('history.victory') : match.result === 'Derrota' ? t('history.defeat') : match.result}
+                  </h4>
                   <span style={{ fontSize: '0.85rem', fontWeight: 'bold', padding: '2px 8px', borderRadius: '12px', background: xp > 0 ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', color: xp > 0 ? '#4ade80' : '#f87171' }}>
                     {xp > 0 ? '+' : ''}{xp} XP
                   </span>

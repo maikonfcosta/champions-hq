@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { BookOpen, Layers, Zap, Shuffle, Activity, Archive, Wrench, Map, Menu, X, Home as HomeIcon, BarChart2, Settings, Volume2, VolumeX, Globe, Download } from 'lucide-react';
+import { BookOpen, Layers, Zap, Shuffle, Activity, Archive, Wrench, Map, Menu, X, Home as HomeIcon, BarChart2, Settings, Volume2, VolumeX, Globe, Download, Trophy } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Modal from './components/Modal';
 import ReloadPrompt from './components/ReloadPrompt';
@@ -15,6 +15,7 @@ const Decks = React.lazy(() => import('./pages/Decks'));
 const Rules = React.lazy(() => import('./pages/Rules'));
 const Tracker = React.lazy(() => import('./pages/Tracker'));
 const History = React.lazy(() => import('./pages/History'));
+const Challenges = React.lazy(() => import('./pages/Challenges'));
 const Builder = React.lazy(() => import('./pages/Builder'));
 const Campaign = React.lazy(() => import('./pages/Campaign'));
 const Dashboard = React.lazy(() => import('./pages/Dashboard'));
@@ -194,6 +195,7 @@ function App() {
               <NavItem to="/decks" icon={Zap}>{t('nav.decks')}</NavItem>
               <NavItem to="/randomizer" icon={Shuffle}>{t('nav.randomizer')}</NavItem>
               <NavItem to="/tracker" icon={Activity}>{t('nav.tracker')}</NavItem>
+              <NavItem to="/challenges" icon={Trophy}>Desafios</NavItem>
               <NavItem to="/history" icon={Archive}>{t('nav.history')}</NavItem>
               <NavItem to="/dashboard" icon={BarChart2}>{t('nav.dashboard')}</NavItem>
               <NavItem to="/builder" icon={Wrench}>Builder</NavItem>
@@ -258,6 +260,7 @@ function App() {
                     <Route path="/decks" element={<Decks />} />
                     <Route path="/randomizer" element={<Randomizer />} />
                     <Route path="/tracker" element={<Tracker />} />
+                    <Route path="/challenges" element={<Challenges />} />
                     <Route path="/history" element={<History />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/builder" element={<Builder />} />
@@ -277,6 +280,7 @@ function App() {
                   <Link to="/builder" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Wrench size={20} /> Builder</Link>
                   <Link to="/campaign" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Map size={20} /> {t('nav.campaign')}</Link>
                   <Link to="/randomizer" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Shuffle size={20} /> {t('nav.randomizer')}</Link>
+                  <Link to="/challenges" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Trophy size={20} /> Desafios</Link>
                   <Link to="/history" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Archive size={20} /> {t('nav.history')}</Link>
                   <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><BarChart2 size={20} /> {t('nav.dashboard')}</Link>
                   <Link to="/decks" onClick={() => setIsMobileMenuOpen(false)} className="mobile-link"><Zap size={20} /> {t('nav.decks')}</Link>

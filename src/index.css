@@ -1502,3 +1502,14 @@ button {
   font-size: 0.9rem;
   font-weight: 500;
 }
+
+/* Challenges Page Styles */
+.challenges-grid {
+  grid-template-columns: minmax(300px, 1fr) minmax(300px, 350px);
+}
+
+@media (max-width: 768px) {
+  .challenges-grid {
+    grid-template-columns: 1fr;
+  }
+}

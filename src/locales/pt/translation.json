@@ -318,5 +318,20 @@
     "share_title": "Compartilhar Deck",
     "share_desc": "Peça para um amigo escanear este QR Code com a câmera do celular ou copie o link direto para carregar essa lista na hora!",
     "copy_link": "Copiar Link Direto"
+  },
+  "challenges": {
+    "title": "Desafio da Semana",
+    "subtitle": "Meça suas habilidades contra a comunidade global!",
+    "no_active": "Nenhum Desafio Ativo",
+    "no_active_desc": "Fique atento. Os grandes vilões descansam... por enquanto.",
+    "req_hero": "Herói Obrigatório",
+    "villain": "Vilão",
+    "free": "Livre",
+    "any_aspect": "Qualquer",
+    "accept": "Aceitar Desafio",
+    "incomplete_col": "Coleção Incompleta",
+    "missing": "Falta: {{packs}}",
+    "leaderboard": "Ranking Global",
+    "no_entries": "Seja o primeiro a vencer este desafio!"
   }
 }
