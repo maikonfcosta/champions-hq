@@ -318,5 +318,20 @@
     "share_title": "Compartir Mazo",
     "share_desc": "¡Pide a un amigo que escanee este código QR con la cámara de su teléfono o copia el enlace directo para cargar esta lista al instante!",
     "copy_link": "Copiar Enlace Directo"
+  },
+  "challenges": {
+    "title": "Desafío de la Semana",
+    "subtitle": "¡Mide tus habilidades contra la comunidad global!",
+    "no_active": "Ningún Desafío Activo",
+    "no_active_desc": "Mantente atento. Los grandes villanos descansan... por ahora.",
+    "req_hero": "Héroe Obligatorio",
+    "villain": "Villano",
+    "free": "Libre",
+    "any_aspect": "Cualquiera",
+    "accept": "Aceptar Desafío",
+    "incomplete_col": "Colección Incompleta",
+    "missing": "Falta: {{packs}}",
+    "leaderboard": "Ranking Global",
+    "no_entries": "¡Sé el primero en superar este desafío!"
   }
 }

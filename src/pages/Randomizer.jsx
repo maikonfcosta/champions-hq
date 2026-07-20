@@ -1,16 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { getCards } from '../services/api';
 import { Shuffle, Loader2, Save, Copy, QrCode, Check } from 'lucide-react';
 import { villains, modularSets } from '../data/villains';
 import Modal from '../components/Modal';
+import { useCloudSync } from '../hooks/useCloudSync';
 import { QRCodeSVG } from 'qrcode.react';
 import { storage } from '../services/storage';
+import { generateSetup } from '../utils/randomizer';
+import { useAuth } from '../context/AuthContext';
+import { submitChallengeLog } from '../services/challenges';
 
 export default function Randomizer() {
+  const location = useLocation();
+  const { user } = useAuth();
   const { t } = useTranslation();
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { syncDataToCloud, getCloudData } = useCloudSync();
   
   const [randomHero, setRandomHero] = useState(null);
   const [randomAspect, setRandomAspect] = useState(null);
@@ -22,6 +30,7 @@ export default function Randomizer() {
   const [difficulty, setDifficulty] = useState('Standard');
   const [showLogModal, setShowLogModal] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [activeChallenge] = useState(location.state?.challengeSeed || null);
   
   const [showCopyAlert, setShowCopyAlert] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -38,99 +47,37 @@ export default function Randomizer() {
     getCards().then(data => {
       setCards(data);
       setLoading(false);
+      if (activeChallenge) {
+        generateRandom(activeChallenge.seedData, data);
+        if (activeChallenge.seedData?.difficulty) {
+          setDifficulty(activeChallenge.seedData.difficulty);
+        }
+      }
     }).catch(err => {
       console.error(err);
       setLoading(false);
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getOwnedPacks = () => {
     return storage.get('mc_owned_packs', {});
   };
 
-  const generateRandom = () => {
+  const generateRandom = (forcedSeed = null, allCards = cards) => {
     const ownedPacks = getOwnedPacks();
-    const ownedPacksCount = Object.keys(ownedPacks).filter(k => ownedPacks[k]).length;
-    
-    // Filter cards by owned packs, unless no packs are selected (then use all)
-    const availableCards = ownedPacksCount > 0 
-      ? cards.filter(c => ownedPacks[c.pack_code] || c.pack_code === 'core') 
-      : cards;
+    const setup = generateSetup(allCards, villains, modularSets, ownedPacks, forcedSeed);
 
-    // Pick Hero
-    const heroes = availableCards.filter(c => c.type_code === 'hero');
-    let hero = null;
-    let aspect = null;
-    let deck = [];
-
-    if (heroes.length > 0) {
-      hero = heroes[Math.floor(Math.random() * heroes.length)];
-      aspect = aspects[Math.floor(Math.random() * aspects.length)];
-      setRandomHero(hero);
-      setRandomAspect(aspect);
-
-      // 1. Get 15 signature cards
-      const signatureCards = availableCards.filter(c => 
-        c.card_set_code === hero.card_set_code && 
-        c.type_code !== 'hero' && 
-        c.type_code !== 'alter_ego'
-      );
-
-      // 2. Get random aspect/basic cards to fill up to 40
-      const validPool = availableCards.filter(c => 
-        (c.faction_code === aspect.code || c.faction_code === 'basic') &&
-        ['ally', 'event', 'resource', 'support', 'upgrade'].includes(c.type_code)
-      );
-
-      // Shuffle pool
-      const shuffledPool = validPool.sort(() => 0.5 - Math.random());
-      
-      const aspectBasicCards = [];
-      let count = 0;
-      for (const card of shuffledPool) {
-        if (count >= 25) break;
-        const qty = card.deck_limit || 1; 
-        const addQty = Math.min(qty, 25 - count); // add up to deck limit, or max 25
-        if (addQty > 0) {
-          aspectBasicCards.push({ ...card, quantity: addQty });
-          count += addQty;
-        }
-      }
-
-      deck = [...signatureCards.map(c => ({...c, quantity: c.quantity || 1})), ...aspectBasicCards];
-      setGeneratedDeck(deck);
-    } else {
-      setRandomHero(null);
-      setGeneratedDeck([]);
-    }
-
-    // Pick Villain & Modular Set
-    const availableVillains = ownedPacksCount > 0 
-      ? villains.filter(v => ownedPacks[v.pack_code] || v.pack_code === 'core')
-      : villains;
-
-    const availableModulars = ownedPacksCount > 0 
-      ? modularSets.filter(m => ownedPacks[m.pack_code] || m.pack_code === 'core')
-      : modularSets;
-
-    if (availableVillains.length > 0) {
-      setRandomVillain(availableVillains[Math.floor(Math.random() * availableVillains.length)]);
-    } else {
-      setRandomVillain(null);
-    }
-
-    if (availableModulars.length > 0) {
-      // Pick 2 modulars to be safe for advanced villains, or just 1
-      const shuffledMods = availableModulars.sort(() => 0.5 - Math.random());
-      setRandomModulars(shuffledMods.slice(0, 2));
-    } else {
-      setRandomModulars([]);
-    }
+    setRandomHero(setup.hero);
+    setRandomAspect(setup.aspect);
+    setGeneratedDeck(setup.deck);
+    setRandomVillain(setup.villain);
+    setRandomModulars(setup.modulars);
   };
 
-  const handleSaveLog = (result) => {
-    const history = storage.get('mc_match_history', []);
-    history.push({
+  const handleSaveLog = async (result) => {
+    const history = await getCloudData('mc_match_history') || [];
+    const matchData = {
       hero: randomHero.name,
       aspect: randomAspect.name,
       villain: randomVillain.name,
@@ -138,8 +85,21 @@ export default function Randomizer() {
       difficulty: difficulty,
       result: result,
       date: new Date().toISOString()
-    });
-    storage.set('mc_match_history', history);
+    };
+    
+    // Calcula XP Básico (Mockado aqui, no history tem logic real)
+    let xpGained = result === 'Vitória' ? (difficulty === 'Heroic' ? 30 : difficulty === 'Expert' ? 20 : 10) : 5;
+    if (activeChallenge && result === 'Vitória') xpGained += 20; // Bonus de Desafio
+    matchData.xpGained = xpGained;
+
+    history.push(matchData);
+    await syncDataToCloud('mc_match_history', history);
+    
+    // Envia Log Pro Desafio se aplicável
+    if (activeChallenge) {
+      await submitChallengeLog(activeChallenge.id, user, matchData);
+    }
+
     setShowLogModal(false);
     setShowAlert(true);
     setTimeout(() => setShowAlert(false), 2000);
@@ -177,21 +137,22 @@ export default function Randomizer() {
     <div className="animate-fade-in container">
       <div className="page-header" style={{ alignItems: 'center', textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
         <div>
-          <h2 className="page-title">{t("randomizer.title")}</h2>
-          <p className="page-subtitle">{t("randomizer.subtitle")}</p>
+          <h2 className="page-title">{activeChallenge ? activeChallenge.title : t("randomizer.title")}</h2>
+          <p className="page-subtitle">{activeChallenge ? "Partida Fixa de Desafio da Semana" : t("randomizer.subtitle")}</p>
         </div>
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
           <select 
             value={difficulty} 
             onChange={(e) => setDifficulty(e.target.value)}
+            disabled={!!activeChallenge}
             style={{ background: 'rgba(0,0,0,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '10px 16px', borderRadius: '8px', outline: 'none' }}
           >
             <option value="Standard">Standard</option>
             <option value="Expert">Expert</option>
             <option value="Heroic">Heroic</option>
           </select>
-          <button onClick={generateRandom} className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-            <Shuffle size={20} /> Gerar Partida
+          <button onClick={() => generateRandom()} disabled={!!activeChallenge} className={activeChallenge ? "btn-secondary" : "btn-primary"} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', opacity: activeChallenge ? 0.5 : 1 }}>
+            <Shuffle size={20} /> {activeChallenge ? "Setup Travado" : "Gerar Partida"}
           </button>
         </div>
       </div>

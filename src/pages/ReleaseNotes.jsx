@@ -3,6 +3,27 @@ import { Tag, CheckCircle2, Star, Sparkles, Rocket } from 'lucide-react';
 
 const releases = [
   {
+    version: "1.4.0",
+    date: "20 de Julho de 2026",
+    title: "Desafios da Semana 🏆",
+    description: "Competição global! Agora toda semana você terá um Desafio da Semana com condições pré-definidas de Vitória, Vilão, Herói e Modulares.",
+    highlights: [
+      {
+        icon: <Trophy size={18} className="text-primary" />,
+        text: "Desafio Global: A página principal conta com um banner desafiando você a bater as estatísticas e ser o melhor da semana."
+      },
+      {
+        icon: <Star size={18} className="text-justice" />,
+        text: "Ranking Dedicado: Os participantes ganham posições na tabela global assim que vencem, estimulando a comunidade a competir de forma saudável."
+      }
+    ],
+    features: [
+      "Integração completa com i18n nas mensagens de desafios.",
+      "Layout UX aprimorado e responsivo no Mobile para o mural do Ranking.",
+      "Destaque visual exclusivo (🏆) no histórico para as partidas que completaram o Desafio."
+    ]
+  },
+  {
     version: "1.3.0",
     date: "13 de Julho de 2026",
     title: "Performance & Robustez (The Quality Update) ⚡",

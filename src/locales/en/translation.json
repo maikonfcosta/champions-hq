@@ -318,5 +318,20 @@
     "share_title": "Share Deck",
     "share_desc": "Ask a friend to scan this QR Code with their phone camera or copy the direct link to load this list instantly!",
     "copy_link": "Copy Direct Link"
+  },
+  "challenges": {
+    "title": "Challenge of the Week",
+    "subtitle": "Measure your skills against the global community!",
+    "no_active": "No Active Challenge",
+    "no_active_desc": "Stay tuned. The great villains rest... for now.",
+    "req_hero": "Required Hero",
+    "villain": "Villain",
+    "free": "Free",
+    "any_aspect": "Any",
+    "accept": "Accept Challenge",
+    "incomplete_col": "Incomplete Collection",
+    "missing": "Missing: {{packs}}",
+    "leaderboard": "Global Ranking",
+    "no_entries": "Be the first to beat this challenge!"
   }
 }
