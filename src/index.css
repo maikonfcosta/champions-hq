@@ -254,6 +254,12 @@ button {
   height: 100vh;
   overflow-y: auto;
   z-index: 50;
+  transition: width 0.3s ease, padding 0.3s ease;
+}
+
+.sidebar.collapsed {
+  width: 80px;
+  padding: 2rem 0.5rem;
 }
 
 .sidebar-logo {
@@ -265,6 +271,11 @@ button {
   border-bottom: 1px solid var(--surface-border);
   text-align: center;
   margin-bottom: 2rem;
+  transition: padding 0.3s ease;
+}
+
+.sidebar.collapsed .sidebar-logo {
+  padding-bottom: 1rem;
 }
 
 .sidebar-logo .logo-img {
@@ -274,6 +285,12 @@ button {
   object-fit: cover;
   border: 2px solid var(--primary-color);
   box-shadow: 0 0 15px var(--primary-glow);
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+.sidebar.collapsed .sidebar-logo .logo-img {
+  width: 40px;
+  height: 40px;
 }
 
 .sidebar-logo h2 {
@@ -282,6 +299,15 @@ button {
   color: white;
   text-transform: uppercase;
   letter-spacing: 1.5px;
+  transition: opacity 0.2s ease, height 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sidebar.collapsed .sidebar-logo h2 {
+  opacity: 0;
+  height: 0;
+  margin: 0;
 }
 
 .sidebar-nav {
@@ -305,6 +331,17 @@ button {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.sidebar.collapsed .sidebar-nav .nav-link {
+  padding: 1rem;
+  justify-content: center;
+}
+
+.sidebar.collapsed .sidebar-nav .nav-link span {
+  display: none;
 }
 
 .sidebar-nav .nav-link:hover {
