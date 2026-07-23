@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { BookOpen, Layers, Zap, Shuffle, Activity, Archive, Wrench, Map, Menu, X, Home as HomeIcon, BarChart2, Settings, Volume2, VolumeX, Globe, Download, Trophy } from 'lucide-react';
+import { BookOpen, Layers, Zap, Shuffle, Activity, Archive, Wrench, Map, Menu, X, Home as HomeIcon, BarChart2, Settings, Volume2, VolumeX, Globe, Download, Trophy, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Modal from './components/Modal';
 import ReloadPrompt from './components/ReloadPrompt';
@@ -47,6 +47,7 @@ function App() {
   const [showInstall, setShowInstall] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   
   // Theme & SFX States
   const [theme, setTheme] = useState('aggression');
@@ -183,9 +184,16 @@ function App() {
         </nav>
 
         <div className="layout-container">
-          <aside className="sidebar desktop-only">
+          <aside className={`sidebar desktop-only ${isCollapsed ? 'collapsed' : ''}`}>
             <div className="sidebar-logo">
-              <img src="/logo.jpg" alt="Champions HQ Logo" className="logo-img" />
+              <img 
+                src="/logo.jpg" 
+                alt="Champions HQ Logo" 
+                className="logo-img desktop-only-click" 
+                onClick={() => setIsCollapsed(!isCollapsed)}
+                style={{ cursor: 'pointer' }}
+                title={isCollapsed ? "Expandir Menu" : "Recolher Menu"}
+              />
               <h2>Champions HQ</h2>
             </div>
             
