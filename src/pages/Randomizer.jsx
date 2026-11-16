@@ -36,13 +36,6 @@ export default function Randomizer() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
 
-  const aspects = [
-    { code: 'aggression', name: t('history.aspect_aggression', 'Agressividade'), color: 'var(--aspect-aggression)' },
-    { code: 'justice', name: t('history.aspect_justice', 'Justiça'), color: 'var(--aspect-justice)' },
-    { code: 'leadership', name: t('history.aspect_leadership', 'Liderança'), color: 'var(--aspect-leadership)' },
-    { code: 'protection', name: t('history.aspect_protection', 'Proteção'), color: 'var(--aspect-protection)' },
-  ];
-
   useEffect(() => {
     getCards().then(data => {
       setCards(data);
