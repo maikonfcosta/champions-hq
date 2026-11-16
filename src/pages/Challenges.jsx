@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Trophy, Skull, Play, Loader2, Star, Shield } from 'lucide-react';
 import { getActiveChallenge, getChallengeLeaderboard } from '../services/challenges';
-import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { storage } from '../services/storage';
 import { getCards } from '../services/api';

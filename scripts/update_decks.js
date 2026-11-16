@@ -52,13 +52,16 @@ async function run() {
           newDecksCount += decks.length;
           console.log(`[${dateStr}] +${decks.length} decks.`);
         }
+        // Atualiza o arquivo de controle exclusivamente em caso de sucesso da requisição
+        fs.writeFileSync(dateFile, dateStr);
+      } else {
+        console.error(`[${dateStr}] Falha na resposta da API: HTTP ${res.status}. Interrompendo para nova tentativa.`);
+        break;
       }
     } catch (e) {
-      console.log(`[${dateStr}] Falha: ${e.message}`);
+      console.error(`[${dateStr}] Erro de rede/execução: ${e.message}. Interrompendo para nova tentativa.`);
+      break;
     }
-    
-    // Atualiza o arquivo com a última data processada com sucesso
-    fs.writeFileSync(dateFile, dateStr);
 
     current.setDate(current.getDate() + 1);
     await sleep(500);

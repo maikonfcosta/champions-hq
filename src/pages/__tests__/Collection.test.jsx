@@ -33,10 +33,12 @@ describe('Collection Page', () => {
     vi.clearAllMocks();
   });
 
-  it('should render loading state initially', () => {
+  it('should render loading state initially', async () => {
     render(<Collection />);
-    // Loading is indicated by the Loader2 component but we can just check if main container isn't there yet
     expect(screen.queryByText('collection.title')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('collection.title')).toBeInTheDocument();
+    });
   });
 
   it('should render packs after loading data', async () => {

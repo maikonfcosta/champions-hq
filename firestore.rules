@@ -6,9 +6,21 @@ service cloud.firestore {
       allow read, write: if false;
     }
     
-    // Regra específica: usuários só podem ler e escrever seus próprios dados
+    // Usuários só podem ler e escrever seus próprios dados
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Desafios globais: leitura pública para qualquer usuário
+    match /challenges/{challengeId} {
+      allow read: if true;
+      allow write: if false; // Gerenciado via console/admin
+    }
+
+    // Leaderboards de desafios: leitura pública de rankings e submissão individual por usuário autenticado
+    match /leaderboards/{challengeId}/entries/{userId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
     }
   }
 }

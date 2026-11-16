@@ -1,7 +1,32 @@
 import React from 'react';
-import { Tag, CheckCircle2, Star, Sparkles, Rocket } from 'lucide-react';
+import { Tag, CheckCircle2, Star, Sparkles, Rocket, Trophy } from 'lucide-react';
 
 const releases = [
+  {
+    version: "1.4.1",
+    date: "16 de Novembro de 2026",
+    title: "Patch de Qualidade & Remediação de Auditoria 🛡️",
+    description: "Correções cirúrgicas de segurança, integridade de dados e estabilidade do aplicativo após auditoria técnica completa.",
+    highlights: [
+      {
+        icon: <CheckCircle2 size={18} className="text-protection" />,
+        text: "Regras do Firestore Atualizadas: Desafios Globais e Ranking Comunitário agora possuem permissões dedicadas no banco de dados para leitura pública e registro seguro de pontuações."
+      },
+      {
+        icon: <Star size={18} className="text-justice" />,
+        text: "Blindagem do Robô de Decks: O atualizador diário agora protege o histórico de decks contra falhas de rede, garantindo que nenhum dia seja ignorado."
+      },
+      {
+        icon: <Rocket size={18} className="text-primary" />,
+        text: "Limpeza Lean & Otimização: Remoção de hooks obsoletos e imports órfãos, reduzindo o peso do pacote final."
+      }
+    ],
+    features: [
+      "Correção do erro fatal de runtime na tela de Notas de Atualização.",
+      "Eliminação de avisos assíncronos nos testes automatizados da Coleção.",
+      "Sincronização completa de +5.300 novos decks da comunidade."
+    ]
+  },
   {
     version: "1.4.0",
     date: "20 de Julho de 2026",
